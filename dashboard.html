@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaShop — 마이 대시보드</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 'inter': ['Inter', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: linear-gradient(135deg, #f0f0ff 0%, #e8e0f0 30%, #f5f0ff 60%, #eef0ff 100%); overflow-x: hidden; }
+
+        .glass { background: rgba(255,255,255,0.45); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.6); }
+        .glass-strong { background: rgba(255,255,255,0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.7); }
+        .glass-card { background: rgba(255,255,255,0.5); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); border-radius: 20px; transition: all 0.3s ease; }
+        .glass-card:hover { transform: translateY(-4px); background: rgba(255,255,255,0.7); box-shadow: 0 12px 40px rgba(0,0,0,0.06); }
+        .glass-btn { background: rgba(255,255,255,0.5); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.6); }
+
+        .blob { position: absolute; border-radius: 50%; filter: blur(80px); z-index: 0; opacity: 0.4; pointer-events: none; }
+        .blob-1 { top: -10%; left: -5%; width: 400px; height: 400px; background: #c7b8f5; }
+        .blob-2 { top: 30%; right: -5%; width: 350px; height: 350px; background: #a5b4fc; }
+        .blob-3 { bottom: 5%; left: 15%; width: 300px; height: 300px; background: #ddd6fe; }
+
+        .hero-gradient { background: linear-gradient(135deg, #a78bfa 0%, #c084fc 30%, #f0abfc 60%, #fda4af 100%); }
+        .promo-gradient { background: linear-gradient(135deg, #c084fc 0%, #f472b6 50%, #fb923c 100%); }
+
+        .sidebar-item { transition: all 0.2s ease; border-radius: 12px; }
+        .sidebar-item:hover, .sidebar-item.active { background: rgba(99,102,241,0.1); color: #6366f1; }
+        .sidebar-item.active { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; }
+
+        .slide-up { animation: slideUp 0.6s ease forwards; opacity: 0; transform: translateY(20px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.5s ease forwards; opacity: 0; }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        .stat-card { transition: all 0.3s ease; }
+        .stat-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.06); }
+
+        .order-row { transition: all 0.2s ease; }
+        .order-row:hover { background: rgba(255,255,255,0.6); }
+
+        .progress-bar { background: linear-gradient(90deg, #6366f1, #8b5cf6, #c084fc); border-radius: 9999px; transition: width 1s ease; }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #c4b5fd; border-radius: 10px; }
+
+        .toast {
+            position: fixed; top: 24px; right: 24px; z-index: 100;
+            padding: 14px 24px; border-radius: 14px; font-size: 13px; font-weight: 600;
+            backdrop-filter: blur(16px); transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+        }
+        .toast.show { transform: translateX(0); }
+        .toast.success { background: rgba(34,197,94,0.9); color: white; }
+        .toast.error { background: rgba(239,68,68,0.9); color: white; }
+        .toast.info { background: rgba(99,102,241,0.9); color: white; }
+    </style>
+</head>
+<body class="min-h-screen relative">
+
+<!-- Background Blobs -->
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<!-- Mobile Menu Overlay -->
+<div id="mobileOverlay" class="fixed inset-0 bg-black/30 z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
+
+<div class="flex h-screen overflow-hidden relative z-10">
+
+<!-- ==================== LEFT SIDEBAR ==================== -->
+<aside id="sidebar" class="w-[240px] glass-strong flex flex-col py-6 px-4 fixed lg:relative h-full z-50 -translate-x-full lg:translate-x-0 transition-transform duration-300">
+    <!-- Logo -->
+    <a href="index.html" class="flex items-center gap-3 px-3 mb-8">
+        <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
+            <i class="fa-solid fa-bag-shopping text-white text-sm"></i>
+        </div>
+        <span class="font-extrabold text-lg text-slate-800">Nova<span class="text-indigo-500">Shop</span></span>
+    </a>
+
+    <!-- Nav Links -->
+    <nav class="flex-1 space-y-1 overflow-y-auto">
+        <a href="index.html" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+            <i class="fa-solid fa-house w-5 text-center"></i> 홈으로
+        </a>
+        <a href="#" onclick="setSection('overview');setActive(this)" class="sidebar-item active flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+            <i class="fa-solid fa-chart-pie w-5 text-center"></i> 대시보드
+        </a>
+        <a href="#" onclick="setSection('orders');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+            <i class="fa-solid fa-box w-5 text-center"></i> 주문 내역
+            <span class="ml-auto badge-hot text-white text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">5</span>
+        </a>
+        <a href="#" onclick="setSection('wishlist');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+            <i class="fa-regular fa-heart w-5 text-center"></i> 관심 상품
+            <span class="ml-auto text-[10px] font-bold text-pink-500">3</span>
+        </a>
+        <a href="#" onclick="setSection('coupons');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+            <i class="fa-solid fa-ticket w-5 text-center"></i> 쿠폰
+            <span class="ml-auto text-[10px] font-bold text-amber-500">2</span>
+        </a>
+        <a href="#" onclick="setSection('addresses');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+            <i class="fa-solid fa-location-dot w-5 text-center"></i> 배송지 관리
+        </a>
+        <a href="#" onclick="setSection('reviews');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+            <i class="fa-solid fa-star w-5 text-center"></i> 리뷰
+        </a>
+
+        <div class="border-t border-slate-200/50 my-3"></div>
+
+        <a href="#" onclick="setSection('settings');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+            <i class="fa-solid fa-gear w-5 text-center"></i> 계정 설정
+        </a>
+        <a href="#" onclick="handleLogout()" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-400 hover:text-red-500 hover:bg-red-50/50">
+            <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> 로그아웃
+        </a>
+    </nav>
+
+    <!-- Promo Card -->
+    <div class="mt-4 promo-gradient rounded-2xl p-5 text-white relative overflow-hidden">
+        <div class="absolute -top-4 -right-4 w-20 h-20 bg-white/20 rounded-full"></div>
+        <div class="absolute -bottom-6 -left-6 w-16 h-16 bg-white/10 rounded-full"></div>
+        <p class="text-[10px] font-bold uppercase tracking-wider mb-1 opacity-90">회원 등급</p>
+        <h3 class="font-extrabold text-lg leading-tight mb-1" id="memberTier">Gold Member</h3>
+        <p class="text-white/80 text-[11px] mb-2">다음 등급까지 ₩50,000 남았습니다</p>
+        <div class="w-full bg-white/20 rounded-full h-2 mb-1">
+            <div class="progress-bar h-2" style="width: 65%"></div>
+        </div>
+        <p class="text-[10px] text-white/70">₩135,000 / ₩200,000</p>
+    </div>
+</aside>
+
+<!-- ==================== MAIN CONTENT ==================== -->
+<main class="flex-1 overflow-y-auto" id="mainContent">
+    <!-- Top Bar -->
+    <header class="sticky top-0 z-30 glass-strong px-6 py-3 flex items-center gap-4">
+        <button onclick="toggleSidebar()" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/50 transition">
+            <i class="fa-solid fa-bars text-slate-600"></i>
+        </button>
+        <div class="flex-1">
+            <h2 class="text-sm font-extrabold text-slate-800" id="greeting">안녕하세요! 👋</h2>
+            <p class="text-[11px] text-slate-500" id="todayDate"></p>
+        </div>
+        <div class="flex items-center gap-3">
+            <button class="relative w-10 h-10 flex items-center justify-center glass-btn rounded-full hover:bg-white/70 transition">
+                <i class="fa-solid fa-bell text-slate-600 text-sm"></i>
+                <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">3</span>
+            </button>
+            <div class="flex items-center gap-2 glass-btn px-3 py-1.5 rounded-full cursor-pointer hover:bg-white/70 transition" id="userProfileBtn">
+                <img id="userAvatar" src="https://i.pravatar.cc/150?img=47" class="w-8 h-8 rounded-full object-cover border-2 border-white shadow-sm">
+                <span class="hidden sm:block text-xs font-semibold text-slate-700" id="userName">사용자</span>
+                <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="p-6" id="mainArea">
+        <!-- ==================== OVERVIEW SECTION ==================== -->
+        <div id="sectionOverview">
+            <!-- Welcome Banner -->
+            <section class="hero-gradient rounded-3xl p-8 mb-8 relative overflow-hidden slide-up">
+                <div class="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/3"></div>
+                <div class="absolute bottom-0 left-1/3 w-48 h-48 bg-white/10 rounded-full translate-y-1/2"></div>
+                <div class="relative z-10 max-w-lg">
+                    <h1 class="text-2xl md:text-3xl font-extrabold text-white leading-tight mb-2" id="welcomeMsg">반갑습니다! 🎉</h1>
+                    <p class="text-white/80 text-sm mb-4">NovaShop에서 쇼핑의 즐거움을 발견하세요. 주문 현황과 회원 혜택을 한눈에 확인하세요.</p>
+                    <a href="index.html" class="inline-flex bg-white text-indigo-600 font-bold text-sm px-6 py-3 rounded-full hover:bg-white/90 transition shadow-xl items-center gap-2">
+                        쇼핑하러 가기 <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </a>
+                </div>
+            </section>
+
+            <!-- Stats Cards -->
+            <section class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 slide-up" style="animation-delay:0.1s">
+                <div class="glass-card p-5 stat-card">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+                            <i class="fa-solid fa-box text-indigo-500 text-sm"></i>
+                        </div>
+                        <span class="text-[10px] font-bold text-green-500 bg-green-50 px-2 py-0.5 rounded-full">+2</span>
+                    </div>
+                    <p class="text-xl font-extrabold text-slate-800">5</p>
+                    <p class="text-[11px] text-slate-500">총 주문</p>
+                </div>
+                <div class="glass-card p-5 stat-card">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
+                            <i class="fa-solid fa-truck text-amber-500 text-sm"></i>
+                        </div>
+                        <span class="text-[10px] font-bold text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full">진행중</span>
+                    </div>
+                    <p class="text-xl font-extrabold text-slate-800">2</p>
+                    <p class="text-[11px] text-slate-500">배송 중</p>
+                </div>
+                <div class="glass-card p-5 stat-card">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-100 to-rose-100 flex items-center justify-center">
+                            <i class="fa-solid fa-heart text-pink-500 text-sm"></i>
+                        </div>
+                    </div>
+                    <p class="text-xl font-extrabold text-slate-800">3</p>
+                    <p class="text-[11px] text-slate-500">관심 상품</p>
+                </div>
+                <div class="glass-card p-5 stat-card">
+                    <div class="flex items-center justify-between mb-3">
+                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center">
+                            <i class="fa-solid fa-ticket text-green-500 text-sm"></i>
+                        </div>
+                    </div>
+                    <p class="text-xl font-extrabold text-slate-800">₩25,000</p>
+                    <p class="text-[11px] text-slate-500">할인 쿠폰</p>
+                </div>
+            </section>
+
+            <!-- Active Orders -->
+            <section class="mb-8 slide-up" style="animation-delay:0.2s">
+                <div class="flex justify-between items-center mb-5">
+                    <h2 class="text-lg font-extrabold text-slate-800">진행 중인 주문</h2>
+                    <button onclick="setSection('orders')" class="text-xs font-semibold text-indigo-500 hover:text-indigo-600 flex items-center gap-1">전체 보기 <i class="fa-solid fa-arrow-right text-[10px]"></i></button>
+                </div>
+                <div class="space-y-3">
+                    <!-- Order 1 -->
+                    <div class="glass-card p-4 flex items-center gap-4">
+                        <img src="https://cdn.dummyjson.com/products/images/mens-shirts/Blue%20Patch%20Polo%20T-Shirt/thumbnail.webp" class="w-16 h-16 rounded-xl object-contain bg-white/50 p-1 flex-shrink-0">
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-xs font-bold text-slate-700 truncate">Blue Patch Polo T-Shirt</h4>
+                            <p class="text-[10px] text-slate-400">주문번호: #NS-20240801</p>
+                            <div class="flex items-center gap-2 mt-2">
+                                <div class="flex-1 bg-slate-200 rounded-full h-1.5">
+                                    <div class="progress-bar h-1.5" style="width:60%"></div>
+                                </div>
+                                <span class="text-[10px] font-bold text-indigo-500">배송중</span>
+                            </div>
+                        </div>
+                        <div class="text-right flex-shrink-0">
+                            <p class="text-sm font-extrabold text-slate-800">$29.99</p>
+                            <p class="text-[10px] text-slate-400">预计 8/5 到达</p>
+                        </div>
+                    </div>
+                    <!-- Order 2 -->
+                    <div class="glass-card p-4 flex items-center gap-4">
+                        <img src="https://cdn.dummyjson.com/products/images/smartphones/iphone-9/thumbnail.webp" class="w-16 h-16 rounded-xl object-contain bg-white/50 p-1 flex-shrink-0">
+                        <div class="flex-1 min-w-0">
+                            <h4 class="text-xs font-bold text-slate-700 truncate">iPhone 9</h4>
+                            <p class="text-[10px] text-slate-400">주문번호: #NS-20240803</p>
+                            <div class="flex items-center gap-2 mt-2">
+                                <div class="flex-1 bg-slate-200 rounded-full h-1.5">
+                                    <div class="progress-bar h-1.5" style="width:30%"></div>
+                                </div>
+                                <span class="text-[10px] font-bold text-amber-500">배송 준비중</span>
+                            </div>
+                        </div>
+                        <div class="text-right flex-shrink-0">
+                            <p class="text-sm font-extrabold text-slate-800">$549.00</p>
+                            <p class="text-[10px] text-slate-400">预计 8/8 到达</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Actions & Coupons -->
+            <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8 slide-up" style="animation-delay:0.3s">
+                <!-- Quick Actions -->
+                <div class="glass-card p-6">
+                    <h3 class="font-extrabold text-sm text-slate-800 mb-4">빠른 실행</h3>
+                    <div class="grid grid-cols-3 gap-3">
+                        <a href="index.html" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/50 transition cursor-pointer">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
+                                <i class="fa-solid fa-bag-shopping text-indigo-500 text-sm"></i>
+                            </div>
+                            <span class="text-[10px] font-semibold text-slate-600">쇼핑</span>
+                        </a>
+                        <a href="checkout.html" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/50 transition cursor-pointer">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center">
+                                <i class="fa-solid fa-credit-card text-green-500 text-sm"></i>
+                            </div>
+                            <span class="text-[10px] font-semibold text-slate-600">결제</span>
+                        </a>
+                        <div onclick="setSection('addresses')" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/50 transition cursor-pointer">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
+                                <i class="fa-solid fa-location-dot text-amber-500 text-sm"></i>
+                            </div>
+                            <span class="text-[10px] font-semibold text-slate-600">배송지</span>
+                        </div>
+                        <div onclick="setSection('reviews')" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/50 transition cursor-pointer">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-pink-100 to-rose-100 flex items-center justify-center">
+                                <i class="fa-solid fa-star text-pink-500 text-sm"></i>
+                            </div>
+                            <span class="text-[10px] font-semibold text-slate-600">리뷰</span>
+                        </div>
+                        <div onclick="setSection('coupons')" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/50 transition cursor-pointer">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-red-100 to-rose-100 flex items-center justify-center">
+                                <i class="fa-solid fa-ticket text-red-400 text-sm"></i>
+                            </div>
+                            <span class="text-[10px] font-semibold text-slate-600">쿠폰</span>
+                        </div>
+                        <div onclick="setSection('settings')" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/50 transition cursor-pointer">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-slate-100 to-gray-100 flex items-center justify-center">
+                                <i class="fa-solid fa-gear text-slate-500 text-sm"></i>
+                            </div>
+                            <span class="text-[10px] font-semibold text-slate-600">설정</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Available Coupons -->
+                <div class="glass-card p-6">
+                    <h3 class="font-extrabold text-sm text-slate-800 mb-4">보유 쿠폰</h3>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center flex-shrink-0">
+                                <span class="text-white font-extrabold text-sm">15%</span>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-xs font-bold text-slate-700">15% 할인 쿠폰</p>
+                                <p class="text-[10px] text-slate-400">₩50,000 이상 구매 시 · 8/31까지</p>
+                            </div>
+                            <button class="text-[10px] font-bold text-indigo-500 hover:text-indigo-600">사용</button>
+                        </div>
+                        <div class="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-100">
+                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0">
+                                <span class="text-white font-extrabold text-sm">₩5k</span>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-xs font-bold text-slate-700">₩5,000 할인</p>
+                                <p class="text-[10px] text-slate-400">₩30,000 이상 구매 시 · 9/15까지</p>
+                            </div>
+                            <button class="text-[10px] font-bold text-indigo-500 hover:text-indigo-600">사용</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Activity -->
+            <section class="mb-8 slide-up" style="animation-delay:0.4s">
+                <h2 class="text-lg font-extrabold text-slate-800 mb-5">최근 활동</h2>
+                <div class="glass-card p-5">
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-check text-green-500 text-xs"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-xs font-semibold text-slate-700">주문 #NS-20240728 배송 완료</p>
+                                <p class="text-[10px] text-slate-400">2024년 7월 28일</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-star text-indigo-500 text-xs"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-xs font-semibold text-slate-700">상품 리뷰를 남겼습니다</p>
+                                <p class="text-[10px] text-slate-400">2024년 7월 30일</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-pink-50 flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-heart text-pink-500 text-xs"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-xs font-semibold text-slate-700">관심 상품에 추가: Galaxy S21</p>
+                                <p class="text-[10px] text-slate-400">2024년 8월 1일</p>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-ticket text-amber-500 text-xs"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-xs font-semibold text-slate-700">쿠폰 획득: 15% 할인</p>
+                                <p class="text-[10px] text-slate-400">2024년 8월 2일</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== ORDERS SECTION ==================== -->
+        <div id="sectionOrders" class="hidden">
+            <section class="mb-8 slide-up">
+                <div class="flex justify-between items-center mb-5">
+                    <h2 class="text-lg font-extrabold text-slate-800">주문 내역</h2>
+                    <div class="flex gap-2">
+                        <button class="glass-btn px-3 py-1.5 rounded-full text-[11px] font-semibold text-indigo-600 bg-indigo-50/50">전체</button>
+                        <button class="glass-btn px-3 py-1.5 rounded-full text-[11px] font-semibold text-slate-500">배송중</button>
+                        <button class="glass-btn px-3 py-1.5 rounded-full text-[11px] font-semibold text-slate-500">완료</button>
+                    </div>
+                </div>
+                <div class="space-y-3">
+                    <div class="glass-card p-4 order-row">
+                        <div class="flex items-center gap-4">
+                            <img src="https://cdn.dummyjson.com/products/images/mens-shirts/Blue%20Patch%20Polo%20T-Shirt/thumbnail.webp" class="w-14 h-14 rounded-xl object-contain bg-white/50 p-1 flex-shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-xs font-bold text-slate-700 truncate">Blue Patch Polo T-Shirt</h4>
+                                <p class="text-[10px] text-slate-400">주문 #NS-20240801 · 2024/08/01</p>
+                            </div>
+                            <div class="text-right flex-shrink-0">
+                                <p class="text-sm font-extrabold text-slate-800">$29.99</p>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-500">배송중</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-4 order-row">
+                        <div class="flex items-center gap-4">
+                            <img src="https://cdn.dummyjson.com/products/images/smartphones/iphone-9/thumbnail.webp" class="w-14 h-14 rounded-xl object-contain bg-white/50 p-1 flex-shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-xs font-bold text-slate-700 truncate">iPhone 9</h4>
+                                <p class="text-[10px] text-slate-400">주문 #NS-20240803 · 2024/08/03</p>
+                            </div>
+                            <div class="text-right flex-shrink-0">
+                                <p class="text-sm font-extrabold text-slate-800">$549.00</p>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-500">준비중</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-4 order-row">
+                        <div class="flex items-center gap-4">
+                            <img src="https://cdn.dummyjson.com/products/images/beauty/essence-mascara-moon/thumbnail.webp" class="w-14 h-14 rounded-xl object-contain bg-white/50 p-1 flex-shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-xs font-bold text-slate-700 truncate">Essence Mascara Moon</h4>
+                                <p class="text-[10px] text-slate-400">주문 #NS-20240728 · 2024/07/28</p>
+                            </div>
+                            <div class="text-right flex-shrink-0">
+                                <p class="text-sm font-extrabold text-slate-800">$9.99</p>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-50 text-green-500">완료</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-4 order-row">
+                        <div class="flex items-center gap-4">
+                            <img src="https://cdn.dummyjson.com/products/images/sunglasses/Round%20Glasses/thumbnail.webp" class="w-14 h-14 rounded-xl object-contain bg-white/50 p-1 flex-shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-xs font-bold text-slate-700 truncate">Round Glasses</h4>
+                                <p class="text-[10px] text-slate-400">주문 #NS-20240720 · 2024/07/20</p>
+                            </div>
+                            <div class="text-right flex-shrink-0">
+                                <p class="text-sm font-extrabold text-slate-800">$49.99</p>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-50 text-green-500">완료</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-4 order-row">
+                        <div class="flex items-center gap-4">
+                            <img src="https://cdn.dummyjson.com/products/images/fragrances/Dior%20Sauvage/thumbnail.webp" class="w-14 h-14 rounded-xl object-contain bg-white/50 p-1 flex-shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <h4 class="text-xs font-bold text-slate-700 truncate">Dior Sauvage</h4>
+                                <p class="text-[10px] text-slate-400">주문 #NS-20240715 · 2024/07/15</p>
+                            </div>
+                            <div class="text-right flex-shrink-0">
+                                <p class="text-sm font-extrabold text-slate-800">$89.50</p>
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-50 text-green-500">완료</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== WISHLIST SECTION ==================== -->
+        <div id="sectionWishlist" class="hidden">
+            <section class="mb-8 slide-up">
+                <h2 class="text-lg font-extrabold text-slate-800 mb-5">관심 상품</h2>
+                <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="glass-card p-4">
+                        <div class="relative bg-slate-50 h-36 rounded-xl overflow-hidden mb-3">
+                            <img src="https://cdn.dummyjson.com/products/images/smartphones/galaxy-s21/thumbnail.webp" class="w-full h-full object-contain p-3">
+                            <button class="absolute top-2 right-2 w-8 h-8 glass rounded-full flex items-center justify-center text-red-400">
+                                <i class="fa-solid fa-heart text-xs"></i>
+                            </button>
+                        </div>
+                        <h4 class="text-xs font-bold text-slate-700 truncate">Galaxy S21</h4>
+                        <p class="text-sm font-extrabold text-slate-800">$699.99</p>
+                        <button class="mt-2 w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-[11px] font-bold py-2 rounded-xl hover:opacity-90 transition">장바구니에 담기</button>
+                    </div>
+                    <div class="glass-card p-4">
+                        <div class="relative bg-slate-50 h-36 rounded-xl overflow-hidden mb-3">
+                            <img src="https://cdn.dummyjson.com/products/images/mens-watches/Rolex%20Submariner/thumbnail.webp" class="w-full h-full object-contain p-3">
+                            <button class="absolute top-2 right-2 w-8 h-8 glass rounded-full flex items-center justify-center text-red-400">
+                                <i class="fa-solid fa-heart text-xs"></i>
+                            </button>
+                        </div>
+                        <h4 class="text-xs font-bold text-slate-700 truncate">Rolex Submariner</h4>
+                        <p class="text-sm font-extrabold text-slate-800">$12,999.99</p>
+                        <button class="mt-2 w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-[11px] font-bold py-2 rounded-xl hover:opacity-90 transition">장바구니에 담기</button>
+                    </div>
+                    <div class="glass-card p-4">
+                        <div class="relative bg-slate-50 h-36 rounded-xl overflow-hidden mb-3">
+                            <img src="https://cdn.dummyjson.com/products/images/beauty/lip-gloss/thumbnail.webp" class="w-full h-full object-contain p-3">
+                            <button class="absolute top-2 right-2 w-8 h-8 glass rounded-full flex items-center justify-center text-red-400">
+                                <i class="fa-solid fa-heart text-xs"></i>
+                            </button>
+                        </div>
+                        <h4 class="text-xs font-bold text-slate-700 truncate">Lip Gloss</h4>
+                        <p class="text-sm font-extrabold text-slate-800">$5.99</p>
+                        <button class="mt-2 w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-[11px] font-bold py-2 rounded-xl hover:opacity-90 transition">장바구니에 담기</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== COUPONS SECTION ==================== -->
+        <div id="sectionCoupons" class="hidden">
+            <section class="mb-8 slide-up">
+                <h2 class="text-lg font-extrabold text-slate-800 mb-5">내 쿠폰</h2>
+                <div class="space-y-3">
+                    <div class="glass-card p-5 flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center flex-shrink-0">
+                            <span class="text-white font-extrabold text-lg">15%</span>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-bold text-slate-800">15% 할인 쿠폰</h4>
+                            <p class="text-[11px] text-slate-500">₩50,000 이상 구매 시 사용 가능</p>
+                            <p class="text-[10px] text-slate-400 mt-1">有效期至 2024/08/31</p>
+                        </div>
+                        <button class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xs font-bold px-5 py-2.5 rounded-xl hover:opacity-90 transition">사용</button>
+                    </div>
+                    <div class="glass-card p-5 flex items-center gap-4">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0">
+                            <span class="text-white font-extrabold text-sm">₩5k</span>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-bold text-slate-800">₩5,000 할인</h4>
+                            <p class="text-[11px] text-slate-500">₩30,000 이상 구매 시 사용 가능</p>
+                            <p class="text-[10px] text-slate-400 mt-1">有效期至 2024/09/15</p>
+                        </div>
+                        <button class="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-5 py-2.5 rounded-xl hover:opacity-90 transition">사용</button>
+                    </div>
+                    <div class="glass-card p-5 flex items-center gap-4 opacity-50">
+                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-400 to-slate-500 flex items-center justify-center flex-shrink-0">
+                            <span class="text-white font-extrabold text-sm">₩3k</span>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-bold text-slate-800">₩3,000 할인</h4>
+                            <p class="text-[11px] text-slate-500">₩20,000 이상 구매 시 사용 가능</p>
+                            <p class="text-[10px] text-red-400 mt-1 font-bold">만료됨</p>
+                        </div>
+                        <span class="text-xs text-slate-400 font-bold">만료</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== ADDRESSES SECTION ==================== -->
+        <div id="sectionAddresses" class="hidden">
+            <section class="mb-8 slide-up">
+                <div class="flex justify-between items-center mb-5">
+                    <h2 class="text-lg font-extrabold text-slate-800">배송지 관리</h2>
+                    <button class="glass-btn px-4 py-2 rounded-xl text-xs font-bold text-indigo-600 hover:bg-white/70 transition flex items-center gap-1">
+                        <i class="fa-solid fa-plus text-[10px]"></i> 새로 추가
+                    </button>
+                </div>
+                <div class="space-y-3">
+                    <div class="glass-card p-5 relative">
+                        <div class="absolute top-4 right-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">기본</div>
+                        <div class="flex items-start gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-house text-indigo-500 text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-800">집</h4>
+                                <p class="text-[11px] text-slate-500 mt-1">서울특별시 강남구 테헤란로 152</p>
+                                <p class="text-[11px] text-slate-500">강남파이낸스센터 23층</p>
+                                <p class="text-[11px] text-slate-400 mt-1">010-1234-5678</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-5">
+                        <div class="flex items-start gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-briefcase text-amber-500 text-sm"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-bold text-slate-800">회사</h4>
+                                <p class="text-[11px] text-slate-500 mt-1">서울특별시 마포구 합정동 123-45</p>
+                                <p class="text-[11px] text-slate-500">NovaShop 오피스빌딩 5층</p>
+                                <p class="text-[11px] text-slate-400 mt-1">010-9876-5432</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== REVIEWS SECTION ==================== -->
+        <div id="sectionReviews" class="hidden">
+            <section class="mb-8 slide-up">
+                <h2 class="text-lg font-extrabold text-slate-800 mb-5">내 리뷰</h2>
+                <div class="space-y-3">
+                    <div class="glass-card p-5">
+                        <div class="flex items-center gap-3 mb-3">
+                            <img src="https://cdn.dummyjson.com/products/images/beauty/essence-mascara-moon/thumbnail.webp" class="w-12 h-12 rounded-xl object-contain bg-white/50 p-1">
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-700">Essence Mascara Moon</h4>
+                                <div class="flex text-amber-400 text-[11px]">★★★★★</div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-slate-600 leading-relaxed">마스카라가 정말 좋아요! 지속력도 뛰어나고 자연스러운 볼륨감을 줍니다. 강력 추천합니다! 💕</p>
+                        <p class="text-[10px] text-slate-400 mt-2">2024/07/30</p>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- ==================== SETTINGS SECTION ==================== -->
+        <div id="sectionSettings" class="hidden">
+            <section class="mb-8 slide-up">
+                <h2 class="text-lg font-extrabold text-slate-800 mb-5">계정 설정</h2>
+                <div class="glass-card p-6 mb-4">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="relative">
+                            <img id="settingsAvatar" src="https://i.pravatar.cc/150?img=47" class="w-20 h-20 rounded-2xl object-cover border-3 border-white shadow-lg">
+                            <button class="absolute -bottom-2 -right-2 w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white shadow-lg">
+                                <i class="fa-solid fa-camera text-[10px]"></i>
+                            </button>
+                        </div>
+                        <div>
+                            <h3 class="font-extrabold text-slate-800" id="settingsName">사용자</h3>
+                            <p class="text-xs text-slate-500" id="settingsEmail">user@example.com</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">사용자 이름</label>
+                            <input type="text" id="settingUsername" placeholder="사용자 이름" class="w-full bg-white/50 border border-white/60 rounded-xl px-4 py-3 text-sm text-slate-700 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition">
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">이메일</label>
+                            <input type="email" id="settingEmailInput" placeholder="이메일" class="w-full bg-white/50 border border-white/60 rounded-xl px-4 py-3 text-sm text-slate-700 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition">
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">전화번호</label>
+                            <input type="tel" id="settingPhone" placeholder="전화번호" class="w-full bg-white/50 border border-white/60 rounded-xl px-4 py-3 text-sm text-slate-700 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition">
+                        </div>
+                        <button onclick="showToast('설정이 저장되었습니다!', 'success')" class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-sm px-8 py-3 rounded-xl hover:opacity-90 transition shadow-lg">
+                            저장하기
+                        </button>
+                    </div>
+                </div>
+
+                <div class="glass-card p-6">
+                    <h3 class="font-extrabold text-sm text-slate-800 mb-4">알림 설정</h3>
+                    <div class="space-y-3">
+                        <label class="flex items-center justify-between p-3 rounded-xl hover:bg-white/30 transition cursor-pointer">
+                            <div class="flex items-center gap-3">
+                                <i class="fa-solid fa-bell text-indigo-500 text-sm w-5"></i>
+                                <span class="text-xs font-semibold text-slate-700">주문 알림</span>
+                            </div>
+                            <div class="w-10 h-5 bg-indigo-500 rounded-full relative">
+                                <div class="absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow transition"></div>
+                            </div>
+                        </label>
+                        <label class="flex items-center justify-between p-3 rounded-xl hover:bg-white/30 transition cursor-pointer">
+                            <div class="flex items-center gap-3">
+                                <i class="fa-solid fa-tag text-pink-500 text-sm w-5"></i>
+                                <span class="text-xs font-semibold text-slate-700">할인 알림</span>
+                            </div>
+                            <div class="w-10 h-5 bg-indigo-500 rounded-full relative">
+                                <div class="absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow transition"></div>
+                            </div>
+                        </label>
+                        <label class="flex items-center justify-between p-3 rounded-xl hover:bg-white/30 transition cursor-pointer">
+                            <div class="flex items-center gap-3">
+                                <i class="fa-solid fa-envelope text-amber-500 text-sm w-5"></i>
+                                <span class="text-xs font-semibold text-slate-700">이메일 뉴스레터</span>
+                            </div>
+                            <div class="w-10 h-5 bg-slate-300 rounded-full relative">
+                                <div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow transition"></div>
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+    </div>
+</main>
+</div>
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+// Firebase config
+const firebaseConfig = {
+    apiKey: "AIzaSyAaLdtzOIZVYB-Bdc42CXm2T8iclWLc4o0",
+    authDomain: "habib-yt.firebaseapp.com",
+    projectId: "habib-yt",
+    storageBucket: "habib-yt.firebasestorage.app",
+    messagingSenderId: "656628491244",
+    appId: "1:656628491244:web:e01ccd42bd8a2b1b4c96c9",
+    measurementId: "G-GNY1T88D34"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+// ===================== TOAST =====================
+function showToast(message, type = 'info') {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = `toast ${type}`;
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+// ===================== AUTH CHECK =====================
+function checkAuth() {
+    auth.onAuthStateChanged((user) => {
+        if (user) {
+            populateUserData(user);
+        } else {
+            // Check localStorage fallback
+            const stored = JSON.parse(localStorage.getItem('novaShopUser') || 'null');
+            if (stored) {
+                populateUserData(stored);
+            } else {
+                showToast('로그인이 필요합니다', 'info');
+                setTimeout(() => { window.location.href = 'login.html'; }, 1000);
+            }
+        }
+    });
+
+    // Also check localStorage immediately
+    const stored = JSON.parse(localStorage.getItem('novaShopUser') || 'null');
+    if (stored) {
+        populateUserData(stored);
+    }
+}
+
+function populateUserData(user) {
+    const name = user.displayName || user.email?.split('@')[0] || '사용자';
+    const email = user.email || '';
+    const phone = user.phoneNumber || '';
+    const photo = user.photoURL || 'https://i.pravatar.cc/150?img=47';
+
+    document.getElementById('userName').textContent = name;
+    document.getElementById('userAvatar').src = photo;
+    document.getElementById('settingsAvatar').src = photo;
+    document.getElementById('welcomeMsg').textContent = `${name}님, 환영합니다! 🎉`;
+    document.getElementById('greeting').textContent = `${name}님, 안녕하세요! 👋`;
+    document.getElementById('settingsName').textContent = name;
+    document.getElementById('settingsEmail').textContent = email;
+    document.getElementById('settingUsername').value = name;
+    document.getElementById('settingEmailInput').value = email;
+    document.getElementById('settingPhone').value = phone;
+
+    // Set today's date in Korean
+    const now = new Date();
+    const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+    document.getElementById('todayDate').textContent = now.toLocaleDateString('ko-KR', options);
+}
+
+// ===================== SECTION SWITCHING =====================
+function setSection(section) {
+    const sections = ['Overview', 'Orders', 'Wishlist', 'Coupons', 'Addresses', 'Reviews', 'Settings'];
+    sections.forEach(s => {
+        const el = document.getElementById('section' + s);
+        if (el) el.classList.add('hidden');
+    });
+    const target = document.getElementById('section' + section.charAt(0).toUpperCase() + section.slice(1));
+    if (target) target.classList.remove('hidden');
+    document.getElementById('mainArea').scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===================== SIDEBAR =====================
+function setActive(el) {
+    document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+    el.classList.add('active');
+    toggleSidebar(false);
+}
+
+function toggleSidebar(open) {
+    const sidebar = document.getElementById('sidebar');
+    const overlay = document.getElementById('mobileOverlay');
+    if (open === false || sidebar.classList.contains('translate-x-0')) {
+        sidebar.classList.remove('translate-x-0');
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+    } else {
+        sidebar.classList.remove('-translate-x-full');
+        sidebar.classList.add('translate-x-0');
+        overlay.classList.remove('hidden');
+    }
+}
+
+// ===================== LOGOUT =====================
+function handleLogout() {
+    auth.signOut().then(() => {
+        localStorage.removeItem('novaShopUser');
+        localStorage.removeItem('novaShopAuth');
+        showToast('로그아웃 되었습니다', 'info');
+        setTimeout(() => { window.location.href = 'login.html'; }, 1000);
+    }).catch((error) => {
+        localStorage.removeItem('novaShopUser');
+        localStorage.removeItem('novaShopAuth');
+        showToast('로그아웃 되었습니다', 'info');
+        setTimeout(() => { window.location.href = 'login.html'; }, 1000);
+    });
+}
+
+// ===================== INIT =====================
+document.addEventListener('DOMContentLoaded', () => {
+    checkAuth();
+});
+</script>
+
+</body>
+</html>
