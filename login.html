@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="ko" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaShop — 로그인</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 'inter': ['Inter', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body {
+            background: linear-gradient(135deg, #f0f0ff 0%, #e8e0f0 30%, #f5f0ff 60%, #eef0ff 100%);
+            overflow-x: hidden;
+        }
+
+        .glass { background: rgba(255,255,255,0.45); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.6); }
+        .glass-strong { background: rgba(255,255,255,0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.7); }
+        .glass-card { background: rgba(255,255,255,0.5); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); border-radius: 20px; transition: all 0.3s ease; }
+        .glass-btn { background: rgba(255,255,255,0.5); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.6); }
+
+        .blob { position: absolute; border-radius: 50%; filter: blur(80px); z-index: 0; opacity: 0.4; pointer-events: none; }
+        .blob-1 { top: -10%; left: -5%; width: 400px; height: 400px; background: #c7b8f5; }
+        .blob-2 { top: 30%; right: -5%; width: 350px; height: 350px; background: #a5b4fc; }
+        .blob-3 { bottom: 5%; left: 15%; width: 300px; height: 300px; background: #ddd6fe; }
+        .blob-4 { bottom: -10%; right: 20%; width: 250px; height: 250px; background: #f0abfc; }
+
+        .hero-gradient { background: linear-gradient(135deg, #a78bfa 0%, #c084fc 30%, #f0abfc 60%, #fda4af 100%); }
+        .promo-gradient { background: linear-gradient(135deg, #c084fc 0%, #f472b6 50%, #fb923c 100%); }
+
+        .slide-up { animation: slideUp 0.6s ease forwards; opacity: 0; transform: translateY(20px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+
+        .fade-in { animation: fadeIn 0.5s ease forwards; opacity: 0; }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        .input-glass {
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(255,255,255,0.6);
+            transition: all 0.3s ease;
+        }
+        .input-glass:focus {
+            outline: none;
+            border-color: #818cf8;
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+            background: rgba(255,255,255,0.7);
+        }
+
+        .tab-active {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99,102,241,0.3);
+        }
+
+        .google-btn {
+            background: white;
+            border: 1.5px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+        .google-btn:hover {
+            border-color: #c7d2fe;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+            transform: translateY(-1px);
+        }
+
+        .phone-input-group {
+            background: rgba(255,255,255,0.5);
+            border: 1.5px solid rgba(255,255,255,0.6);
+        }
+        .phone-input-group:focus-within {
+            border-color: #818cf8;
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+        }
+
+        .otp-input {
+            width: 48px;
+            height: 56px;
+            text-align: center;
+            font-size: 20px;
+            font-weight: 700;
+            background: rgba(255,255,255,0.5);
+            border: 1.5px solid rgba(255,255,255,0.6);
+            border-radius: 14px;
+            backdrop-filter: blur(12px);
+            transition: all 0.3s ease;
+        }
+        .otp-input:focus {
+            outline: none;
+            border-color: #818cf8;
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.15);
+            background: rgba(255,255,255,0.7);
+        }
+
+        .divider-line {
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #d1d5db, transparent);
+        }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #c4b5fd; border-radius: 10px; }
+
+        .password-toggle { cursor: pointer; }
+
+        .toast {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            z-index: 100;
+            padding: 14px 24px;
+            border-radius: 14px;
+            font-size: 13px;
+            font-weight: 600;
+            backdrop-filter: blur(16px);
+            transform: translateX(120%);
+            transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
+        }
+        .toast.show { transform: translateX(0); }
+        .toast.success { background: rgba(34,197,94,0.9); color: white; }
+        .toast.error { background: rgba(239,68,68,0.9); color: white; }
+        .toast.info { background: rgba(99,102,241,0.9); color: white; }
+
+        #recaptcha-container { margin-top: -10px; }
+    </style>
+</head>
+<body class="min-h-screen relative flex items-center justify-center p-4">
+
+<!-- Background Blobs -->
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+<div class="blob blob-4"></div>
+
+<!-- Toast -->
+<div id="toast" class="toast"></div>
+
+<!-- reCAPTCHA container for phone auth -->
+<div id="recaptcha-container"></div>
+
+<!-- Main Container -->
+<div class="w-full max-w-5xl relative z-10 flex flex-col lg:flex-row gap-0 items-stretch min-h-[640px]">
+
+    <!-- ==================== LEFT PANEL — Branding ==================== -->
+    <div class="lg:w-[45%] hero-gradient rounded-l-3xl lg:rounded-l-3xl rounded-t-3xl lg:rounded-tr-none p-8 lg:p-10 flex flex-col justify-between relative overflow-hidden slide-up">
+        <div class="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/3"></div>
+        <div class="absolute bottom-0 left-1/3 w-48 h-48 bg-white/10 rounded-full translate-y-1/2"></div>
+        <div class="absolute top-1/2 right-10 w-32 h-32 bg-white/10 rounded-full"></div>
+
+        <!-- Logo -->
+        <a href="index.html" class="flex items-center gap-3 relative z-10 mb-8">
+            <div class="w-10 h-10 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center">
+                <i class="fa-solid fa-bag-shopping text-white text-sm"></i>
+            </div>
+            <span class="font-extrabold text-xl text-white">Nova<span class="text-white/80">Shop</span></span>
+        </a>
+
+        <!-- Hero Content -->
+        <div class="relative z-10 flex-1 flex flex-col justify-center">
+            <h1 class="text-3xl lg:text-4xl font-extrabold text-white leading-tight mb-4">
+                당신만의 스타일을<br>찾아보세요 ✨
+            </h1>
+            <p class="text-white/80 text-sm leading-relaxed mb-6 max-w-sm">
+                NovaShop에 로그인하여 최신 패션, 뷰티, 라이프스타일 트렌드를 만나보세요.exclusive offers와 회원 특별 혜택을 누려보세요.
+            </p>
+
+            <!-- Features -->
+            <div class="space-y-3">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                        <i class="fa-solid fa-shield-halved text-white text-xs"></i>
+                    </div>
+                    <span class="text-white/90 text-xs font-medium">100% 안전한 결제 시스템</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                        <i class="fa-solid fa-truck-fast text-white text-xs"></i>
+                    </div>
+                    <span class="text-white/90 text-xs font-medium">무료 배송 혜택</span>
+                </div>
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+                        <i class="fa-solid fa-gift text-white text-xs"></i>
+                    </div>
+                    <span class="text-white/90 text-xs font-medium">회원 전용 할인 & 쿠폰</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom -->
+        <div class="relative z-10 mt-8">
+            <div class="flex items-center gap-3 text-white/60 text-[11px]">
+                <i class="fa-solid fa-star text-amber-300"></i>
+                <span>4.8점 · 50,000+ 회원이 신뢰합니다</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== RIGHT PANEL — Auth Forms ==================== -->
+    <div class="lg:w-[55%] glass-strong rounded-b-3xl lg:rounded-b-3xl lg:rounded-r-3xl rounded-bl-3xl lg:rounded-bl-none p-6 lg:p-10 flex flex-col fade-in" style="animation-delay:0.2s">
+
+        <!-- Tabs: 로그인 / 회원가입 -->
+        <div class="flex gap-2 p-1 rounded-2xl bg-white/30 mb-6">
+            <button id="tabLogin" onclick="switchTab('login')" class="flex-1 py-3 rounded-xl text-sm font-bold transition tab-active">
+                로그인
+            </button>
+            <button id="tabRegister" onclick="switchTab('register')" class="flex-1 py-3 rounded-xl text-sm font-bold text-slate-500 transition hover:text-slate-700">
+                회원가입
+            </button>
+        </div>
+
+        <!-- ==================== LOGIN FORM ==================== -->
+        <div id="loginForm">
+            <!-- Google Login -->
+            <button onclick="loginWithGoogle()" class="google-btn w-full flex items-center justify-center gap-3 py-3.5 rounded-xl mb-4">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                <span class="text-sm font-semibold text-slate-700">Google 계정으로 로그인</span>
+            </button>
+
+            <!-- Divider -->
+            <div class="flex items-center gap-3 mb-5">
+                <div class="divider-line"></div>
+                <span class="text-xs text-slate-400 font-medium">또는</span>
+                <div class="divider-line"></div>
+            </div>
+
+            <!-- Email / Password -->
+            <div class="space-y-3 mb-4">
+                <div class="relative">
+                    <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <input type="email" id="loginEmail" placeholder="이메일 주소" class="input-glass w-full pl-11 pr-4 py-3.5 rounded-xl text-sm text-slate-700 placeholder-slate-400">
+                </div>
+                <div class="relative">
+                    <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <input type="password" id="loginPassword" placeholder="비밀번호" class="input-glass w-full pl-11 pr-11 py-3.5 rounded-xl text-sm text-slate-700 placeholder-slate-400">
+                    <button onclick="togglePassword('loginPassword', this)" class="password-toggle absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition">
+                        <i class="fa-regular fa-eye text-sm"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Forgot Password -->
+            <div class="flex justify-end mb-5">
+                <button onclick="showForgotPassword()" class="text-xs text-indigo-500 hover:text-indigo-600 font-medium transition">비밀번호를 잊으셨나요?</button>
+            </div>
+
+            <!-- Login Button -->
+            <button onclick="loginWithEmail()" class="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-sm py-3.5 rounded-xl hover:opacity-90 transition shadow-lg flex items-center justify-center gap-2">
+                <i class="fa-solid fa-right-to-bracket text-xs"></i> 로그인
+            </button>
+
+            <!-- Phone Login -->
+            <div class="flex items-center gap-3 my-5">
+                <div class="divider-line"></div>
+                <span class="text-xs text-slate-400 font-medium">전화번호 로그인</span>
+                <div class="divider-line"></div>
+            </div>
+
+            <div class="phone-input-group rounded-xl flex items-center overflow-hidden">
+                <div class="flex items-center gap-2 px-4 py-3 border-r border-white/40">
+                    <span class="text-lg">🇰🇷</span>
+                    <span class="text-xs font-bold text-slate-600">+82</span>
+                </div>
+                <input type="tel" id="loginPhone" placeholder="전화번호 입력" class="flex-1 bg-transparent px-4 py-3 text-sm text-slate-700 placeholder-slate-400 focus:outline-none">
+            </div>
+            <button onclick="sendPhoneOTP()" class="w-full mt-3 glass-btn text-indigo-600 font-bold text-sm py-3 rounded-xl hover:bg-white/70 transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-paper-plane text-xs"></i> 인증번호 전송
+            </button>
+
+            <!-- OTP Section (hidden by default) -->
+            <div id="otpSection" class="mt-4 hidden">
+                <p class="text-xs text-slate-500 mb-3 text-center">전송된 인증번호 6자리를 입력하세요</p>
+                <div class="flex justify-center gap-2 mb-4" id="otpInputs">
+                    <input type="text" maxlength="1" class="otp-input" oninput="otpAutoTab(this, 0)" onkeydown="otpKeyDown(event, 0)">
+                    <input type="text" maxlength="1" class="otp-input" oninput="otpAutoTab(this, 1)" onkeydown="otpKeyDown(event, 1)">
+                    <input type="text" maxlength="1" class="otp-input" oninput="otpAutoTab(this, 2)" onkeydown="otpKeyDown(event, 2)">
+                    <input type="text" maxlength="1" class="otp-input" oninput="otpAutoTab(this, 3)" onkeydown="otpKeyDown(event, 3)">
+                    <input type="text" maxlength="1" class="otp-input" oninput="otpAutoTab(this, 4)" onkeydown="otpKeyDown(event, 4)">
+                    <input type="text" maxlength="1" class="otp-input" oninput="otpAutoTab(this, 5)" onkeydown="otpKeyDown(event, 5)">
+                </div>
+                <button onclick="verifyPhoneOTP()" class="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-sm py-3 rounded-xl hover:opacity-90 transition shadow-lg flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-check text-xs"></i> 인증 확인
+                </button>
+            </div>
+        </div>
+
+        <!-- ==================== REGISTER FORM ==================== -->
+        <div id="registerForm" class="hidden">
+            <!-- Google Register -->
+            <button onclick="loginWithGoogle()" class="google-btn w-full flex items-center justify-center gap-3 py-3.5 rounded-xl mb-4">
+                <svg width="20" height="20" viewBox="0 0 24 24">
+                    <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" fill="#4285F4"/>
+                    <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/>
+                    <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/>
+                    <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
+                </svg>
+                <span class="text-sm font-semibold text-slate-700">Google 계정으로 회원가입</span>
+            </button>
+
+            <!-- Divider -->
+            <div class="flex items-center gap-3 mb-5">
+                <div class="divider-line"></div>
+                <span class="text-xs text-slate-400 font-medium">또는</span>
+                <div class="divider-line"></div>
+            </div>
+
+            <!-- Username -->
+            <div class="relative mb-3">
+                <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                <input type="text" id="regUsername" placeholder="사용자 이름" class="input-glass w-full pl-11 pr-4 py-3.5 rounded-xl text-sm text-slate-700 placeholder-slate-400">
+            </div>
+
+            <!-- Email -->
+            <div class="relative mb-3">
+                <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                <input type="email" id="regEmail" placeholder="이메일 주소" class="input-glass w-full pl-11 pr-4 py-3.5 rounded-xl text-sm text-slate-700 placeholder-slate-400">
+            </div>
+
+            <!-- Password -->
+            <div class="relative mb-3">
+                <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                <input type="password" id="regPassword" placeholder="비밀번호 (6자리 이상)" class="input-glass w-full pl-11 pr-11 py-3.5 rounded-xl text-sm text-slate-700 placeholder-slate-400">
+                <button onclick="togglePassword('regPassword', this)" class="password-toggle absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition">
+                    <i class="fa-regular fa-eye text-sm"></i>
+                </button>
+            </div>
+
+            <!-- Phone (optional) -->
+            <div class="phone-input-group rounded-xl flex items-center overflow-hidden mb-5">
+                <div class="flex items-center gap-2 px-4 py-3 border-r border-white/40">
+                    <span class="text-lg">🇰🇷</span>
+                    <span class="text-xs font-bold text-slate-600">+82</span>
+                </div>
+                <input type="tel" id="regPhone" placeholder="전화번호 (선택사항)" class="flex-1 bg-transparent px-4 py-3 text-sm text-slate-700 placeholder-slate-400 focus:outline-none">
+            </div>
+
+            <!-- Terms -->
+            <div class="flex items-start gap-2 mb-5">
+                <input type="checkbox" id="agreeTerms" class="mt-0.5 accent-indigo-500">
+                <label for="agreeTerms" class="text-[11px] text-slate-500 leading-relaxed">
+                    <a href="#" class="text-indigo-500 hover:underline">이용약관</a> 및 <a href="#" class="text-indigo-500 hover:underline">개인정보처리방침</a>에 동의합니다
+                </label>
+            </div>
+
+            <!-- Register Button -->
+            <button onclick="registerWithEmail()" class="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-sm py-3.5 rounded-xl hover:opacity-90 transition shadow-lg flex items-center justify-center gap-2">
+                <i class="fa-solid fa-user-plus text-xs"></i> 회원가입
+            </button>
+        </div>
+
+        <!-- ==================== FORGOT PASSWORD (hidden) ==================== -->
+        <div id="forgotForm" class="hidden">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-key text-indigo-500 text-xl"></i>
+                </div>
+                <h3 class="font-extrabold text-lg text-slate-800 mb-1">비밀번호 재설정</h3>
+                <p class="text-xs text-slate-500">이메일 주소를 입력하시면 비밀번호 재설정 링크를 보내드립니다</p>
+            </div>
+
+            <div class="relative mb-5">
+                <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                <input type="email" id="forgotEmail" placeholder="이메일 주소" class="input-glass w-full pl-11 pr-4 py-3.5 rounded-xl text-sm text-slate-700 placeholder-slate-400">
+            </div>
+
+            <button onclick="resetPassword()" class="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-sm py-3.5 rounded-xl hover:opacity-90 transition shadow-lg flex items-center justify-center gap-2 mb-4">
+                <i class="fa-solid fa-paper-plane text-xs"></i> 재설정 링크 보내기
+            </button>
+
+            <button onclick="showLoginForm()" class="w-full text-sm text-indigo-500 hover:text-indigo-600 font-medium transition">
+                <i class="fa-solid fa-arrow-left text-xs mr-1"></i> 로그인으로 돌아가기
+            </button>
+        </div>
+
+        <!-- Divider -->
+        <div class="mt-auto pt-6 text-center">
+            <p class="text-xs text-slate-400">
+                NovaShop에 오신 것을 환영합니다 🛍️
+            </p>
+            <a href="index.html" class="text-xs text-indigo-500 hover:text-indigo-600 font-medium transition mt-1 inline-flex items-center gap-1">
+                <i class="fa-solid fa-arrow-left text-[10px]"></i> 홈으로 돌아가기
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+// ===================== FIREBASE INIT =====================
+const firebaseConfig = {
+    apiKey: "AIzaSyAaLdtzOIZVYB-Bdc42CXm2T8iclWLc4o0",
+    authDomain: "habib-yt.firebaseapp.com",
+    projectId: "habib-yt",
+    storageBucket: "habib-yt.firebasestorage.app",
+    messagingSenderId: "656628491244",
+    appId: "1:656628491244:web:e01ccd42bd8a2b1b4c96c9",
+    measurementId: "G-GNY1T88D34"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+// ===================== STATE =====================
+let confirmationResult = null;
+let recaptchaVerifier = null;
+
+// ===================== TOAST =====================
+function showToast(message, type = 'info') {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = `toast ${type}`;
+    setTimeout(() => toast.classList.add('show'), 10);
+    setTimeout(() => toast.classList.remove('show'), 3500);
+}
+
+// ===================== TAB SWITCHING =====================
+function switchTab(tab) {
+    const loginForm = document.getElementById('loginForm');
+    const registerForm = document.getElementById('registerForm');
+    const forgotForm = document.getElementById('forgotForm');
+    const tabLogin = document.getElementById('tabLogin');
+    const tabRegister = document.getElementById('tabRegister');
+
+    forgotForm.classList.add('hidden');
+
+    if (tab === 'login') {
+        loginForm.classList.remove('hidden');
+        registerForm.classList.add('hidden');
+        tabLogin.classList.add('tab-active');
+        tabRegister.classList.remove('tab-active');
+        tabRegister.classList.add('text-slate-500');
+        tabLogin.classList.remove('text-slate-500');
+    } else {
+        loginForm.classList.add('hidden');
+        registerForm.classList.remove('hidden');
+        tabRegister.classList.add('tab-active');
+        tabLogin.classList.remove('tab-active');
+        tabLogin.classList.add('text-slate-500');
+        tabRegister.classList.remove('text-slate-500');
+    }
+}
+
+function showLoginForm() {
+    document.getElementById('forgotForm').classList.add('hidden');
+    document.getElementById('loginForm').classList.remove('hidden');
+    document.getElementById('registerForm').classList.add('hidden');
+    document.getElementById('tabLogin').classList.add('tab-active');
+    document.getElementById('tabRegister').classList.remove('tab-active');
+}
+
+function showForgotPassword() {
+    document.getElementById('loginForm').classList.add('hidden');
+    document.getElementById('registerForm').classList.add('hidden');
+    document.getElementById('forgotForm').classList.remove('hidden');
+}
+
+// ===================== PASSWORD TOGGLE =====================
+function togglePassword(inputId, btn) {
+    const input = document.getElementById(inputId);
+    const icon = btn.querySelector('i');
+    if (input.type === 'password') {
+        input.type = 'text';
+        icon.classList.remove('fa-regular', 'fa-eye');
+        icon.classList.add('fa-regular', 'fa-eye-slash');
+    } else {
+        input.type = 'password';
+        icon.classList.remove('fa-regular', 'fa-eye-slash');
+        icon.classList.add('fa-regular', 'fa-eye');
+    }
+}
+
+// ===================== GOOGLE AUTH =====================
+function loginWithGoogle() {
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.addScope('email');
+    provider.addScope('profile');
+    auth.signInWithPopup(provider)
+        .then((result) => {
+            const user = result.user;
+            // Save user info
+            saveUserToStorage(user);
+            showToast(`환영합니다, ${user.displayName || '사용자'}님! 🎉`, 'success');
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1500);
+        })
+        .catch((error) => {
+            console.error('Google login error:', error);
+            if (error.code === 'auth/popup-closed-by-user') {
+                showToast('로그인 창이 닫혔습니다', 'error');
+            } else {
+                showToast('Google 로그인에 실패했습니다: ' + error.message, 'error');
+            }
+        });
+}
+
+// ===================== EMAIL/PASSWORD AUTH =====================
+function loginWithEmail() {
+    const email = document.getElementById('loginEmail').value.trim();
+    const password = document.getElementById('loginPassword').value;
+
+    if (!email) {
+        showToast('이메일 주소를 입력하세요', 'error');
+        return;
+    }
+    if (!password) {
+        showToast('비밀번호를 입력하세요', 'error');
+        return;
+    }
+
+    auth.signInWithEmailAndPassword(email, password)
+        .then((result) => {
+            const user = result.user;
+            saveUserToStorage(user);
+            showToast(`로그인 성공! 환영합니다 🎉`, 'success');
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1500);
+        })
+        .catch((error) => {
+            console.error('Email login error:', error);
+            if (error.code === 'auth/user-not-found') {
+                showToast('등록되지 않은 이메일입니다', 'error');
+            } else if (error.code === 'auth/wrong-password') {
+                showToast('비밀번호가 올바르지 않습니다', 'error');
+            } else if (error.code === 'auth/invalid-email') {
+                showToast('올바른 이메일 형식을 입력하세요', 'error');
+            } else {
+                showToast('로그인 실패: ' + error.message, 'error');
+            }
+        });
+}
+
+function registerWithEmail() {
+    const username = document.getElementById('regUsername').value.trim();
+    const email = document.getElementById('regEmail').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const phone = document.getElementById('regPhone').value.trim();
+    const agreed = document.getElementById('agreeTerms').checked;
+
+    if (!username) {
+        showToast('사용자 이름을 입력하세요', 'error');
+        return;
+    }
+    if (!email) {
+        showToast('이메일 주소를 입력하세요', 'error');
+        return;
+    }
+    if (!password || password.length < 6) {
+        showToast('비밀번호는 6자리 이상이어야 합니다', 'error');
+        return;
+    }
+    if (!agreed) {
+        showToast('이용약관에 동의해주세요', 'error');
+        return;
+    }
+
+    auth.createUserWithEmailAndPassword(email, password)
+        .then((result) => {
+            const user = result.user;
+            // Update display name
+            return user.updateProfile({ displayName: username }).then(() => {
+                // Save user info with phone
+                const userData = {
+                    uid: user.uid,
+                    email: user.email,
+                    displayName: username,
+                    phone: phone || '',
+                    photoURL: user.photoURL || '',
+                    createdAt: new Date().toISOString()
+                };
+                localStorage.setItem('novaShopUser', JSON.stringify(userData));
+                localStorage.setItem('novaShopAuth', 'true');
+                showToast('회원가입 성공! 환영합니다 🎉', 'success');
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+            });
+        })
+        .catch((error) => {
+            console.error('Register error:', error);
+            if (error.code === 'auth/email-already-in-use') {
+                showToast('이미 사용 중인 이메일입니다', 'error');
+            } else if (error.code === 'auth/invalid-email') {
+                showToast('올바른 이메일 형식을 입력하세요', 'error');
+            } else if (error.code === 'auth/weak-password') {
+                showToast('비밀번호가 너무 약합니다', 'error');
+            } else {
+                showToast('회원가입 실패: ' + error.message, 'error');
+            }
+        });
+}
+
+// ===================== PHONE AUTH =====================
+function initRecaptcha() {
+    if (!recaptchaVerifier) {
+        recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+            size: 'invisible',
+            callback: () => {
+                console.log('reCAPTCHA solved');
+            }
+        });
+    }
+}
+
+function sendPhoneOTP() {
+    const phone = document.getElementById('loginPhone').value.trim();
+    if (!phone) {
+        showToast('전화번호를 입력하세요', 'error');
+        return;
+    }
+
+    const fullPhone = '+82' + phone;
+
+    initRecaptcha();
+
+    auth.signInWithPhoneNumber(fullPhone, recaptchaVerifier)
+        .then((result) => {
+            confirmationResult = result;
+            document.getElementById('otpSection').classList.remove('hidden');
+            showToast('인증번호가 전송되었습니다! 📱', 'success');
+            // Focus first OTP input
+            document.querySelector('#otpInputs input').focus();
+        })
+        .catch((error) => {
+            console.error('Phone auth error:', error);
+            showToast('인증번호 전송 실패: ' + error.message, 'error');
+            // Reset reCAPTCHA
+            if (recaptchaVerifier) {
+                recaptchaVerifier.render().then(widgetId => {
+                    grecaptcha.reset(widgetId);
+                });
+            }
+        });
+}
+
+function verifyPhoneOTP() {
+    if (!confirmationResult) {
+        showToast('인증번호를 먼저 전송하세요', 'error');
+        return;
+    }
+
+    const inputs = document.querySelectorAll('#otpInputs input');
+    let otp = '';
+    inputs.forEach(input => otp += input.value);
+
+    if (otp.length !== 6) {
+        showToast('6자리 인증번호를 입력하세요', 'error');
+        return;
+    }
+
+    confirmationResult.confirm(otp)
+        .then((result) => {
+            const user = result.user;
+            saveUserToStorage(user);
+            showToast('전화번호 인증 성공! 🎉', 'success');
+            setTimeout(() => {
+                window.location.href = 'dashboard.html';
+            }, 1500);
+        })
+        .catch((error) => {
+            console.error('OTP verify error:', error);
+            showToast('인증번호가 올바르지 않습니다', 'error');
+            // Clear OTP inputs
+            inputs.forEach(input => input.value = '');
+            inputs[0].focus();
+        });
+}
+
+// ===================== OTP INPUT HANDLING =====================
+function otpAutoTab(input, index) {
+    input.value = input.value.replace(/[^0-9]/g, '');
+    if (input.value.length === 1 && index < 5) {
+        document.querySelectorAll('#otpInputs input')[index + 1].focus();
+    }
+    // Auto-verify when all 6 digits entered
+    if (index === 5 && input.value.length === 1) {
+        const inputs = document.querySelectorAll('#otpInputs input');
+        let otp = '';
+        inputs.forEach(inp => otp += inp.value);
+        if (otp.length === 6) {
+            verifyPhoneOTP();
+        }
+    }
+}
+
+function otpKeyDown(e, index) {
+    if (e.key === 'Backspace' && !e.target.value && index > 0) {
+        document.querySelectorAll('#otpInputs input')[index - 1].focus();
+    }
+}
+
+// ===================== FORGOT PASSWORD =====================
+function resetPassword() {
+    const email = document.getElementById('forgotEmail').value.trim();
+    if (!email) {
+        showToast('이메일 주소를 입력하세요', 'error');
+        return;
+    }
+
+    auth.sendPasswordResetEmail(email)
+        .then(() => {
+            showToast('비밀번호 재설정 링크가 전송되었습니다! 📧', 'success');
+            setTimeout(() => showLoginForm(), 2000);
+        })
+        .catch((error) => {
+            console.error('Reset password error:', error);
+            if (error.code === 'auth/user-not-found') {
+                showToast('등록되지 않은 이메일입니다', 'error');
+            } else {
+                showToast('오류: ' + error.message, 'error');
+            }
+        });
+}
+
+// ===================== USER STORAGE =====================
+function saveUserToStorage(user) {
+    const userData = {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName || '',
+        phone: user.phoneNumber || '',
+        photoURL: user.photoURL || '',
+        lastLogin: new Date().toISOString()
+    };
+    localStorage.setItem('novaShopUser', JSON.stringify(userData));
+    localStorage.setItem('novaShopAuth', 'true');
+}
+
+// ===================== CHECK AUTH STATE =====================
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        // User is signed in, save and redirect
+        saveUserToStorage(user);
+        // Don't redirect if already on login page - let user see they're logged in
+    }
+});
+
+// ===================== ENTER KEY =====================
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        if (!document.getElementById('loginForm').classList.contains('hidden')) {
+            loginWithEmail();
+        } else if (!document.getElementById('registerForm').classList.contains('hidden')) {
+            registerWithEmail();
+        } else if (!document.getElementById('forgotForm').classList.contains('hidden')) {
+            resetPassword();
+        }
+    }
+});
+
+// ===================== INIT =====================
+document.addEventListener('DOMContentLoaded', () => {
+    // Check if already logged in
+    if (localStorage.getItem('novaShopAuth') === 'true') {
+        showToast('이미 로그인되어 있습니다', 'info');
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 1000);
+    }
+});
+</script>
+
+</body>
+</html>
