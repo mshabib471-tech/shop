@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NovaShop — Checkout</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 'inter': ['Inter', 'sans-serif'] },
+                }
+            }
+        }
+    </script>
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        body { background: linear-gradient(135deg, #f0f0ff 0%, #e8e0f0 30%, #f5f0ff 60%, #eef0ff 100%); overflow-x: hidden; }
+
+        .glass { background: rgba(255,255,255,0.45); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.6); }
+        .glass-strong { background: rgba(255,255,255,0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.7); }
+        .glass-card { background: rgba(255,255,255,0.5); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); border-radius: 20px; transition: all 0.3s ease; }
+
+        .blob { position: fixed; border-radius: 50%; filter: blur(80px); z-index: 0; opacity: 0.4; pointer-events: none; }
+        .blob-1 { top: -10%; left: -5%; width: 400px; height: 400px; background: #c7b8f5; }
+        .blob-2 { top: 30%; right: -5%; width: 350px; height: 350px; background: #a5b4fc; }
+        .blob-3 { bottom: -10%; left: 15%; width: 300px; height: 300px; background: #ddd6fe; }
+
+        .input-glass { background: rgba(255,255,255,0.5); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.6); border-radius: 14px; transition: all 0.25s ease; }
+        .input-glass:focus { outline: none; border-color: #818cf8; box-shadow: 0 0 0 3px rgba(99,102,241,0.12); background: rgba(255,255,255,0.7); }
+
+        .payment-option { transition: all 0.25s ease; cursor: pointer; }
+        .payment-option:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+        .payment-option.selected { border-color: #818cf8 !important; background: rgba(99,102,241,0.05) !important; box-shadow: 0 0 0 2px rgba(99,102,241,0.2); }
+
+        .step-dot { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; transition: all 0.3s ease; }
+        .step-dot.active { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; box-shadow: 0 4px 16px rgba(99,102,241,0.3); }
+        .step-dot.done { background: #22c55e; color: white; }
+        .step-dot.pending { background: rgba(255,255,255,0.5); color: #94a3b8; border: 2px solid #e2e8f0; }
+        .step-line { height: 2px; flex: 1; transition: background 0.3s ease; }
+
+        .slide-up { animation: slideUp 0.6s ease forwards; opacity: 0; transform: translateY(20px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+
+        .fade-in { animation: fadeIn 0.5s ease forwards; opacity: 0; }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        .success-check { animation: scaleIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; transform: scale(0); }
+        @keyframes scaleIn { to { transform: scale(1); } }
+
+        .confetti { position: fixed; pointer-events: none; z-index: 100; }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #c4b5fd; border-radius: 10px; }
+
+        .order-item { transition: all 0.2s ease; }
+        .order-item:hover { background: rgba(255,255,255,0.4); }
+
+        .promo-gradient { background: linear-gradient(135deg, #c084fc 0%, #f472b6 50%, #fb923c 100%); }
+    </style>
+</head>
+<body class="min-h-screen relative">
+
+<!-- Background Blobs -->
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="blob blob-3"></div>
+
+<!-- Main Container -->
+<div class="relative z-10 min-h-screen flex flex-col">
+
+    <!-- ==================== HEADER ==================== -->
+    <header class="glass-strong px-6 py-4 flex items-center justify-between sticky top-0 z-30">
+        <a href="index.html" class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
+                <i class="fa-solid fa-bag-shopping text-white text-sm"></i>
+            </div>
+            <span class="font-extrabold text-lg text-slate-800">Nova<span class="text-indigo-500">Shop</span></span>
+        </a>
+        <div class="flex items-center gap-3">
+            <a href="index.html" class="text-xs font-semibold text-slate-500 hover:text-indigo-500 transition flex items-center gap-1">
+                <i class="fa-solid fa-arrow-left text-[10px]"></i> Continue Shopping
+            </a>
+            <div class="w-px h-6 bg-slate-200"></div>
+            <div class="flex items-center gap-2 glass px-3 py-1.5 rounded-full">
+                <i class="fa-solid fa-lock text-green-500 text-[10px]"></i>
+                <span class="text-[11px] font-semibold text-slate-600">Secure Checkout</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ==================== PROGRESS STEPS ==================== -->
+    <div class="max-w-4xl mx-auto w-full px-6 pt-8 pb-4 slide-up">
+        <div class="flex items-center gap-0 justify-center">
+            <div class="flex flex-col items-center gap-2">
+                <div id="step1Dot" class="step-dot active"><i class="fa-solid fa-cart-shopping text-xs"></i></div>
+                <span class="text-[10px] font-bold text-indigo-600">Cart Review</span>
+            </div>
+            <div id="step1Line" class="step-line bg-indigo-300 mx-3 mt-[-20px]"></div>
+            <div class="flex flex-col items-center gap-2">
+                <div id="step2Dot" class="step-dot pending">2</div>
+                <span id="step2Label" class="text-[10px] font-bold text-slate-400">Shipping</span>
+            </div>
+            <div id="step2Line" class="step-line bg-slate-200 mx-3 mt-[-20px]"></div>
+            <div class="flex flex-col items-center gap-2">
+                <div id="step3Dot" class="step-dot pending">3</div>
+                <span id="step3Label" class="text-[10px] font-bold text-slate-400">Payment</span>
+            </div>
+            <div id="step3Line" class="step-line bg-slate-200 mx-3 mt-[-20px]"></div>
+            <div class="flex flex-col items-center gap-2">
+                <div id="step4Dot" class="step-dot pending">4</div>
+                <span id="step4Label" class="text-[10px] font-bold text-slate-400">Confirm</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ==================== MAIN CONTENT ==================== -->
+    <div class="flex-1 max-w-6xl mx-auto w-full px-6 pb-12">
+
+        <!-- STEP 1: Cart Review -->
+        <div id="step1" class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left: Cart Items -->
+            <div class="lg:col-span-2 space-y-6 slide-up" style="animation-delay:0.1s">
+                <div class="flex items-center justify-between">
+                    <h1 class="text-2xl font-extrabold text-slate-800">Review Your Cart</h1>
+                    <span id="cartItemCount" class="text-sm text-slate-500">0 items</span>
+                </div>
+                <div id="cartItemsList" class="space-y-3">
+                    <!-- Filled by JS -->
+                </div>
+                <div class="flex gap-3">
+                    <div class="flex-1">
+                        <input type="text" id="promoInput" placeholder="Enter promo code" class="input-glass w-full px-5 py-3 text-sm text-slate-700 placeholder-slate-400">
+                    </div>
+                    <button onclick="applyPromo()" class="glass-card px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-sm rounded-xl hover:opacity-90 transition shadow-lg">
+                        Apply
+                    </button>
+                </div>
+                <div id="promoMsg" class="text-xs font-semibold hidden"></div>
+                <button onclick="goToStep(2)" class="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold py-4 rounded-2xl flex items-center justify-center gap-2 hover:opacity-90 transition shadow-xl text-sm">
+                    Proceed to Shipping <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </div>
+
+            <!-- Right: Order Summary -->
+            <div class="glass-card p-6 h-fit sticky top-24 slide-up" style="animation-delay:0.2s">
+                <h3 class="font-extrabold text-sm text-slate-800 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-receipt text-indigo-400"></i> Order Summary
+                </h3>
+                <div id="orderSummaryItems" class="space-y-3 max-h-[200px] overflow-y-auto mb-4">
+                    <!-- Filled by JS -->
+                </div>
+                <div class="border-t border-white/30 pt-4 space-y-2 text-sm">
+                    <div class="flex justify-between text-slate-500"><span>Subtotal</span><span id="sumSubtotal">$0.00</span></div>
+                    <div class="flex justify-between text-slate-500"><span>Shipping</span><span id="sumShipping" class="text-green-500 font-bold">Free</span></div>
+                    <div id="discountRow" class="hidden flex justify-between text-green-500"><span>Discount</span><span id="sumDiscount">-$0.00</span></div>
+                    <div class="flex justify-between text-slate-500"><span>Tax (8%)</span><span id="sumTax">$0.00</span></div>
+                    <div class="border-t border-slate-200/50 pt-3 flex justify-between font-extrabold text-slate-800 text-base">
+                        <span>Total</span><span id="sumTotal">$0.00</span>
+                    </div>
+                </div>
+                <div class="mt-4 flex justify-center gap-3 opacity-40">
+                    <i class="fa-brands fa-cc-visa text-xl"></i>
+                    <i class="fa-brands fa-cc-mastercard text-xl"></i>
+                    <i class="fa-brands fa-cc-amex text-xl"></i>
+                    <i class="fa-brands fa-cc-apple-pay text-xl"></i>
+                    <i class="fa-brands fa-google-pay text-xl"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 2: Shipping Info -->
+        <div id="step2" class="hidden max-w-3xl mx-auto">
+            <div class="glass-card p-8 slide-up">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-6 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center">
+                        <i class="fa-solid fa-truck text-indigo-500 text-sm"></i>
+                    </div>
+                    Shipping Information
+                </h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">First Name *</label>
+                        <input type="text" id="firstName" placeholder="Alina" class="input-glass w-full px-5 py-3 text-sm text-slate-700 placeholder-slate-400">
+                    </div>
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Last Name *</label>
+                        <input type="text" id="lastName" placeholder="Putri" class="input-glass w-full px-5 py-3 text-sm text-slate-700 placeholder-slate-400">
+                    </div>
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Email *</label>
+                        <input type="email" id="email" placeholder="alina@example.com" class="input-glass w-full px-5 py-3 text-sm text-slate-700 placeholder-slate-400">
+                    </div>
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Phone *</label>
+                        <input type="tel" id="phone" placeholder="+1 (555) 000-0000" class="input-glass w-full px-5 py-3 text-sm text-slate-700 placeholder-slate-400">
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Street Address *</label>
+                        <input type="text" id="address" placeholder="123 Nova Avenue, Apt 4B" class="input-glass w-full px-5 py-3 text-sm text-slate-700 placeholder-slate-400">
+                    </div>
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">City *</label>
+                        <input type="text" id="city" placeholder="New York" class="input-glass w-full px-5 py-3 text-sm text-slate-700 placeholder-slate-400">
+                    </div>
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">State / Province</label>
+                        <input type="text" id="state" placeholder="NY" class="input-glass w-full px-5 py-3 text-sm text-slate-700 placeholder-slate-400">
+                    </div>
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Zip / Postal Code *</label>
+                        <input type="text" id="zip" placeholder="10001" class="input-glass w-full px-5 py-3 text-sm text-slate-700 placeholder-slate-400">
+                    </div>
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Country *</label>
+                        <select id="country" class="input-glass w-full px-5 py-3 text-sm text-slate-700 appearance-none cursor-pointer">
+                            <option value="">Select Country</option>
+                            <option value="US" selected>United States</option>
+                            <option value="CA">Canada</option>
+                            <option value="UK">United Kingdom</option>
+                            <option value="AU">Australia</option>
+                            <option value="DE">Germany</option>
+                            <option value="FR">France</option>
+                            <option value="JP">Japan</option>
+                            <option value="BD">Bangladesh</option>
+                            <option value="IN">India</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Shipping Method -->
+                <div class="mt-8">
+                    <h3 class="font-bold text-sm text-slate-700 mb-4 flex items-center gap-2">
+                        <i class="fa-solid fa-shipping-fast text-indigo-400"></i> Shipping Method
+                    </h3>
+                    <div class="space-y-3">
+                        <label class="payment-option glass-card flex items-center gap-4 p-4 border-2 border-transparent selected" id="shipFree" onclick="selectShipping('free', 0)">
+                            <input type="radio" name="shipping" checked class="accent-indigo-500">
+                            <div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-box text-green-500 text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-bold text-slate-700">Standard Shipping</p>
+                                <p class="text-[11px] text-slate-400">5-7 business days</p>
+                            </div>
+                            <span class="text-sm font-extrabold text-green-500">Free</span>
+                        </label>
+                        <label class="payment-option glass-card flex items-center gap-4 p-4 border-2 border-transparent" id="shipExpress" onclick="selectShipping('express', 9.99)">
+                            <input type="radio" name="shipping" class="accent-indigo-500">
+                            <div class="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-truck-fast text-blue-500 text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-bold text-slate-700">Express Shipping</p>
+                                <p class="text-[11px] text-slate-400">2-3 business days</p>
+                            </div>
+                            <span class="text-sm font-extrabold text-slate-700">$9.99</span>
+                        </label>
+                        <label class="payment-option glass-card flex items-center gap-4 p-4 border-2 border-transparent" id="shipOvernight" onclick="selectShipping('overnight', 19.99)">
+                            <input type="radio" name="shipping" class="accent-indigo-500">
+                            <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-jet-fighter text-amber-500 text-sm"></i>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-bold text-slate-700">Overnight Shipping</p>
+                                <p class="text-[11px] text-slate-400">Next business day</p>
+                            </div>
+                            <span class="text-sm font-extrabold text-slate-700">$19.99</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="flex gap-3 mt-8">
+                    <button onclick="goToStep(1)" class="glass-card px-6 py-3 text-sm font-bold text-slate-600 hover:bg-white/70 transition flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-left text-xs"></i> Back
+                    </button>
+                    <button onclick="goToStep(3)" class="flex-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition shadow-lg text-sm">
+                        Continue to Payment <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 3: Payment -->
+        <div id="step3" class="hidden max-w-3xl mx-auto">
+            <div class="glass-card p-8 slide-up">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-6 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center">
+                        <i class="fa-solid fa-credit-card text-green-500 text-sm"></i>
+                    </div>
+                    Payment Method
+                </h2>
+
+                <!-- Payment Options -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+                    <label class="payment-option glass-card p-4 text-center border-2 border-transparent selected" onclick="selectPayment('card')" id="payCard">
+                        <i class="fa-solid fa-credit-card text-2xl text-indigo-500 mb-2"></i>
+                        <p class="text-[11px] font-bold text-slate-700">Credit Card</p>
+                    </label>
+                    <label class="payment-option glass-card p-4 text-center border-2 border-transparent" onclick="selectPayment('paypal')" id="payPaypal">
+                        <i class="fa-brands fa-paypal text-2xl text-blue-500 mb-2"></i>
+                        <p class="text-[11px] font-bold text-slate-700">PayPal</p>
+                    </label>
+                    <label class="payment-option glass-card p-4 text-center border-2 border-transparent" onclick="selectPayment('apple')" id="payApple">
+                        <i class="fa-brands fa-apple-pay text-2xl text-slate-800 mb-2"></i>
+                        <p class="text-[11px] font-bold text-slate-700">Apple Pay</p>
+                    </label>
+                    <label class="payment-option glass-card p-4 text-center border-2 border-transparent" onclick="selectPayment('cod')" id="payCod">
+                        <i class="fa-solid fa-money-bill-wave text-2xl text-green-500 mb-2"></i>
+                        <p class="text-[11px] font-bold text-slate-700">Cash on Delivery</p>
+                    </label>
+                </div>
+
+                <!-- Card Form -->
+                <div id="cardForm" class="space-y-5">
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Cardholder Name *</label>
+                        <input type="text" id="cardName" placeholder="ALINA PUTRI" class="input-glass w-full px-5 py-3 text-sm text-slate-700 placeholder-slate-400 uppercase tracking-wider">
+                    </div>
+                    <div>
+                        <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Card Number *</label>
+                        <div class="relative">
+                            <input type="text" id="cardNumber" placeholder="4242 4242 4242 4242" maxlength="19" class="input-glass w-full pl-5 pr-16 py-3 text-sm text-slate-700 placeholder-slate-400 tracking-wider" oninput="formatCardNumber(this)">
+                            <div class="absolute right-4 top-1/2 -translate-y-1/2 flex gap-1">
+                                <i class="fa-brands fa-cc-visa text-slate-300 text-lg" id="visaIcon"></i>
+                                <i class="fa-brands fa-cc-mastercard text-slate-300 text-lg" id="mcIcon"></i>
+                                <i class="fa-brands fa-cc-amex text-slate-300 text-lg" id="amexIcon"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Expiry Date *</label>
+                            <input type="text" id="cardExpiry" placeholder="MM/YY" maxlength="5" class="input-glass w-full px-5 py-3 text-sm text-slate-700 placeholder-slate-400 tracking-wider" oninput="formatExpiry(this)">
+                        </div>
+                        <div>
+                            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">CVV *</label>
+                            <div class="relative">
+                                <input type="password" id="cardCvv" placeholder="•••" maxlength="4" class="input-glass w-full px-5 py-3 text-sm text-slate-700 placeholder-slate-400 tracking-wider">
+                                <i class="fa-solid fa-eye-slash absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 cursor-pointer text-xs" onclick="toggleCvv(this)"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PayPal Info -->
+                <div id="paypalForm" class="hidden text-center py-10">
+                    <div class="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-brands fa-paypal text-blue-500 text-2xl"></i>
+                    </div>
+                    <p class="text-sm text-slate-600 font-medium">You will be redirected to PayPal to complete your payment.</p>
+                    <p class="text-[11px] text-slate-400 mt-1">No card details required.</p>
+                </div>
+
+                <!-- Apple Pay Info -->
+                <div id="appleForm" class="hidden text-center py-10">
+                    <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-brands fa-apple text-slate-800 text-2xl"></i>
+                    </div>
+                    <p class="text-sm text-slate-600 font-medium">Complete payment with Apple Pay.</p>
+                    <p class="text-[11px] text-slate-400 mt-1">Touch ID or Face ID required.</p>
+                </div>
+
+                <!-- COD Info -->
+                <div id="codForm" class="hidden text-center py-10">
+                    <div class="w-16 h-16 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-4">
+                        <i class="fa-solid fa-money-bill-wave text-green-500 text-2xl"></i>
+                    </div>
+                    <p class="text-sm text-slate-600 font-medium">Pay with cash when your order is delivered.</p>
+                    <p class="text-[11px] text-slate-400 mt-1">Please have the exact amount ready.</p>
+                </div>
+
+                <!-- Billing Address -->
+                <div class="mt-6 flex items-center gap-3 p-4 glass rounded-xl">
+                    <input type="checkbox" id="sameBilling" checked class="accent-indigo-500 w-4 h-4">
+                    <label for="sameBilling" class="text-sm text-slate-600 font-medium">Billing address same as shipping</label>
+                </div>
+
+                <div class="flex gap-3 mt-8">
+                    <button onclick="goToStep(2)" class="glass-card px-6 py-3 text-sm font-bold text-slate-600 hover:bg-white/70 transition flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-left text-xs"></i> Back
+                    </button>
+                    <button onclick="goToStep(4)" class="flex-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition shadow-lg text-sm">
+                        <i class="fa-solid fa-lock text-xs"></i> Review Order
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 4: Confirm & Place Order -->
+        <div id="step4" class="hidden max-w-3xl mx-auto">
+            <div class="glass-card p-8 slide-up">
+                <h2 class="text-xl font-extrabold text-slate-800 mb-6 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-100 to-pink-100 flex items-center justify-center">
+                        <i class="fa-solid fa-clipboard-check text-purple-500 text-sm"></i>
+                    </div>
+                    Review & Place Order
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Shipping Summary -->
+                    <div class="glass p-5 rounded-2xl">
+                        <h4 class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-truck text-indigo-400"></i> Shipping To
+                        </h4>
+                        <p id="confirmName" class="text-sm font-bold text-slate-700"></p>
+                        <p id="confirmAddress" class="text-xs text-slate-500 mt-1"></p>
+                        <p id="confirmCity" class="text-xs text-slate-500"></p>
+                        <p id="confirmEmail" class="text-xs text-slate-500 mt-2"></p>
+                        <p id="confirmPhone" class="text-xs text-slate-500"></p>
+                        <div class="mt-3 pt-3 border-t border-white/30">
+                            <p class="text-[11px] text-slate-400">Shipping Method</p>
+                            <p id="confirmShipping" class="text-xs font-bold text-slate-700 mt-0.5"></p>
+                        </div>
+                    </div>
+
+                    <!-- Payment Summary -->
+                    <div class="glass p-5 rounded-2xl">
+                        <h4 class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-credit-card text-green-400"></i> Payment
+                        </h4>
+                        <p id="confirmPaymentMethod" class="text-sm font-bold text-slate-700"></p>
+                        <p id="confirmCardInfo" class="text-xs text-slate-500 mt-1"></p>
+                        <div class="mt-4 pt-3 border-t border-white/30 space-y-1.5 text-sm">
+                            <div class="flex justify-between text-slate-500"><span>Subtotal</span><span id="confirmSubtotal">$0.00</span></div>
+                            <div class="flex justify-between text-slate-500"><span>Shipping</span><span id="confirmShippingCost">$0.00</span></div>
+                            <div id="confirmDiscountRow" class="hidden flex justify-between text-green-500"><span>Discount</span><span id="confirmDiscount">-$0.00</span></div>
+                            <div class="flex justify-between text-slate-500"><span>Tax</span><span id="confirmTax">$0.00</span></div>
+                            <div class="border-t border-slate-200/50 pt-2 flex justify-between font-extrabold text-slate-800 text-base">
+                                <span>Total</span><span id="confirmTotal">$0.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Items List -->
+                <div class="mt-6">
+                    <h4 class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <i class="fa-solid fa-box text-amber-400"></i> Items
+                    </h4>
+                    <div id="confirmItems" class="space-y-2">
+                        <!-- Filled by JS -->
+                    </div>
+                </div>
+
+                <div class="flex gap-3 mt-8">
+                    <button onclick="goToStep(3)" class="glass-card px-6 py-3 text-sm font-bold text-slate-600 hover:bg-white/70 transition flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-left text-xs"></i> Back
+                    </button>
+                    <button onclick="placeOrder()" id="placeOrderBtn" class="flex-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition shadow-xl text-sm">
+                        <i class="fa-solid fa-lock text-xs"></i> Place Order — <span id="confirmBtnTotal">$0.00</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SUCCESS -->
+        <div id="stepSuccess" class="hidden max-w-xl mx-auto text-center py-12">
+            <div class="glass-card p-10 slide-up">
+                <div class="success-check w-20 h-20 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center mx-auto mb-6 shadow-xl">
+                    <i class="fa-solid fa-check text-white text-3xl"></i>
+                </div>
+                <h1 class="text-2xl font-extrabold text-slate-800 mb-2">Order Placed Successfully! 🎉</h1>
+                <p class="text-sm text-slate-500 mb-1">Thank you for shopping with NovaShop</p>
+                <p class="text-xs text-slate-400 mb-6">Order ID: <span id="orderId" class="font-mono font-bold text-indigo-500"></span></p>
+
+                <div class="glass p-5 rounded-2xl mb-6 text-left">
+                    <h4 class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-3">What's Next?</h4>
+                    <div class="space-y-3">
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-envelope text-indigo-500 text-xs"></i>
+                            </div>
+                            <p class="text-xs text-slate-600">A confirmation email has been sent to <span id="successEmail" class="font-bold"></span></p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-truck text-green-500 text-xs"></i>
+                            </div>
+                            <p class="text-xs text-slate-600">Your order will be shipped within <span id="successShipTime" class="font-bold"></span></p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <div class="w-8 h-8 rounded-lg bg-amber-50 flex items-center justify-center flex-shrink-0">
+                                <i class="fa-solid fa-bell text-amber-500 text-xs"></i>
+                            </div>
+                            <p class="text-xs text-slate-600">You'll receive tracking updates via email and SMS</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <a href="index.html" class="flex-1 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition shadow-lg text-sm">
+                        <i class="fa-solid fa-bag-shopping text-xs"></i> Continue Shopping
+                    </a>
+                    <button class="glass-card px-6 py-3 text-sm font-bold text-slate-600 hover:bg-white/70 transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-download text-xs"></i> Download Receipt
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ==================== FOOTER ==================== -->
+    <footer class="glass-strong px-6 py-4 text-center mt-auto">
+        <div class="flex items-center justify-center gap-4 text-[10px] text-slate-400">
+            <span>&copy; 2026 NovaShop. All rights reserved.</span>
+            <span>•</span>
+            <a href="#" class="hover:text-indigo-500 transition">Privacy</a>
+            <a href="#" class="hover:text-indigo-500 transition">Terms</a>
+            <a href="#" class="hover:text-indigo-500 transition">Support</a>
+        </div>
+    </footer>
+
+</div>
+
+
+<!-- ==================== JAVASCRIPT ==================== -->
+<script>
+// ===================== STATE =====================
+let cart = JSON.parse(localStorage.getItem('novaCart') || '[]');
+let currentStep = 1;
+let shippingCost = 0;
+let shippingMethod = 'Standard Shipping (5-7 days)';
+let paymentMethod = 'Credit Card';
+let discount = 0;
+
+// ===================== INIT =====================
+document.addEventListener('DOMContentLoaded', () => {
+    renderCheckoutCart();
+    if (cart.length === 0) {
+        document.getElementById('cartItemsList').innerHTML = `
+            <div class="text-center py-12">
+                <div class="w-20 h-20 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-4">
+                    <i class="fa-solid fa-bag-shopping text-slate-300 text-2xl"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-600 mb-2">Your cart is empty</h3>
+                <p class="text-sm text-slate-400 mb-6">Add some products before checking out</p>
+                <a href="index.html" class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-sm px-6 py-3 rounded-xl hover:opacity-90 transition shadow-lg">
+                    <i class="fa-solid fa-arrow-left text-xs"></i> Back to Shop
+                </a>
+            </div>`;
+        document.querySelector('#step1 button[onclick*="goToStep"]').style.display = 'none';
+    }
+});
+
+// ===================== RENDER CART ITEMS =====================
+function renderCheckoutCart() {
+    const totalItems = cart.reduce((s, c) => s + c.qty, 0);
+    document.getElementById('cartItemCount').textContent = `${totalItems} item${totalItems !== 1 ? 's' : ''}`;
+
+    const container = document.getElementById('cartItemsList');
+    container.innerHTML = cart.map(item => {
+        const itemTotal = item.price * item.qty;
+        const oldPrice = item.discountPercentage > 0 ? (item.price / (1 - item.discountPercentage / 100)) : null;
+        return `
+        <div class="order-item glass-card p-4 flex gap-4 items-center fade-in">
+            <div class="w-20 h-20 rounded-2xl bg-white/50 flex-shrink-0 overflow-hidden p-2">
+                <img src="${item.thumbnail}" class="w-full h-full object-contain" alt="${item.title}">
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider">${item.brand || item.category}</p>
+                <h4 class="text-sm font-bold text-slate-700 truncate">${item.title}</h4>
+                <div class="flex items-center gap-2 mt-1">
+                    <span class="text-sm font-extrabold text-slate-800">$${item.price.toFixed(2)}</span>
+                    ${oldPrice ? `<span class="text-[11px] text-slate-400 line-through">$${oldPrice.toFixed(2)}</span>` : ''}
+                </div>
+            </div>
+            <div class="flex flex-col items-end gap-2">
+                <div class="flex items-center gap-2">
+                    <button onclick="updateCheckoutQty(${item.id}, -1)" class="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 text-xs hover:bg-slate-200 transition">−</button>
+                    <span class="text-sm font-bold text-slate-700 w-5 text-center">${item.qty}</span>
+                    <button onclick="updateCheckoutQty(${item.id}, 1)" class="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 text-xs hover:bg-slate-200 transition">+</button>
+                </div>
+                <p class="text-sm font-extrabold text-slate-800">$${itemTotal.toFixed(2)}</p>
+                <button onclick="removeCheckoutItem(${item.id})" class="text-[10px] text-red-400 hover:text-red-600 font-semibold transition flex items-center gap-1">
+                    <i class="fa-solid fa-trash text-[9px]"></i> Remove
+                </button>
+            </div>
+        </div>`;
+    }).join('');
+
+    updateSummary();
+}
+
+function updateCheckoutQty(id, delta) {
+    const item = cart.find(c => c.id === id);
+    if (!item) return;
+    item.qty += delta;
+    if (item.qty <= 0) {
+        cart = cart.filter(c => c.id !== id);
+    }
+    saveCart();
+    renderCheckoutCart();
+    if (cart.length === 0) {
+        location.reload();
+    }
+}
+
+function removeCheckoutItem(id) {
+    cart = cart.filter(c => c.id !== id);
+    saveCart();
+    renderCheckoutCart();
+    if (cart.length === 0) {
+        location.reload();
+    }
+}
+
+function saveCart() {
+    localStorage.setItem('novaCart', JSON.stringify(cart));
+}
+
+// ===================== SUMMARY =====================
+function updateSummary() {
+    const subtotal = cart.reduce((s, c) => s + c.price * c.qty, 0);
+    const discountAmount = discount > 0 ? subtotal * discount : 0;
+    const taxable = subtotal - discountAmount + shippingCost;
+    const tax = taxable * 0.08;
+    const total = taxable + tax;
+
+    document.getElementById('sumSubtotal').textContent = `$${subtotal.toFixed(2)}`;
+    document.getElementById('sumShipping').textContent = shippingCost === 0 ? 'Free' : `$${shippingCost.toFixed(2)}`;
+    document.getElementById('sumTax').textContent = `$${tax.toFixed(2)}`;
+    document.getElementById('sumTotal').textContent = `$${total.toFixed(2)}`;
+
+    if (discount > 0) {
+        document.getElementById('discountRow').classList.remove('hidden');
+        document.getElementById('sumDiscount').textContent = `-$${discountAmount.toFixed(2)}`;
+    }
+
+    // Order summary mini items
+    const summaryContainer = document.getElementById('orderSummaryItems');
+    summaryContainer.innerHTML = cart.map(item => `
+        <div class="flex gap-2 items-center p-2 rounded-xl hover:bg-white/30 transition">
+            <img src="${item.thumbnail}" class="w-10 h-10 rounded-lg object-contain bg-white/50 p-0.5 flex-shrink-0">
+            <div class="flex-1 min-w-0">
+                <p class="text-[11px] font-bold text-slate-700 truncate">${item.title}</p>
+                <p class="text-[10px] text-slate-400">x${item.qty}</p>
+            </div>
+            <span class="text-[11px] font-bold text-slate-700">$${(item.price * item.qty).toFixed(2)}</span>
+        </div>
+    `).join('');
+
+    return { subtotal, discountAmount, tax, total };
+}
+
+// ===================== STEPS =====================
+function goToStep(step) {
+    // Validate current step before advancing
+    if (step > currentStep) {
+        if (currentStep === 1 && cart.length === 0) return;
+        if (currentStep === 2 && !validateShipping()) return;
+        if (currentStep === 3 && !validatePayment()) return;
+    }
+
+    // If going back or same step
+    if (step === 4) {
+        populateConfirm();
+    }
+
+    // Hide all steps
+    for (let i = 1; i <= 4; i++) {
+        document.getElementById(`step${i}`).classList.add('hidden');
+    }
+
+    // Show target step
+    if (step <= 4) {
+        document.getElementById(`step${step}`).classList.remove('hidden');
+    }
+
+    // Update step indicators
+    for (let i = 1; i <= 4; i++) {
+        const dot = document.getElementById(`step${i}Dot`);
+        dot.classList.remove('active', 'done', 'pending');
+        if (i < step) { dot.classList.add('done'); dot.innerHTML = '<i class="fa-solid fa-check text-xs"></i>'; }
+        else if (i === step) { dot.classList.add('active'); }
+        else { dot.classList.add('pending'); dot.textContent = i; }
+
+        // Labels
+        const label = document.getElementById(`step${i}Label`);
+        if (label) {
+            label.classList.remove('text-indigo-600', 'text-green-500', 'text-slate-400');
+            if (i < step) label.classList.add('text-green-500');
+            else if (i === step) label.classList.add('text-indigo-600');
+            else label.classList.add('text-slate-400');
+        }
+
+        // Lines
+        const line = document.getElementById(`step${i}Line`);
+        if (line) {
+            line.classList.remove('bg-indigo-300', 'bg-green-300', 'bg-slate-200');
+            if (i < step) line.classList.add('bg-green-300');
+            else if (i === step) line.classList.add('bg-indigo-300');
+            else line.classList.add('bg-slate-200');
+        }
+    }
+
+    currentStep = step;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// ===================== VALIDATION =====================
+function validateShipping() {
+    const fields = ['firstName', 'lastName', 'email', 'phone', 'address', 'city', 'zip', 'country'];
+    for (const f of fields) {
+        const el = document.getElementById(f);
+        if (!el.value.trim()) {
+            el.style.borderColor = '#ef4444';
+            el.focus();
+            setTimeout(() => el.style.borderColor = '', 2000);
+            return false;
+        }
+    }
+    return true;
+}
+
+function validatePayment() {
+    if (paymentMethod === 'card') {
+        const fields = ['cardName', 'cardNumber', 'cardExpiry', 'cardCvv'];
+        for (const f of fields) {
+            const el = document.getElementById(f);
+            if (!el.value.trim()) {
+                el.style.borderColor = '#ef4444';
+                el.focus();
+                setTimeout(() => el.style.borderColor = '', 2000);
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+// ===================== SHIPPING SELECTION =====================
+function selectShipping(method, cost) {
+    shippingCost = cost;
+    const names = { free: 'Standard Shipping (5-7 days)', express: 'Express Shipping (2-3 days)', overnight: 'Overnight Shipping (Next day)' };
+    shippingMethod = names[method];
+
+    document.querySelectorAll('[id^="ship"]').forEach(el => el.classList.remove('selected'));
+    document.getElementById('ship' + method.charAt(0).toUpperCase() + method.slice(1)).classList.add('selected');
+    updateSummary();
+}
+
+// ===================== PAYMENT SELECTION =====================
+function selectPayment(method) {
+    paymentMethod = method === 'card' ? 'Credit Card' : method === 'paypal' ? 'PayPal' : method === 'apple' ? 'Apple Pay' : 'Cash on Delivery';
+
+    document.querySelectorAll('[id^="pay"]').forEach(el => el.classList.remove('selected'));
+    const idMap = { card: 'payCard', paypal: 'payPaypal', apple: 'payApple', cod: 'payCod' };
+    document.getElementById(idMap[method]).classList.add('selected');
+
+    document.getElementById('cardForm').classList.toggle('hidden', method !== 'card');
+    document.getElementById('paypalForm').classList.toggle('hidden', method !== 'paypal');
+    document.getElementById('appleForm').classList.toggle('hidden', method !== 'apple');
+    document.getElementById('codForm').classList.toggle('hidden', method !== 'cod');
+}
+
+// ===================== CARD FORMATTING =====================
+function formatCardNumber(el) {
+    let v = el.value.replace(/\D/g, '').substring(0, 16);
+    el.value = v.replace(/(.{4})/g, '$1 ').trim();
+
+    const icons = { visa: document.getElementById('visaIcon'), mc: document.getElementById('mcIcon'), amex: document.getElementById('amexIcon') };
+    Object.values(icons).forEach(i => i.classList.replace('text-indigo-400', 'text-slate-300'));
+    if (v.startsWith('4')) icons.visa.classList.replace('text-slate-300', 'text-indigo-400');
+    else if (v.startsWith('5')) icons.mc.classList.replace('text-slate-300', 'text-indigo-400');
+    else if (v.startsWith('3')) icons.amex.classList.replace('text-slate-300', 'text-indigo-400');
+}
+
+function formatExpiry(el) {
+    let v = el.value.replace(/\D/g, '').substring(0, 4);
+    if (v.length >= 2) v = v.substring(0, 2) + '/' + v.substring(2);
+    el.value = v;
+}
+
+function toggleCvv(el) {
+    const input = document.getElementById('cardCvv');
+    if (input.type === 'password') {
+        input.type = 'text';
+        el.classList.replace('fa-eye-slash', 'fa-eye');
+    } else {
+        input.type = 'password';
+        el.classList.replace('fa-eye', 'fa-eye-slash');
+    }
+}
+
+// ===================== PROMO CODE =====================
+function applyPromo() {
+    const code = document.getElementById('promoInput').value.trim().toUpperCase();
+    const msg = document.getElementById('promoMsg');
+    msg.classList.remove('hidden');
+
+    const codes = { 'NOVA20': 0.20, 'SAVE10': 0.10, 'SUMMER50': 0.50 };
+    if (codes[code]) {
+        discount = codes[code];
+        msg.className = 'text-xs font-semibold text-green-500 flex items-center gap-1 mt-1';
+        msg.innerHTML = `<i class="fa-solid fa-check-circle"></i> Promo applied! ${Math.round(discount * 100)}% discount`;
+    } else {
+        discount = 0;
+        msg.className = 'text-xs font-semibold text-red-400 flex items-center gap-1 mt-1';
+        msg.innerHTML = `<i class="fa-solid fa-times-circle"></i> Invalid promo code`;
+    }
+    updateSummary();
+}
+
+// ===================== POPULATE CONFIRM =====================
+function populateConfirm() {
+    const { subtotal, discountAmount, tax, total } = updateSummary();
+
+    document.getElementById('confirmName').textContent = `${document.getElementById('firstName').value} ${document.getElementById('lastName').value}`;
+    document.getElementById('confirmAddress').textContent = document.getElementById('address').value;
+    document.getElementById('confirmCity').textContent = `${document.getElementById('city').value}, ${document.getElementById('state').value} ${document.getElementById('zip').value}`;
+    document.getElementById('confirmEmail').textContent = document.getElementById('email').value;
+    document.getElementById('confirmPhone').textContent = document.getElementById('phone').value;
+    document.getElementById('confirmShipping').textContent = shippingMethod;
+
+    document.getElementById('confirmPaymentMethod').textContent = paymentMethod;
+    if (paymentMethod === 'Credit Card') {
+        const num = document.getElementById('cardNumber').value.replace(/\s/g, '');
+        document.getElementById('confirmCardInfo').textContent = `•••• •••• •••• ${num.slice(-4)}`;
+    } else {
+        document.getElementById('confirmCardInfo').textContent = 'No card details required';
+    }
+
+    document.getElementById('confirmSubtotal').textContent = `$${subtotal.toFixed(2)}`;
+    document.getElementById('confirmShippingCost').textContent = shippingCost === 0 ? 'Free' : `$${shippingCost.toFixed(2)}`;
+    document.getElementById('confirmTax').textContent = `$${tax.toFixed(2)}`;
+    document.getElementById('confirmTotal').textContent = `$${total.toFixed(2)}`;
+    document.getElementById('confirmBtnTotal').textContent = `$${total.toFixed(2)}`;
+
+    if (discount > 0) {
+        document.getElementById('confirmDiscountRow').classList.remove('hidden');
+        document.getElementById('confirmDiscount').textContent = `-$${discountAmount.toFixed(2)}`;
+    }
+
+    document.getElementById('confirmItems').innerHTML = cart.map(item => `
+        <div class="flex gap-3 items-center p-3 rounded-xl bg-white/20">
+            <img src="${item.thumbnail}" class="w-12 h-12 rounded-xl object-contain bg-white/50 p-0.5 flex-shrink-0">
+            <div class="flex-1 min-w-0">
+                <p class="text-xs font-bold text-slate-700 truncate">${item.title}</p>
+                <p class="text-[10px] text-slate-400">Qty: ${item.qty}</p>
+            </div>
+            <span class="text-sm font-bold text-slate-700">$${(item.price * item.qty).toFixed(2)}</span>
+        </div>
+    `).join('');
+}
+
+// ===================== PLACE ORDER =====================
+function placeOrder() {
+    const btn = document.getElementById('placeOrderBtn');
+    btn.innerHTML = '<div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div> Processing...';
+    btn.disabled = true;
+
+    setTimeout(() => {
+        // Generate order ID
+        const orderId = 'NS-' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).substring(2, 6).toUpperCase();
+        document.getElementById('orderId').textContent = orderId;
+        document.getElementById('successEmail').textContent = document.getElementById('email').value;
+        document.getElementById('successShipTime').textContent = shippingMethod.includes('Overnight') ? '1 business day' : shippingMethod.includes('Express') ? '2-3 business days' : '5-7 business days';
+
+        // Hide all steps
+        for (let i = 1; i <= 4; i++) document.getElementById(`step${i}`).classList.add('hidden');
+
+        // Show success
+        document.getElementById('stepSuccess').classList.remove('hidden');
+
+        // Clear cart
+        cart = [];
+        saveCart();
+
+        // Trigger confetti
+        launchConfetti();
+    }, 2000);
+}
+
+// ===================== CONFETTI =====================
+function launchConfetti() {
+    const colors = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#22c55e', '#06b6d4'];
+    for (let i = 0; i < 50; i++) {
+        const el = document.createElement('div');
+        el.className = 'confetti';
+        el.style.cssText = `
+            left: ${Math.random() * 100}vw;
+            top: -10px;
+            width: ${6 + Math.random() * 6}px;
+            height: ${6 + Math.random() * 6}px;
+            background: ${colors[Math.floor(Math.random() * colors.length)]};
+            border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+            animation: confettiFall ${2 + Math.random() * 3}s ease-out forwards;
+            animation-delay: ${Math.random() * 0.5}s;
+        `;
+        document.body.appendChild(el);
+        setTimeout(() => el.remove(), 5000);
+    }
+
+    // Add confetti animation
+    if (!document.getElementById('confettiStyle')) {
+        const style = document.createElement('style');
+        style.id = 'confettiStyle';
+        style.textContent = `
+            @keyframes confettiFall {
+                0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+                100% { transform: translateY(100vh) rotate(${360 + Math.random() * 720}deg); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+}
+</script>
+
+</body>
+</html>
