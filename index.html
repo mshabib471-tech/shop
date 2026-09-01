@@ -9,11 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { 'inter': ['Inter', 'sans-serif'] },
-                }
-            }
+            theme: { extend: { fontFamily: { 'inter': ['Inter', 'sans-serif'] } } }
         }
     </script>
     <style>
@@ -32,7 +28,6 @@
         .blob-3 { bottom: 5%; left: 15%; width: 300px; height: 300px; background: #ddd6fe; }
 
         .hero-gradient { background: linear-gradient(135deg, #a78bfa 0%, #c084fc 30%, #f0abfc 60%, #fda4af 100%); }
-
         .sidebar-item { transition: all 0.2s ease; border-radius: 12px; }
         .sidebar-item:hover, .sidebar-item.active { background: rgba(99,102,241,0.1); color: #6366f1; }
         .sidebar-item.active { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; }
@@ -46,13 +41,6 @@
         .product-card:hover .product-img { transform: scale(1.05); }
         .product-img { transition: transform 0.5s ease; }
 
-        .cart-slide { transition: transform 0.35s cubic-bezier(0.4,0,0.2,1); }
-        .cart-slide.open { transform: translateX(0); }
-        .cart-slide.closed { transform: translateX(100%); }
-
-        .flash-pulse { animation: pulse 2s ease-in-out infinite; }
-        @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.7; } }
-
         .badge-discount { background: linear-gradient(135deg, #ef4444, #f97316); }
         .badge-new { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
         .badge-hot { background: linear-gradient(135deg, #f43f5e, #ec4899); }
@@ -62,144 +50,147 @@
         ::-webkit-scrollbar-thumb { background: #c4b5fd; border-radius: 10px; }
 
         .search-glow:focus { box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
-
         .fade-in { animation: fadeIn 0.5s ease forwards; opacity: 0; }
         @keyframes fadeIn { to { opacity:1; } }
-
         .slide-up { animation: slideUp 0.6s ease forwards; opacity:0; transform: translateY(20px); }
         @keyframes slideUp { to { opacity:1; transform: translateY(0); } }
 
         .countdown-box { background: rgba(255,255,255,0.6); backdrop-filter: blur(8px); border-radius: 10px; }
-
         .promo-gradient { background: linear-gradient(135deg, #c084fc 0%, #f472b6 50%, #fb923c 100%); }
-
         .trust-badge { background: rgba(255,255,255,0.5); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.6); }
 
         .wishlist-btn:hover { color: #ef4444; }
         .wishlist-btn.active { color: #ef4444; }
+
+        .lang-toggle { transition: all 0.3s ease; }
+        .lang-toggle.active { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; }
     </style>
 </head>
 <body class="min-h-screen relative">
 
-<!-- Background Blobs -->
 <div class="blob blob-1"></div>
 <div class="blob blob-2"></div>
 <div class="blob blob-3"></div>
 
-<!-- Mobile Menu Overlay -->
 <div id="mobileOverlay" class="fixed inset-0 bg-black/30 z-40 hidden lg:hidden" onclick="toggleMobileSidebar()"></div>
 
 <div class="flex h-screen overflow-hidden relative z-10">
 
 <!-- ==================== LEFT SIDEBAR ==================== -->
 <aside id="sidebar" class="w-[240px] glass-strong flex flex-col py-6 px-4 fixed lg:relative h-full z-50 -translate-x-full lg:translate-x-0 transition-transform duration-300">
-    <!-- Logo -->
-    <div class="flex items-center gap-3 px-3 mb-8">
+    <div class="flex items-center gap-3 px-3 mb-6">
         <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
             <i class="fa-solid fa-bag-shopping text-white text-sm"></i>
         </div>
         <span class="font-extrabold text-lg text-slate-800">Nova<span class="text-indigo-500">Shop</span></span>
     </div>
 
-    <!-- Nav Links -->
+    <!-- Language Toggle -->
+    <div class="flex gap-1 p-1 rounded-xl bg-white/30 mb-5 mx-3">
+        <button onclick="setLang('en')" id="langEn" class="flex-1 py-1.5 rounded-lg text-[11px] font-bold transition lang-toggle active">EN</button>
+        <button onclick="setLang('bn')" id="langBn" class="flex-1 py-1.5 rounded-lg text-[11px] font-bold text-slate-500 transition lang-toggle">বাং</button>
+    </div>
+
     <nav class="flex-1 space-y-1 overflow-y-auto">
         <a href="#" onclick="loadCategory('all');setActive(this)" class="sidebar-item active flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-house w-5 text-center"></i> Home
-        </a>
-        <a href="#" onclick="setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-grid-2 w-5 text-center"></i> Categories
+            <i class="fa-solid fa-house w-5 text-center"></i> <span data-i18n="nav_home">Home</span>
         </a>
         <a href="#" onclick="loadCategory('all');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-bolt w-5 text-center"></i> Deals
+            <i class="fa-solid fa-bolt w-5 text-center"></i> <span data-i18n="nav_deals">Deals</span>
             <span class="ml-auto badge-hot text-white text-[10px] font-bold px-2 py-0.5 rounded-full">Hot</span>
         </a>
         <a href="#" onclick="loadCategory('all');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-sparkles w-5 text-center"></i> New Arrivals
+            <i class="fa-solid fa-sparkles w-5 text-center"></i> <span data-i18n="nav_new">New Arrivals</span>
         </a>
         <a href="#" onclick="loadCategory('all');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-fire w-5 text-center"></i> Best Sellers
+            <i class="fa-solid fa-fire w-5 text-center"></i> <span data-i18n="nav_best">Best Sellers</span>
         </a>
         <a href="#" onclick="loadCategory('all');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-tags w-5 text-center"></i> Brands
+            <i class="fa-solid fa-tags w-5 text-center"></i> <span data-i18n="nav_brands">Brands</span>
         </a>
-        <a href="#" onclick="loadCategory('all');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-layer-group w-5 text-center"></i> Collections
-        </a>
-
         <div class="border-t border-slate-200/50 my-3"></div>
-
-        <a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-box w-5 text-center"></i> My Orders
+        <a href="#" onclick="setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+            <i class="fa-solid fa-box w-5 text-center"></i> <span data-i18n="nav_orders">My Orders</span>
         </a>
-        <a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-regular fa-heart w-5 text-center"></i> Wishlist
+        <a href="#" onclick="setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+            <i class="fa-regular fa-heart w-5 text-center"></i> <span data-i18n="nav_wishlist">Wishlist</span>
             <span id="wishlistCount" class="ml-auto text-[10px] font-bold text-pink-500 hidden">0</span>
         </a>
-        <a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-ticket w-5 text-center"></i> Coupons
+        <a href="#" onclick="setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+            <i class="fa-solid fa-ticket w-5 text-center"></i> <span data-i18n="nav_coupons">Coupons</span>
         </a>
-        <a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-location-dot w-5 text-center"></i> Addresses
+        <a href="#" onclick="setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+            <i class="fa-solid fa-location-dot w-5 text-center"></i> <span data-i18n="nav_addresses">Addresses</span>
         </a>
+        <div class="border-t border-slate-200/50 my-3"></div>
         <a href="login.html" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-right-to-bracket w-5 text-center"></i> Login / Sign Up
+            <i class="fa-solid fa-right-to-bracket w-5 text-center"></i> <span data-i18n="nav_login">Login / Sign Up</span>
         </a>
         <a href="dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-chart-line w-5 text-center"></i> Dashboard
-        </a>
-        <a href="#" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-gear w-5 text-center"></i> Account Settings
+            <i class="fa-solid fa-chart-line w-5 text-center"></i> <span data-i18n="nav_dashboard">Dashboard</span>
         </a>
     </nav>
 
-    <!-- Promo Card -->
     <div class="mt-4 promo-gradient rounded-2xl p-5 text-white relative overflow-hidden">
         <div class="absolute -top-4 -right-4 w-20 h-20 bg-white/20 rounded-full"></div>
         <div class="absolute -bottom-6 -left-6 w-16 h-16 bg-white/10 rounded-full"></div>
-        <p class="text-[10px] font-bold uppercase tracking-wider mb-1 opacity-90">Special Offer</p>
-        <h3 class="font-extrabold text-lg leading-tight mb-2">Summer Sale<br>Up to 50% Off</h3>
-        <button onclick="loadCategory('all')" class="bg-white text-purple-600 text-xs font-bold px-4 py-2 rounded-full hover:bg-white/90 transition">Shop Now</button>
-    </div>
-
-    <!-- Help & Theme -->
-    <div class="mt-4 space-y-2 px-3">
-        <a href="#" class="flex items-center gap-2 text-xs text-slate-500 hover:text-indigo-500 transition">
-            <i class="fa-regular fa-circle-question"></i> Need Help? 24/7 Support
-        </a>
+        <p class="text-[10px] font-bold uppercase tracking-wider mb-1 opacity-90" data-i18n="promo_label">Special Offer</p>
+        <h3 class="font-extrabold text-lg leading-tight mb-2" data-i18n="promo_title">Summer Sale<br>Up to 50% Off</h3>
+        <button onclick="loadCategory('all')" class="bg-white text-purple-600 text-xs font-bold px-4 py-2 rounded-full hover:bg-white/90 transition" data-i18n="promo_btn">Shop Now</button>
     </div>
 </aside>
 
 <!-- ==================== MAIN CONTENT ==================== -->
 <main class="flex-1 overflow-y-auto" id="mainContent">
-    <!-- Top Bar -->
     <header class="sticky top-0 z-30 glass-strong px-6 py-3 flex items-center gap-4">
-        <!-- Mobile Menu Toggle -->
         <button onclick="toggleMobileSidebar()" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/50 transition">
             <i class="fa-solid fa-bars text-slate-600"></i>
         </button>
-
-        <!-- Search Bar -->
         <div class="flex-1 relative">
             <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-            <input type="text" id="searchInput" placeholder="Search for products, brands and more..."
+            <input type="text" id="searchInput" data-i18n-placeholder="search_placeholder" placeholder="Search for products, brands and more..."
                 class="w-full bg-white/60 border border-white/80 rounded-full px-12 py-2.5 text-sm text-slate-700 placeholder-slate-400 focus:outline-none search-glow transition"
                 oninput="handleSearch(this.value)">
         </div>
-
-        <!-- Top Right Icons -->
-        <div class="flex items-center gap-3">
-            <button onclick="loadCategory('all')" class="hidden sm:flex items-center gap-2 glass-btn px-4 py-2 rounded-full text-sm font-medium text-slate-600 hover:bg-white/70 transition">
-                <i class="fa-regular fa-heart"></i> Wishlist
-            </button>
-            <button class="relative w-10 h-10 flex items-center justify-center glass-btn rounded-full hover:bg-white/70 transition">
+        <div class="flex items-center gap-2">
+            <!-- Notification Bell -->
+            <button class="relative w-10 h-10 flex items-center justify-center glass-btn rounded-full hover:bg-white/70 transition" onclick="toggleNotifications()">
                 <i class="fa-solid fa-bell text-slate-600 text-sm"></i>
-                <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">3</span>
+                <span id="notifBadge" class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">3</span>
             </button>
-            <a href="login.html" class="relative w-10 h-10 flex items-center justify-center glass-btn rounded-full hover:bg-white/70 transition" title="Login">
-                <img src="https://i.pravatar.cc/150?img=47" class="w-8 h-8 rounded-full object-cover border-2 border-white shadow-sm">
+            <!-- Wishlist Heart (icon only) -->
+            <button onclick="showWishlist()" class="relative w-10 h-10 flex items-center justify-center glass-btn rounded-full hover:bg-white/70 transition" data-i18n-title="nav_wishlist" title="Wishlist">
+                <i class="fa-regular fa-heart text-slate-600 text-sm"></i>
+                <span id="headerWishlistCount" class="absolute -top-1 -right-1 w-4 h-4 bg-pink-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center hidden">0</span>
+            </button>
+            <!-- Avatar / Sign In -->
+            <a href="login.html" id="avatarLoggedOut" class="w-10 h-10 flex items-center justify-center glass-btn rounded-full hover:bg-white/70 transition" title="Login">
+                <i class="fa-solid fa-user text-slate-500 text-sm"></i>
+            </a>
+            <a href="dashboard.html" id="avatarLoggedIn" class="w-10 h-10 flex items-center justify-center glass-btn rounded-full hover:bg-white/70 transition hidden" title="Dashboard">
+                <img id="headerAvatar" src="" class="w-8 h-8 rounded-full object-cover border-2 border-white shadow-sm">
             </a>
         </div>
     </header>
+
+    <!-- Notifications Dropdown -->
+    <div id="notifPanel" class="fixed top-14 right-20 z-[40] w-72 glass-strong rounded-2xl p-4 hidden shadow-2xl">
+        <h4 class="font-bold text-xs text-slate-800 mb-3" data-i18n="notif_title">Notifications</h4>
+        <div class="space-y-2">
+            <div class="flex items-center gap-2 p-2 rounded-xl hover:bg-white/40 transition cursor-pointer">
+                <div class="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center"><i class="fa-solid fa-check text-green-500 text-[10px]"></i></div>
+                <div><p class="text-[11px] font-semibold text-slate-700" data-i18n="notif_1">Your order has been delivered!</p><p class="text-[9px] text-slate-400">2 min ago</p></div>
+            </div>
+            <div class="flex items-center gap-2 p-2 rounded-xl hover:bg-white/40 transition cursor-pointer">
+                <div class="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center"><i class="fa-solid fa-tag text-indigo-500 text-[10px]"></i></div>
+                <div><p class="text-[11px] font-semibold text-slate-700" data-i18n="notif_2">Flash sale starts in 1 hour!</p><p class="text-[9px] text-slate-400">15 min ago</p></div>
+            </div>
+            <div class="flex items-center gap-2 p-2 rounded-xl hover:bg-white/40 transition cursor-pointer">
+                <div class="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center"><i class="fa-solid fa-ticket text-amber-500 text-[10px]"></i></div>
+                <div><p class="text-[11px] font-semibold text-slate-700" data-i18n="notif_3">New coupon available!</p><p class="text-[9px] text-slate-400">1 hour ago</p></div>
+            </div>
+        </div>
+    </div>
 
     <div class="p-6" id="mainArea">
         <!-- Hero Banner -->
@@ -207,55 +198,48 @@
             <div class="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/3"></div>
             <div class="absolute bottom-0 left-1/3 w-48 h-48 bg-white/10 rounded-full translate-y-1/2"></div>
             <div class="relative z-10 max-w-lg">
-                <span class="inline-block bg-white/30 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4">New Collection</span>
-                <h1 class="text-3xl md:text-5xl font-extrabold text-white leading-tight mb-3">Find Your Style,<br>Love Your Look ✨</h1>
-                <p class="text-white/80 text-sm mb-6">Discover the latest trends in fashion, beauty, and lifestyle.</p>
+                <span class="inline-block bg-white/30 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4" data-i18n="hero_badge">New Collection</span>
+                <h1 class="text-3xl md:text-5xl font-extrabold text-white leading-tight mb-3" data-i18n="hero_title">Find Your Style,<br>Love Your Look ✨</h1>
+                <p class="text-white/80 text-sm mb-6" data-i18n="hero_desc">Discover the latest trends in fashion, beauty, and lifestyle.</p>
                 <button onclick="loadCategory('all')" class="bg-white text-indigo-600 font-bold text-sm px-8 py-3 rounded-full hover:bg-white/90 transition shadow-xl flex items-center gap-2">
-                    Shop Now <i class="fa-solid fa-arrow-right text-xs"></i>
+                    <span data-i18n="hero_btn">Shop Now</span> <i class="fa-solid fa-arrow-right text-xs"></i>
                 </button>
             </div>
         </section>
 
-        <!-- Categories Row -->
+        <!-- Categories -->
         <section class="mb-8 slide-up" style="animation-delay:0.1s">
             <div class="flex gap-4 overflow-x-auto pb-2" id="categoriesRow">
                 <div onclick="loadCategory('all')" class="category-pill active flex flex-col items-center gap-2 min-w-[80px] p-4 rounded-2xl glass-card cursor-pointer">
                     <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center text-xl">🛍️</div>
-                    <span class="text-[11px] font-semibold text-slate-600">All</span>
-                </div>
-                <div onclick="loadCategory('beauty')" class="category-pill flex flex-col items-center gap-2 min-w-[80px] p-4 rounded-2xl glass-card cursor-pointer">
-                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-100 to-rose-100 flex items-center justify-center text-xl">💄</div>
-                    <span class="text-[11px] font-semibold text-slate-600">Beauty</span>
+                    <span class="text-[11px] font-semibold text-slate-600" data-i18n="cat_all">All</span>
                 </div>
                 <div onclick="loadCategory('electronics')" class="category-pill flex flex-col items-center gap-2 min-w-[80px] p-4 rounded-2xl glass-card cursor-pointer">
                     <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center text-xl">📱</div>
-                    <span class="text-[11px] font-semibold text-slate-600">Electronics</span>
+                    <span class="text-[11px] font-semibold text-slate-600" data-i18n="cat_electronics">Electronics</span>
                 </div>
-                <div onclick="loadCategory('furniture')" class="category-pill flex flex-col items-center gap-2 min-w-[80px] p-4 rounded-2xl glass-card cursor-pointer">
-                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center text-xl">🏠</div>
-                    <span class="text-[11px] font-semibold text-slate-600">Home</span>
+                <div onclick="loadCategory('jewelery')" class="category-pill flex flex-col items-center gap-2 min-w-[80px] p-4 rounded-2xl glass-card cursor-pointer">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center text-xl">💍</div>
+                    <span class="text-[11px] font-semibold text-slate-600" data-i18n="cat_jewelry">Jewelry</span>
                 </div>
-                <div onclick="loadCategory('sports-accessories')" class="category-pill flex flex-col items-center gap-2 min-w-[80px] p-4 rounded-2xl glass-card cursor-pointer">
-                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center text-xl">⚽</div>
-                    <span class="text-[11px] font-semibold text-slate-600">Sports</span>
+                <div onclick="loadCategory(\"men's clothing\")" class="category-pill flex flex-col items-center gap-2 min-w-[80px] p-4 rounded-2xl glass-card cursor-pointer">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center text-xl">👔</div>
+                    <span class="text-[11px] font-semibold text-slate-600" data-i18n="cat_men">Men</span>
                 </div>
-                <div onclick="loadCategory('groceries')" class="category-pill flex flex-col items-center gap-2 min-w-[80px] p-4 rounded-2xl glass-card cursor-pointer">
-                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-teal-100 to-green-100 flex items-center justify-center text-xl">🍎</div>
-                    <span class="text-[11px] font-semibold text-slate-600">Grocery</span>
+                <div onclick="loadCategory(\"women's clothing\")" class="category-pill flex flex-col items-center gap-2 min-w-[80px] p-4 rounded-2xl glass-card cursor-pointer">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-100 to-rose-100 flex items-center justify-center text-xl">👗</div>
+                    <span class="text-[11px] font-semibold text-slate-600" data-i18n="cat_women">Women</span>
                 </div>
             </div>
         </section>
 
-        <!-- Flash Sale / Free Shipping / New Arrivals Cards -->
+        <!-- Flash Sale / Free Shipping / New Arrivals -->
         <section class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 slide-up" style="animation-delay:0.2s">
-            <!-- Flash Sale -->
             <div class="glass-card p-5 flex items-center gap-4 cursor-pointer" onclick="loadCategory('all')">
-                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-100 to-orange-100 flex items-center justify-center flex-shrink-0">
-                    <span class="text-2xl">🔥</span>
-                </div>
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-100 to-orange-100 flex items-center justify-center flex-shrink-0"><span class="text-2xl">🔥</span></div>
                 <div class="flex-1">
-                    <h3 class="font-bold text-sm text-slate-800">Flash Sale</h3>
-                    <p class="text-[11px] text-slate-500 mb-2">Limited time deals</p>
+                    <h3 class="font-bold text-sm text-slate-800" data-i18n="flash_title">Flash Sale</h3>
+                    <p class="text-[11px] text-slate-500 mb-2" data-i18n="flash_desc">Limited time deals</p>
                     <div class="flex gap-1.5" id="countdown">
                         <span class="countdown-box px-2 py-1 text-xs font-bold text-slate-700" id="cdHours">02</span>
                         <span class="text-slate-400 font-bold">:</span>
@@ -265,140 +249,107 @@
                     </div>
                 </div>
             </div>
-            <!-- Free Shipping -->
             <div class="glass-card p-5 flex items-center gap-4 cursor-pointer">
-                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center flex-shrink-0">
-                    <span class="text-2xl">🚚</span>
-                </div>
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center flex-shrink-0"><span class="text-2xl">🚚</span></div>
                 <div class="flex-1">
-                    <h3 class="font-bold text-sm text-slate-800">Free Shipping</h3>
-                    <p class="text-[11px] text-slate-500 mb-2">On orders over $50</p>
-                    <a href="#" class="text-[11px] font-bold text-indigo-500 hover:text-indigo-600">Shop now →</a>
+                    <h3 class="font-bold text-sm text-slate-800" data-i18n="ship_title">Free Shipping</h3>
+                    <p class="text-[11px] text-slate-500 mb-2" data-i18n="ship_desc">On orders over $50</p>
+                    <a href="#" onclick="loadCategory('all')" class="text-[11px] font-bold text-indigo-500 hover:text-indigo-600" data-i18n="shop_now">Shop now →</a>
                 </div>
             </div>
-            <!-- New Arrivals -->
             <div class="glass-card p-5 flex items-center gap-4 cursor-pointer" onclick="loadCategory('all')">
-                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-100 to-purple-100 flex items-center justify-center flex-shrink-0">
-                    <span class="text-2xl">✨</span>
-                </div>
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-100 to-purple-100 flex items-center justify-center flex-shrink-0"><span class="text-2xl">✨</span></div>
                 <div class="flex-1">
-                    <h3 class="font-bold text-sm text-slate-800">New Arrivals</h3>
-                    <p class="text-[11px] text-slate-500 mb-2">Check out the latest trends</p>
-                    <a href="#" class="text-[11px] font-bold text-indigo-500 hover:text-indigo-600">Shop now →</a>
+                    <h3 class="font-bold text-sm text-slate-800" data-i18n="new_title">New Arrivals</h3>
+                    <p class="text-[11px] text-slate-500 mb-2" data-i18n="new_desc">Check out the latest trends</p>
+                    <a href="#" onclick="loadCategory('all')" class="text-[11px] font-bold text-indigo-500 hover:text-indigo-600" data-i18n="shop_now">Shop now →</a>
                 </div>
             </div>
         </section>
 
-        <!-- Best Deals For You -->
+        <!-- Best Deals -->
         <section class="mb-8 slide-up" style="animation-delay:0.3s">
             <div class="flex justify-between items-center mb-5">
-                <h2 class="text-xl font-extrabold text-slate-800">Best Deals for You</h2>
-                <button onclick="loadCategory('all')" class="text-xs font-semibold text-indigo-500 hover:text-indigo-600 flex items-center gap-1">View All <i class="fa-solid fa-arrow-right text-[10px]"></i></button>
+                <h2 class="text-xl font-extrabold text-slate-800" data-i18n="deals_title">Best Deals for You</h2>
+                <button onclick="loadCategory('all')" class="text-xs font-semibold text-indigo-500 hover:text-indigo-600 flex items-center gap-1"><span data-i18n="view_all">View All</span> <i class="fa-solid fa-arrow-right text-[10px]"></i></button>
             </div>
             <div id="dealsGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                <!-- Products loaded via JS -->
                 <div class="glass-card p-8 flex items-center justify-center col-span-full">
                     <div class="text-center">
                         <div class="w-10 h-10 border-3 border-indigo-300 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-                        <p class="text-sm text-slate-500">Loading products...</p>
+                        <p class="text-sm text-slate-500" data-i18n="loading">Loading products...</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Recommended For You -->
+        <!-- Recommended -->
         <section class="mb-8 slide-up" style="animation-delay:0.4s">
             <div class="flex justify-between items-center mb-5">
-                <h2 class="text-xl font-extrabold text-slate-800" id="sectionTitle">Recommended for You</h2>
-                <button onclick="loadCategory('all')" class="text-xs font-semibold text-indigo-500 hover:text-indigo-600 flex items-center gap-1">View All <i class="fa-solid fa-arrow-right text-[10px]"></i></button>
+                <h2 class="text-xl font-extrabold text-slate-800" id="sectionTitle" data-i18n="recommended_title">Recommended for You</h2>
+                <button onclick="loadCategory('all')" class="text-xs font-semibold text-indigo-500 hover:text-indigo-600 flex items-center gap-1"><span data-i18n="view_all">View All</span> <i class="fa-solid fa-arrow-right text-[10px]"></i></button>
             </div>
-            <div id="recommendedGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                <!-- Products loaded via JS -->
-            </div>
+            <div id="recommendedGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
         </section>
 
         <!-- Trust Badges -->
         <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 slide-up" style="animation-delay:0.5s">
             <div class="trust-badge rounded-2xl p-4 text-center">
-                <div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-2">
-                    <i class="fa-solid fa-shield-halved text-green-500 text-sm"></i>
-                </div>
-                <p class="text-[11px] font-bold text-slate-700">Secure Payment</p>
-                <p class="text-[10px] text-slate-400">100% secure payment</p>
+                <div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-2"><i class="fa-solid fa-shield-halved text-green-500 text-sm"></i></div>
+                <p class="text-[11px] font-bold text-slate-700" data-i18n="trust_secure">Secure Payment</p>
+                <p class="text-[10px] text-slate-400" data-i18n="trust_secure_desc">100% secure payment</p>
             </div>
             <div class="trust-badge rounded-2xl p-4 text-center">
-                <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-2">
-                    <i class="fa-solid fa-rotate-left text-blue-500 text-sm"></i>
-                </div>
-                <p class="text-[11px] font-bold text-slate-700">Easy Returns</p>
-                <p class="text-[10px] text-slate-400">30-day return policy</p>
+                <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-2"><i class="fa-solid fa-rotate-left text-blue-500 text-sm"></i></div>
+                <p class="text-[11px] font-bold text-slate-700" data-i18n="trust_return">Easy Returns</p>
+                <p class="text-[10px] text-slate-400" data-i18n="trust_return_desc">30-day return policy</p>
             </div>
             <div class="trust-badge rounded-2xl p-4 text-center">
-                <div class="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center mx-auto mb-2">
-                    <i class="fa-solid fa-headset text-purple-500 text-sm"></i>
-                </div>
-                <p class="text-[11px] font-bold text-slate-700">24/7 Support</p>
-                <p class="text-[10px] text-slate-400">Dedicated support</p>
+                <div class="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center mx-auto mb-2"><i class="fa-solid fa-headset text-purple-500 text-sm"></i></div>
+                <p class="text-[11px] font-bold text-slate-700" data-i18n="trust_support">24/7 Support</p>
+                <p class="text-[10px] text-slate-400" data-i18n="trust_support_desc">Dedicated support</p>
             </div>
             <div class="trust-badge rounded-2xl p-4 text-center">
-                <div class="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center mx-auto mb-2">
-                    <i class="fa-solid fa-star text-amber-500 text-sm"></i>
-                </div>
-                <p class="text-[11px] font-bold text-slate-700">Trusted by Thousands</p>
-                <p class="text-[10px] text-slate-400">4.8 average rating</p>
+                <div class="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center mx-auto mb-2"><i class="fa-solid fa-star text-amber-500 text-sm"></i></div>
+                <p class="text-[11px] font-bold text-slate-700" data-i18n="trust_trusted">Trusted by Thousands</p>
+                <p class="text-[10px] text-slate-400" data-i18n="trust_trusted_desc">4.8 average rating</p>
             </div>
         </section>
 
         <!-- Newsletter -->
         <section class="glass-card p-8 mb-8 text-center slide-up" style="animation-delay:0.6s">
-            <h3 class="text-xl font-extrabold text-slate-800 mb-2">Join NovaShop Club</h3>
-            <p class="text-sm text-slate-500 mb-4">Get exclusive offers, early accesses and more!</p>
+            <h3 class="text-xl font-extrabold text-slate-800 mb-2" data-i18n="newsletter_title">Join NovaShop Club</h3>
+            <p class="text-sm text-slate-500 mb-4" data-i18n="newsletter_desc">Get exclusive offers, early access and more!</p>
             <div class="flex max-w-md mx-auto gap-2">
-                <input type="email" placeholder="Enter your email" class="flex-1 bg-white/60 border border-white/80 rounded-full px-5 py-2.5 text-sm focus:outline-none search-glow transition">
-                <button class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-sm px-6 py-2.5 rounded-full hover:opacity-90 transition shadow-lg">Join Now</button>
+                <input type="email" data-i18n-placeholder="newsletter_placeholder" placeholder="Enter your email" class="flex-1 bg-white/60 border border-white/80 rounded-full px-5 py-2.5 text-sm focus:outline-none search-glow transition">
+                <button class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-sm px-6 py-2.5 rounded-full hover:opacity-90 transition shadow-lg" data-i18n="newsletter_btn">Join Now</button>
             </div>
         </section>
-
     </div>
 </main>
 
 <!-- ==================== RIGHT SIDEBAR - CART ==================== -->
 <aside class="w-[340px] glass-strong border-l border-white/40 flex flex-col h-full hidden lg:flex">
-    <!-- Cart Header -->
     <div class="px-5 py-4 border-b border-white/30 flex items-center justify-between">
-        <h3 class="font-extrabold text-sm text-slate-800">My Cart (<span id="cartCount">0</span>)</h3>
-        <button onclick="closeCart()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/50 transition text-slate-400">
-            <i class="fa-solid fa-xmark"></i>
-        </button>
+        <h3 class="font-extrabold text-sm text-slate-800"><span data-i18n="cart_title">My Cart</span> (<span id="cartCount">0</span>)</h3>
     </div>
-
-    <!-- Cart Items -->
     <div class="flex-1 overflow-y-auto px-5 py-4 space-y-4" id="cartItems">
         <div class="text-center py-12">
-            <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3">
-                <i class="fa-solid fa-bag-shopping text-slate-300 text-xl"></i>
-            </div>
-            <p class="text-sm text-slate-400">Your cart is empty</p>
-            <p class="text-[11px] text-slate-300 mt-1">Add products to get started</p>
+            <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-bag-shopping text-slate-300 text-xl"></i></div>
+            <p class="text-sm text-slate-400" data-i18n="cart_empty">Your cart is empty</p>
+            <p class="text-[11px] text-slate-300 mt-1" data-i18n="cart_empty_desc">Add products to get started</p>
         </div>
     </div>
-
-    <!-- Cart Summary -->
     <div id="cartSummary" class="hidden px-5 py-4 border-t border-white/30 space-y-3">
-        <!-- Promo Code -->
-        <div class="flex gap-2">
-            <input type="text" placeholder="Promo Code" class="flex-1 bg-white/50 border border-white/60 rounded-xl px-4 py-2 text-xs focus:outline-none transition">
-            <button class="bg-indigo-500 text-white text-xs font-bold px-4 py-2 rounded-xl hover:bg-indigo-600 transition">Apply</button>
-        </div>
         <div class="space-y-2 text-sm">
-            <div class="flex justify-between text-slate-500"><span>Subtotal</span><span id="subtotal">$0.00</span></div>
-            <div class="flex justify-between text-green-500"><span>Shipping</span><span class="font-bold">Free</span></div>
+            <div class="flex justify-between text-slate-500"><span data-i18n="cart_subtotal">Subtotal</span><span id="subtotal">$0.00</span></div>
+            <div class="flex justify-between text-green-500"><span data-i18n="cart_shipping">Shipping</span><span class="font-bold" data-i18n="cart_free">Free</span></div>
             <div class="border-t border-slate-200/50 pt-2 flex justify-between font-extrabold text-slate-800">
-                <span>Total</span><span id="total">$0.00</span>
+                <span data-i18n="cart_total">Total</span><span id="total">$0.00</span>
             </div>
         </div>
         <a href="checkout.html" class="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-sm py-3.5 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition shadow-lg">
-            Checkout <i class="fa-solid fa-arrow-right text-xs"></i>
+            <span data-i18n="cart_checkout">Checkout</span> <i class="fa-solid fa-arrow-right text-xs"></i>
         </a>
         <div class="flex justify-center gap-3 opacity-40">
             <i class="fa-brands fa-cc-visa text-xl"></i>
@@ -407,72 +358,54 @@
             <i class="fa-brands fa-google-pay text-xl"></i>
         </div>
     </div>
-
-    <!-- You Might Also Like -->
-    <div class="px-5 py-4 border-t border-white/30 hidden" id="suggestionsSection">
-        <h4 class="font-bold text-xs text-slate-700 mb-3">You might also like</h4>
-        <div id="suggestions" class="space-y-3 max-h-[200px] overflow-y-auto">
-            <!-- Loaded via JS -->
-        </div>
-    </div>
 </aside>
-
 </div>
 
-<!-- ==================== MOBILE CART BUTTON ==================== -->
+<!-- Mobile Cart Button -->
 <button onclick="openCartMobile()" class="lg:hidden fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center shadow-2xl text-white">
     <i class="fa-solid fa-bag-shopping"></i>
     <span id="mobileCartBadge" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center hidden">0</span>
 </button>
 
-<!-- ==================== MOBILE CART PANEL ==================== -->
+<!-- Mobile Cart Panel -->
 <div id="mobileCart" class="fixed inset-0 z-[60] hidden">
     <div class="absolute inset-0 bg-black/30" onclick="closeCartMobile()"></div>
-    <div class="absolute right-0 top-0 h-full w-[90%] max-w-[360px] glass-strong flex flex-col cart-slide closed" id="mobileCartPanel">
-        <!-- Mobile Cart Header -->
+    <div class="absolute right-0 top-0 h-full w-[90%] max-w-[360px] glass-strong flex flex-col" id="mobileCartPanel">
         <div class="px-5 py-4 border-b border-white/30 flex items-center justify-between">
-            <h3 class="font-extrabold text-sm text-slate-800">My Cart (<span id="mobileCartCount">0</span>)</h3>
-            <button onclick="closeCartMobile()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/50 transition text-slate-400">
-                <i class="fa-solid fa-xmark"></i>
-            </button>
+            <h3 class="font-extrabold text-sm text-slate-800"><span data-i18n="cart_title">My Cart</span> (<span id="mobileCartCount">0</span>)</h3>
+            <button onclick="closeCartMobile()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/50 transition text-slate-400"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        <!-- Mobile Cart Items -->
         <div class="flex-1 overflow-y-auto px-5 py-4 space-y-4" id="mobileCartItems">
             <div class="text-center py-12">
-                <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3">
-                    <i class="fa-solid fa-bag-shopping text-slate-300 text-xl"></i>
-                </div>
-                <p class="text-sm text-slate-400">Your cart is empty</p>
+                <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-bag-shopping text-slate-300 text-xl"></i></div>
+                <p class="text-sm text-slate-400" data-i18n="cart_empty">Your cart is empty</p>
             </div>
         </div>
-        <!-- Mobile Cart Summary -->
         <div id="mobileCartSummary" class="hidden px-5 py-4 border-t border-white/30 space-y-3">
             <div class="space-y-2 text-sm">
-                <div class="flex justify-between text-slate-500"><span>Subtotal</span><span id="mobileSubtotal">$0.00</span></div>
-                <div class="flex justify-between text-green-500"><span>Shipping</span><span class="font-bold">Free</span></div>
+                <div class="flex justify-between text-slate-500"><span data-i18n="cart_subtotal">Subtotal</span><span id="mobileSubtotal">$0.00</span></div>
+                <div class="flex justify-between text-green-500"><span data-i18n="cart_shipping">Shipping</span><span class="font-bold" data-i18n="cart_free">Free</span></div>
                 <div class="border-t border-slate-200/50 pt-2 flex justify-between font-extrabold text-slate-800">
-                    <span>Total</span><span id="mobileTotal">$0.00</span>
+                    <span data-i18n="cart_total">Total</span><span id="mobileTotal">$0.00</span>
                 </div>
             </div>
-            <button class="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-sm py-3.5 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition shadow-lg">
-                Checkout <i class="fa-solid fa-arrow-right text-xs"></i>
-            </button>
+            <a href="checkout.html" class="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-sm py-3.5 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition shadow-lg">
+                <span data-i18n="cart_checkout">Checkout</span> <i class="fa-solid fa-arrow-right text-xs"></i>
+            </a>
         </div>
     </div>
 </div>
 
-<!-- ==================== PRODUCT DETAIL MODAL ==================== -->
+<!-- Product Modal -->
 <div id="productModal" class="fixed inset-0 z-[70] hidden">
     <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeModal()"></div>
     <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-lg glass-strong rounded-3xl overflow-hidden">
         <div class="relative">
-            <img id="modalImg" src="" class="w-full h-72 object-cover bg-slate-100">
-            <button onclick="closeModal()" class="absolute top-4 right-4 w-9 h-9 glass rounded-full flex items-center justify-center hover:bg-white/80 transition">
-                <i class="fa-solid fa-xmark text-slate-600"></i>
-            </button>
+            <img id="modalImg" src="" class="w-full h-72 object-contain bg-white/50 p-4">
+            <button onclick="closeModal()" class="absolute top-4 right-4 w-9 h-9 glass rounded-full flex items-center justify-center hover:bg-white/80 transition"><i class="fa-solid fa-xmark text-slate-600"></i></button>
         </div>
         <div class="p-6">
-            <p id="modalBrand" class="text-[10px] font-bold text-indigo-500 uppercase tracking-wider mb-1"></p>
+            <p id="modalCategory" class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider mb-1"></p>
             <h2 id="modalTitle" class="font-extrabold text-xl text-slate-800 mb-2"></h2>
             <div class="flex items-center gap-2 mb-3">
                 <div id="modalStars" class="flex text-amber-400 text-xs"></div>
@@ -480,64 +413,145 @@
             </div>
             <p id="modalDesc" class="text-sm text-slate-500 leading-relaxed mb-4 line-clamp-3"></p>
             <div class="flex items-center justify-between">
-                <div>
-                    <span id="modalPrice" class="text-2xl font-extrabold text-slate-800"></span>
-                    <span id="modalOldPrice" class="text-sm text-slate-400 line-through ml-2"></span>
-                </div>
+                <span id="modalPrice" class="text-2xl font-extrabold text-slate-800"></span>
                 <button id="modalAddBtn" onclick="addToCartFromModal()" class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-sm px-6 py-3 rounded-xl hover:opacity-90 transition shadow-lg flex items-center gap-2">
-                    <i class="fa-solid fa-bag-shopping text-xs"></i> Add to Cart
+                    <i class="fa-solid fa-bag-shopping text-xs"></i> <span data-i18n="add_to_cart">Add to Cart</span>
                 </button>
             </div>
         </div>
     </div>
 </div>
 
-
-<!-- ==================== JAVASCRIPT ==================== -->
 <script>
+// ===================== i18n =====================
+const i18n = {
+    en: {
+        nav_home: 'Home', nav_deals: 'Deals', nav_new: 'New Arrivals', nav_best: 'Best Sellers', nav_brands: 'Brands',
+        nav_orders: 'My Orders', nav_wishlist: 'Wishlist', nav_coupons: 'Coupons', nav_addresses: 'Addresses',
+        nav_login: 'Login / Sign Up', nav_dashboard: 'Dashboard',
+        search_placeholder: 'Search for products, brands and more...',
+        hero_badge: 'New Collection', hero_title: 'Find Your Style,<br>Love Your Look ✨',
+        hero_desc: 'Discover the latest trends in fashion, beauty, and lifestyle.', hero_btn: 'Shop Now',
+        cat_all: 'All', cat_electronics: 'Electronics', cat_jewelry: 'Jewelry', cat_men: 'Men', cat_women: 'Women',
+        flash_title: 'Flash Sale', flash_desc: 'Limited time deals',
+        ship_title: 'Free Shipping', ship_desc: 'On orders over $50',
+        new_title: 'New Arrivals', new_desc: 'Check out the latest trends',
+        shop_now: 'Shop now →', deals_title: 'Best Deals for You', view_all: 'View All',
+        recommended_title: 'Recommended for You', loading: 'Loading products...',
+        trust_secure: 'Secure Payment', trust_secure_desc: '100% secure payment',
+        trust_return: 'Easy Returns', trust_return_desc: '30-day return policy',
+        trust_support: '24/7 Support', trust_support_desc: 'Dedicated support',
+        trust_trusted: 'Trusted by Thousands', trust_trusted_desc: '4.8 average rating',
+        newsletter_title: 'Join NovaShop Club', newsletter_desc: 'Get exclusive offers, early access and more!',
+        newsletter_placeholder: 'Enter your email', newsletter_btn: 'Join Now',
+        cart_title: 'My Cart', cart_empty: 'Your cart is empty', cart_empty_desc: 'Add products to get started',
+        cart_subtotal: 'Subtotal', cart_shipping: 'Shipping', cart_free: 'Free', cart_total: 'Total', cart_checkout: 'Checkout',
+        add_to_cart: 'Add to Cart', added: 'Added', added_to_wishlist: 'Added to wishlist!', removed_from_wishlist: 'Removed from wishlist!',
+        notif_title: 'Notifications', notif_1: 'Your order has been delivered!', notif_2: 'Flash sale starts in 1 hour!', notif_3: 'New coupon available!',
+        promo_label: 'Special Offer', promo_title: 'Summer Sale<br>Up to 50% Off', promo_btn: 'Shop Now',
+        no_products: 'No products found'
+    },
+    bn: {
+        nav_home: 'হোম', nav_deals: 'ডিলস', nav_new: 'নতুন আগমন', nav_best: 'সেরা বিক্রেতা', nav_brands: 'ব্র্যান্ড',
+        nav_orders: 'আমার অর্ডার', nav_wishlist: 'ইচ্ছাতালিকা', nav_coupons: 'কুপন', nav_addresses: 'ঠিকানা',
+        nav_login: 'লগইন / সাইন আপ', nav_dashboard: 'ড্যাশবোর্ড',
+        search_placeholder: 'পণ্য, ব্র্যান্ড এবং আরও অনুসন্ধান করুন...',
+        hero_badge: 'নতুন সংগ্রহ', hero_title: 'আপনার স্টাইল খুঁজুন,<br>আপনার লুক ভালোবাসুন ✨',
+        hero_desc: 'ফ্যাশন, সৌন্দর্য এবং লাইফস্টাইলের সর্বশেষ ট্রেন্ড আবিষ্কার করুন।', hero_btn: 'এখনই কিনুন',
+        cat_all: 'সব', cat_electronics: 'ইলেকট্রনিক্স', cat_jewelry: 'গহনা', cat_men: 'পুরুষ', cat_women: 'নারী',
+        flash_title: 'ফ্ল্যাশ সেল', flash_desc: 'সীমিত সময়ের ডিল',
+        ship_title: 'ফ্রি শিপিং', ship_desc: '$৫০ এর বেশি অর্ডারে',
+        new_title: 'নতুন আগমন', new_desc: 'সর্বশেষ ট্রেন্ড দেখুন',
+        shop_now: 'এখনই কিনুন →', deals_title: 'আপনার জন্য সেরা ডিল', view_all: 'সব দেখুন',
+        recommended_title: 'আপনার জন্য সুপারিশ', loading: 'পণ্য লোড হচ্ছে...',
+        trust_secure: 'নিরাপদ পেমেন্ট', trust_secure_desc: '১০০% নিরাপদ পেমেন্ট',
+        trust_return: 'সহজ রিটার্ন', trust_return_desc: '৩০-দিনের রিটার্ন নীতি',
+        trust_support: '২৪/৭ সাপোর্ট', trust_support_desc: 'সমর্পিত সহায়তা',
+        trust_trusted: 'হাজারো মানুষের বিশ্বাস', trust_trusted_desc: '৪.৮ গড় রেটিং',
+        newsletter_title: 'NovaShop ক্লাবে যোগ দিন', newsletter_desc: 'একচেটিয়া অফার, আগাম অ্যাক্সেস এবং আরও পান!',
+        newsletter_placeholder: 'আপনার ইমেইল লিখুন', newsletter_btn: 'যোগ দিন',
+        cart_title: 'আমার কার্ট', cart_empty: 'আপনার কার্ট খালি', cart_empty_desc: 'শুরু করতে পণ্য যোগ করুন',
+        cart_subtotal: 'উপমোট', cart_shipping: 'শিপিং', cart_free: 'বিনামূল্যে', cart_total: 'মোট', cart_checkout: 'চেকআউট',
+        add_to_cart: 'কার্টে যোগ করুন', added: 'যোগ করা হয়েছে', added_to_wishlist: 'ইচ্ছাতালিকায় যোগ করা হয়েছে!', removed_from_wishlist: 'ইচ্ছাতালিকা থেকে সরানো হয়েছে!',
+        notif_title: 'নোটিফিকেশন', notif_1: 'আপনার অর্ডার ডেলিভারি হয়েছে!', notif_2: 'ফ্ল্যাশ সেল ১ ঘণ্টায় শুরু!', notif_3: 'নতুন কুপন পাওয়া গেছে!',
+        promo_label: 'বিশেষ অফার', promo_title: 'গ্রীষ্মকালীন সেল<br>৫০% পর্যন্ত ছাড়', promo_btn: 'এখনই কিনুন',
+        no_products: 'কোনো পণ্য পাওয়া যায়নি'
+    }
+};
+
+let currentLang = localStorage.getItem('novaLang') || 'en';
+
+function setLang(lang) {
+    currentLang = lang;
+    localStorage.setItem('novaLang', lang);
+    document.getElementById('langEn').classList.toggle('active', lang === 'en');
+    document.getElementById('langBn').classList.toggle('active', lang === 'bn');
+    applyTranslations();
+    // Re-render products with new "Add to Cart" text
+    loadProducts(currentCategory);
+}
+
+function applyTranslations() {
+    const t = i18n[currentLang];
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key]) el.innerHTML = t[key];
+    });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.getAttribute('data-i18n-placeholder');
+        if (t[key]) el.placeholder = t[key];
+    });
+    document.documentElement.lang = currentLang === 'bn' ? 'bn' : 'en';
+}
+
 // ===================== STATE =====================
 let allProducts = [];
 let cart = JSON.parse(localStorage.getItem('novaCart') || '[]');
+let wishlist = JSON.parse(localStorage.getItem('novaWishlist') || '[]');
 let currentCategory = 'all';
 let modalProduct = null;
 
-// ===================== API =====================
-const API_BASE = 'https://dummyjson.com';
+// ===================== FAKESTORE API =====================
+const API_BASE = 'https://fakestoreapi.com';
 
-async function fetchProducts(limit = 20, skip = 0) {
-    const res = await fetch(`${API_BASE}/products?limit=${limit}&skip=${skip}&select=id,title,price,discountPercentage,rating,brand,category,thumbnail,images,description,stock`);
+async function fetchProducts() {
+    const res = await fetch(`${API_BASE}/products`);
     return res.json();
 }
 
-async function fetchByCategory(cat, limit = 20) {
-    const url = cat === 'all'
-        ? `${API_BASE}/products?limit=${limit}&select=id,title,price,discountPercentage,rating,brand,category,thumbnail,images,description,stock`
-        : `${API_BASE}/products/category/${cat}?limit=${limit}&select=id,title,price,discountPercentage,rating,brand,category,thumbnail,images,description,stock`;
-    const res = await fetch(url);
+async function fetchByCategory(cat) {
+    if (cat === 'all') return fetchProducts();
+    const res = await fetch(`${API_BASE}/products/category/${encodeURIComponent(cat)}`);
     return res.json();
 }
 
 async function searchProducts(query) {
-    const res = await fetch(`${API_BASE}/products/search?q=${encodeURIComponent(query)}&limit=20&select=id,title,price,discountPercentage,rating,brand,category,thumbnail,images,description,stock`);
-    return res.json();
+    const all = await fetchProducts();
+    return all.filter(p => p.title.toLowerCase().includes(query.toLowerCase()) || p.category.toLowerCase().includes(query.toLowerCase()));
 }
 
 // ===================== INIT =====================
 document.addEventListener('DOMContentLoaded', async () => {
+    applyTranslations();
     renderCart();
+    updateWishlistCount();
+    checkLoginState();
     await loadProducts('all');
     startCountdown();
+    document.addEventListener('click', (e) => {
+        const notif = document.getElementById('notifPanel');
+        if (!e.target.closest('#notifPanel') && !e.target.closest('.fa-bell')) notif.classList.add('hidden');
+    });
 });
 
 async function loadProducts(cat) {
     try {
-        const data = await fetchByCategory(cat, 16);
-        allProducts = data.products || [];
+        const data = await fetchByCategory(cat);
+        allProducts = data || [];
         const deals = allProducts.slice(0, 8);
         const recommended = allProducts.slice(8, 16);
         renderProductGrid('dealsGrid', deals, true);
         renderProductGrid('recommendedGrid', recommended, false);
-        renderSuggestions();
     } catch (err) {
         console.error('Failed to load products:', err);
     }
@@ -545,68 +559,51 @@ async function loadProducts(cat) {
 
 async function loadCategory(cat) {
     currentCategory = cat;
-    document.querySelectorAll('.category-pill').forEach(p => p.classList.remove('active'));
     document.querySelectorAll('.category-pill').forEach(p => {
         const label = p.querySelector('span')?.textContent.trim().toLowerCase();
-        const map = { 'all':'all','beauty':'beauty','electronics':'electronics','home':'furniture','sports':'sports-accessories','grocery':'groceries' };
-        if (map[label] === cat) p.classList.add('active');
+        const map = { 'all': 'all', 'electronics': 'electronics', 'jewelry': 'jewelery', 'men': "men's clothing", 'women': "women's clothing" };
+        p.classList.toggle('active', map[label] === cat);
     });
-
-    document.getElementById('sectionTitle').textContent = cat === 'all' ? 'Recommended for You' : cat.charAt(0).toUpperCase() + cat.slice(1).replace('-', ' ');
-
-    document.getElementById('dealsGrid').innerHTML = `
-        <div class="glass-card p-8 flex items-center justify-center col-span-full">
-            <div class="text-center">
-                <div class="w-10 h-10 border-3 border-indigo-300 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-                <p class="text-sm text-slate-500">Loading...</p>
-            </div>
-        </div>`;
-
+    document.getElementById('dealsGrid').innerHTML = `<div class="col-span-full text-center py-8"><div class="w-10 h-10 border-3 border-indigo-300 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div><p class="text-sm text-slate-500" data-i18n="loading">${i18n[currentLang].loading}</p></div>`;
     await loadProducts(cat);
-    document.getElementById('mainArea')?.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
 // ===================== RENDER PRODUCTS =====================
 function renderProductGrid(containerId, products, showBadge) {
     const container = document.getElementById(containerId);
     if (!products || products.length === 0) {
-        container.innerHTML = '<div class="col-span-full text-center py-8 text-sm text-slate-400">No products found</div>';
+        container.innerHTML = `<div class="col-span-full text-center py-8 text-sm text-slate-400">${i18n[currentLang].no_products}</div>`;
         return;
     }
+    const t = i18n[currentLang];
     container.innerHTML = products.map((p, i) => {
-        const discounted = p.discountPercentage > 0;
-        const oldPrice = discounted ? (p.price / (1 - p.discountPercentage / 100)).toFixed(2) : null;
-        const stars = '★'.repeat(Math.round(p.rating)) + '☆'.repeat(5 - Math.round(p.rating));
+        const inWishlist = wishlist.includes(p.id);
         const inCart = cart.find(c => c.id === p.id);
-        const badge = showBadge && i < 4
-            ? `<span class="badge-discount absolute top-3 left-3 text-white text-[9px] font-bold px-2 py-1 rounded-lg z-10">-${Math.round(p.discountPercentage)}%</span>`
-            : showBadge && i >= 4 && i < 6
-            ? `<span class="badge-new absolute top-3 left-3 text-white text-[9px] font-bold px-2 py-1 rounded-lg z-10">NEW</span>`
-            : '';
-
+        const rating = p.rating?.rate || 0;
+        const stars = '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating));
+        const badge = showBadge && i < 3 ? `<span class="badge-discount absolute top-3 left-3 text-white text-[9px] font-bold px-2 py-1 rounded-lg z-10">-20%</span>` : '';
         return `
         <div class="product-card glass-card fade-in" style="animation-delay:${i * 0.05}s">
-            <div class="relative bg-slate-50 h-40 overflow-hidden cursor-pointer" onclick='openModal(${JSON.stringify(p).replace(/'/g,"&#39;")})'>
+            <div class="relative bg-white/50 h-40 overflow-hidden cursor-pointer" onclick='openModal(${JSON.stringify(p).replace(/'/g,"&#39;").replace(/"/g,"&quot;")})'>
                 ${badge}
-                <img src="${p.thumbnail}" alt="${p.title}" class="product-img w-full h-full object-contain p-3" loading="lazy">
+                <img src="${p.image}" alt="${p.title}" class="product-img w-full h-full object-contain p-3" loading="lazy">
                 <button onclick="event.stopPropagation();toggleWishlist(${p.id})" class="wishlist-btn absolute top-3 right-3 w-8 h-8 glass rounded-full flex items-center justify-center text-slate-400 hover:text-red-400 transition z-10">
-                    <i class="fa-${cart.find(c=>c.id===p.id)?'solid':'regular'} fa-heart text-xs"></i>
+                    <i class="fa-${inWishlist ? 'solid' : 'regular'} fa-heart text-xs"></i>
                 </button>
             </div>
             <div class="p-3">
-                <p class="text-[9px] font-bold text-indigo-400 uppercase tracking-wider mb-0.5 truncate">${p.brand || p.category}</p>
-                <h3 class="text-xs font-bold text-slate-700 truncate mb-1 cursor-pointer hover:text-indigo-500 transition" onclick='openModal(${JSON.stringify(p).replace(/'/g,"&#39;")})'>${p.title}</h3>
+                <p class="text-[9px] font-bold text-indigo-400 uppercase tracking-wider mb-0.5 truncate">${p.category}</p>
+                <h3 class="text-xs font-bold text-slate-700 truncate mb-1 cursor-pointer hover:text-indigo-500 transition" onclick='openModal(${JSON.stringify(p).replace(/'/g,"&#39;").replace(/"/g,"&quot;")})'>${p.title}</h3>
                 <div class="flex items-center gap-1 mb-1.5">
                     <span class="text-amber-400 text-[10px]">${stars}</span>
-                    <span class="text-[10px] text-slate-400">(${Math.round(p.rating * 100)})</span>
+                    <span class="text-[10px] text-slate-400">(${p.rating?.count || 0})</span>
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="text-sm font-extrabold text-slate-800">$${p.price.toFixed(2)}</span>
-                    ${oldPrice ? `<span class="text-[11px] text-slate-400 line-through">$${oldPrice}</span>` : ''}
                 </div>
                 <button onclick="addToCart(${p.id})"
                     class="mt-2 w-full ${inCart ? 'bg-indigo-100 text-indigo-600' : 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white'} text-[11px] font-bold py-2 rounded-xl flex items-center justify-center gap-1 hover:opacity-90 transition">
-                    <i class="fa-solid fa-${inCart ? 'check' : 'plus'} text-[10px]"></i> ${inCart ? 'Added' : 'Add to Cart'}
+                    <i class="fa-solid fa-${inCart ? 'check' : 'plus'} text-[10px]"></i> ${inCart ? t.added : t.add_to_cart}
                 </button>
             </div>
         </div>`;
@@ -615,75 +612,46 @@ function renderProductGrid(containerId, products, showBadge) {
 
 // ===================== CART =====================
 function addToCart(productId) {
-    const product = allProducts.find(p => p.id === productId) || cart.find(c => c.id === productId);
+    const product = allProducts.find(p => p.id === productId);
     if (!product) return;
     const existing = cart.find(c => c.id === productId);
-    if (existing) {
-        existing.qty += 1;
-    } else {
-        cart.push({ ...product, qty: 1 });
-    }
-    saveCart();
-    renderCart();
-    // Re-render grids to update button states
-    loadProducts(currentCategory);
+    if (existing) { existing.qty += 1; } else { cart.push({ ...product, qty: 1 }); }
+    saveCart(); renderCart(); loadProducts(currentCategory);
 }
-
-function removeFromCart(productId) {
-    cart = cart.filter(c => c.id !== productId);
-    saveCart();
-    renderCart();
-    loadProducts(currentCategory);
-}
-
+function removeFromCart(productId) { cart = cart.filter(c => c.id !== productId); saveCart(); renderCart(); loadProducts(currentCategory); }
 function updateQty(productId, delta) {
     const item = cart.find(c => c.id === productId);
     if (!item) return;
     item.qty += delta;
-    if (item.qty <= 0) {
-        removeFromCart(productId);
-        return;
-    }
-    saveCart();
-    renderCart();
+    if (item.qty <= 0) { removeFromCart(productId); return; }
+    saveCart(); renderCart();
 }
-
-function saveCart() {
-    localStorage.setItem('novaCart', JSON.stringify(cart));
-}
+function saveCart() { localStorage.setItem('novaCart', JSON.stringify(cart)); }
 
 function renderCart() {
     const totalItems = cart.reduce((s, c) => s + c.qty, 0);
     const subtotal = cart.reduce((s, c) => s + c.price * c.qty, 0);
-
-    // Desktop cart
     document.getElementById('cartCount').textContent = totalItems;
     document.getElementById('mobileCartCount').textContent = totalItems;
-
-    // Mobile badge
     const badge = document.getElementById('mobileCartBadge');
-    if (totalItems > 0) { badge.textContent = totalItems; badge.classList.remove('hidden'); }
-    else { badge.classList.add('hidden'); }
+    if (totalItems > 0) { badge.textContent = totalItems; badge.classList.remove('hidden'); } else { badge.classList.add('hidden'); }
 
-    // Cart items
+    const t = i18n[currentLang];
     const cartContainer = document.getElementById('cartItems');
     const mobileCartContainer = document.getElementById('mobileCartItems');
 
     if (cart.length === 0) {
-        const emptyHTML = `<div class="text-center py-12"><div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-bag-shopping text-slate-300 text-xl"></i></div><p class="text-sm text-slate-400">Your cart is empty</p><p class="text-[11px] text-slate-300 mt-1">Add products to get started</p></div>`;
-        cartContainer.innerHTML = emptyHTML;
-        mobileCartContainer.innerHTML = emptyHTML;
-        document.getElementById('cartSummary').classList.add('hidden');
-        document.getElementById('mobileCartSummary').classList.add('hidden');
-        return;
+        const emptyHTML = `<div class="text-center py-12"><div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-bag-shopping text-slate-300 text-xl"></i></div><p class="text-sm text-slate-400">${t.cart_empty}</p><p class="text-[11px] text-slate-300 mt-1">${t.cart_empty_desc}</p></div>`;
+        cartContainer.innerHTML = emptyHTML; mobileCartContainer.innerHTML = emptyHTML;
+        document.getElementById('cartSummary').classList.add('hidden'); document.getElementById('mobileCartSummary').classList.add('hidden'); return;
     }
 
     const itemHTML = cart.map(item => `
         <div class="flex gap-3 p-3 glass-card">
-            <img src="${item.thumbnail}" class="w-16 h-16 rounded-xl object-contain bg-white/50 flex-shrink-0 p-1">
+            <img src="${item.image}" class="w-16 h-16 rounded-xl object-contain bg-white/50 flex-shrink-0 p-1">
             <div class="flex-1 min-w-0">
                 <h4 class="text-xs font-bold text-slate-700 truncate">${item.title}</h4>
-                <p class="text-[10px] text-slate-400">${item.brand || item.category}</p>
+                <p class="text-[10px] text-slate-400">${item.category}</p>
                 <div class="flex items-center justify-between mt-2">
                     <span class="text-sm font-extrabold text-slate-800">$${(item.price * item.qty).toFixed(2)}</span>
                     <div class="flex items-center gap-2">
@@ -696,11 +664,8 @@ function renderCart() {
             </div>
         </div>
     `).join('');
+    cartContainer.innerHTML = itemHTML; mobileCartContainer.innerHTML = itemHTML;
 
-    cartContainer.innerHTML = itemHTML;
-    mobileCartContainer.innerHTML = itemHTML;
-
-    // Summary
     document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
     document.getElementById('total').textContent = `$${subtotal.toFixed(2)}`;
     document.getElementById('mobileSubtotal').textContent = `$${subtotal.toFixed(2)}`;
@@ -712,151 +677,116 @@ function renderCart() {
 // ===================== MODAL =====================
 function openModal(product) {
     modalProduct = product;
-    document.getElementById('modalImg').src = product.images?.[0] || product.thumbnail;
-    document.getElementById('modalBrand').textContent = product.brand || product.category;
+    document.getElementById('modalImg').src = product.image;
+    document.getElementById('modalCategory').textContent = product.category;
     document.getElementById('modalTitle').textContent = product.title;
     document.getElementById('modalDesc').textContent = product.description;
     document.getElementById('modalPrice').textContent = `$${product.price.toFixed(2)}`;
-    const oldPrice = product.discountPercentage > 0 ? (product.price / (1 - product.discountPercentage / 100)).toFixed(2) : null;
-    document.getElementById('modalOldPrice').textContent = oldPrice ? `$${oldPrice}` : '';
-    document.getElementById('modalOldPrice').classList.toggle('hidden', !oldPrice);
-    const stars = Math.round(product.rating);
+    const rating = product.rating?.rate || 0;
+    const stars = Math.round(rating);
     document.getElementById('modalStars').innerHTML = '★'.repeat(stars) + '☆'.repeat(5 - stars);
-    document.getElementById('modalRating').textContent = `${product.rating.toFixed(1)} (${Math.round(product.rating * 100)})`;
+    document.getElementById('modalRating').textContent = `${rating.toFixed(1)} (${product.rating?.count || 0})`;
     const inCart = cart.find(c => c.id === product.id);
     const btn = document.getElementById('modalAddBtn');
-    btn.innerHTML = inCart ? '<i class="fa-solid fa-check text-xs"></i> In Cart' : '<i class="fa-solid fa-bag-shopping text-xs"></i> Add to Cart';
+    btn.innerHTML = inCart ? `<i class="fa-solid fa-check text-xs"></i> ${i18n[currentLang].added}` : `<i class="fa-solid fa-bag-shopping text-xs"></i> ${i18n[currentLang].add_to_cart}`;
     document.getElementById('productModal').classList.remove('hidden');
     document.body.style.overflow = 'hidden';
 }
-
-function closeModal() {
-    document.getElementById('productModal').classList.add('hidden');
-    document.body.style.overflow = '';
-}
-
-function addToCartFromModal() {
-    if (modalProduct) {
-        addToCart(modalProduct.id);
-        const inCart = cart.find(c => c.id === modalProduct.id);
-        const btn = document.getElementById('modalAddBtn');
-        btn.innerHTML = '<i class="fa-solid fa-check text-xs"></i> In Cart';
-    }
-}
+function closeModal() { document.getElementById('productModal').classList.add('hidden'); document.body.style.overflow = ''; }
+function addToCartFromModal() { if (modalProduct) { addToCart(modalProduct.id); const btn = document.getElementById('modalAddBtn'); btn.innerHTML = `<i class="fa-solid fa-check text-xs"></i> ${i18n[currentLang].added}`; } }
 
 // ===================== SEARCH =====================
 let searchTimeout;
 async function handleSearch(query) {
     clearTimeout(searchTimeout);
     searchTimeout = setTimeout(async () => {
-        if (query.trim().length < 2) {
-            loadCategory(currentCategory);
-            return;
-        }
+        if (query.trim().length < 2) { loadCategory(currentCategory); return; }
         try {
             const data = await searchProducts(query.trim());
-            allProducts = data.products || [];
-            document.getElementById('sectionTitle').textContent = `Results for "${query}"`;
+            allProducts = data || [];
             renderProductGrid('dealsGrid', allProducts.slice(0, 8), true);
             renderProductGrid('recommendedGrid', allProducts.slice(8, 16), false);
-        } catch (err) {
-            console.error('Search failed:', err);
-        }
+        } catch (err) { console.error('Search failed:', err); }
     }, 400);
 }
 
 // ===================== WISHLIST =====================
 function toggleWishlist(productId) {
-    // Simple visual toggle for demo
-    const btns = document.querySelectorAll(`button[onclick*="toggleWishlist(${productId})"]`);
-    btns.forEach(b => {
-        const icon = b.querySelector('i');
-        if (icon.classList.contains('fa-regular')) {
-            icon.classList.remove('fa-regular');
-            icon.classList.add('fa-solid');
-            b.classList.add('text-red-400');
-        } else {
-            icon.classList.remove('fa-solid');
-            icon.classList.add('fa-regular');
-            b.classList.remove('text-red-400');
-        }
-    });
+    const idx = wishlist.indexOf(productId);
+    if (idx === -1) { wishlist.push(productId); showToast(i18n[currentLang].added_to_wishlist); }
+    else { wishlist.splice(idx, 1); showToast(i18n[currentLang].removed_from_wishlist); }
+    localStorage.setItem('novaWishlist', JSON.stringify(wishlist));
+    updateWishlistCount();
+    renderProductGrid('dealsGrid', allProducts.slice(0, 8), true);
+    renderProductGrid('recommendedGrid', allProducts.slice(8, 16), false);
+}
+function updateWishlistCount() {
+    const count = wishlist.length;
+    const el = document.getElementById('wishlistCount');
+    const headerEl = document.getElementById('headerWishlistCount');
+    if (count > 0) { el.textContent = count; el.classList.remove('hidden'); headerEl.textContent = count; headerEl.classList.remove('hidden'); }
+    else { el.classList.add('hidden'); headerEl.classList.add('hidden'); }
+}
+function showWishlist() { showToast(`${i18n[currentLang].nav_wishlist}: ${wishlist.length} items`); }
+
+// ===================== NOTIFICATIONS =====================
+function toggleNotifications() { document.getElementById('notifPanel').classList.toggle('hidden'); }
+
+// ===================== TOAST =====================
+function showToast(msg) {
+    const toast = document.createElement('div');
+    toast.className = 'fixed top-24 right-6 z-[100] bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xs font-bold px-5 py-3 rounded-xl shadow-2xl transition-all';
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.style.opacity = '1', 10);
+    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2500);
+}
+
+// ===================== AUTH STATE =====================
+function checkLoginState() {
+    const user = JSON.parse(localStorage.getItem('novaShopUser') || 'null');
+    if (user && localStorage.getItem('novaShopAuth') === 'true') {
+        document.getElementById('avatarLoggedOut').classList.add('hidden');
+        document.getElementById('avatarLoggedIn').classList.remove('hidden');
+        const photo = user.photoURL || 'https://i.pravatar.cc/150?img=47';
+        document.getElementById('headerAvatar').src = photo;
+    } else {
+        document.getElementById('avatarLoggedOut').classList.remove('hidden');
+        document.getElementById('avatarLoggedIn').classList.add('hidden');
+    }
 }
 
 // ===================== SIDEBAR =====================
-function setActive(el) {
-    document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
-    el.classList.add('active');
-    toggleMobileSidebar(false);
-}
-
+function setActive(el) { document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active')); el.classList.add('active'); toggleMobileSidebar(false); }
 function toggleMobileSidebar(open) {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('mobileOverlay');
     if (open === false || sidebar.classList.contains('translate-x-0')) {
-        sidebar.classList.remove('translate-x-0');
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('hidden');
+        sidebar.classList.remove('translate-x-0'); sidebar.classList.add('-translate-x-full'); overlay.classList.add('hidden');
     } else {
-        sidebar.classList.remove('-translate-x-full');
-        sidebar.classList.add('translate-x-0');
-        overlay.classList.remove('hidden');
+        sidebar.classList.remove('-translate-x-full'); sidebar.classList.add('translate-x-0'); overlay.classList.remove('hidden');
     }
 }
 
 // ===================== CART MOBILE =====================
-function openCartMobile() {
-    document.getElementById('mobileCart').classList.remove('hidden');
-    setTimeout(() => {
-        document.getElementById('mobileCartPanel').classList.remove('closed');
-        document.getElementById('mobileCartPanel').classList.add('open');
-    }, 10);
-}
-function closeCartMobile() {
-    document.getElementById('mobileCartPanel').classList.remove('open');
-    document.getElementById('mobileCartPanel').classList.add('closed');
-    setTimeout(() => document.getElementById('mobileCart').classList.add('hidden'), 350);
-}
-function closeCart() { /* desktop cart stays visible */ }
-
-// ===================== SUGGESTIONS =====================
-function renderSuggestions() {
-    const container = document.getElementById('suggestions');
-    const suggested = allProducts.slice().sort(() => Math.random() - 0.5).slice(0, 4);
-    container.innerHTML = suggested.map(p => `
-        <div class="flex gap-3 cursor-pointer hover:bg-white/30 rounded-xl p-2 transition" onclick='openModal(${JSON.stringify(p).replace(/'/g,"&#39;")})'>
-            <img src="${p.thumbnail}" class="w-12 h-12 rounded-xl object-contain bg-white/50 p-0.5">
-            <div class="flex-1 min-w-0">
-                <h4 class="text-[11px] font-bold text-slate-700 truncate">${p.title}</h4>
-                <p class="text-xs font-extrabold text-slate-800">$${p.price.toFixed(2)}</p>
-            </div>
-            <button onclick="event.stopPropagation();addToCart(${p.id})" class="w-7 h-7 rounded-full bg-indigo-500 text-white flex items-center justify-center flex-shrink-0 text-[10px] hover:bg-indigo-600 transition">
-                <i class="fa-solid fa-plus"></i>
-            </button>
-        </div>
-    `).join('');
-}
+function openCartMobile() { document.getElementById('mobileCart').classList.remove('hidden'); }
+function closeCartMobile() { document.getElementById('mobileCart').classList.add('hidden'); }
 
 // ===================== COUNTDOWN =====================
 function startCountdown() {
     let totalSec = 2 * 3600 + 45 * 60 + 18;
     function update() {
         if (totalSec <= 0) totalSec = 8 * 3600;
-        const h = Math.floor(totalSec / 3600);
-        const m = Math.floor((totalSec % 3600) / 60);
-        const s = totalSec % 60;
+        const h = Math.floor(totalSec / 3600); const m = Math.floor((totalSec % 3600) / 60); const s = totalSec % 60;
         document.getElementById('cdHours').textContent = String(h).padStart(2, '0');
         document.getElementById('cdMins').textContent = String(m).padStart(2, '0');
         document.getElementById('cdSecs').textContent = String(s).padStart(2, '0');
         totalSec--;
     }
-    update();
-    setInterval(update, 1000);
+    update(); setInterval(update, 1000);
 }
 
-// Close modal on Escape
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
 </script>
-
 </body>
 </html>
