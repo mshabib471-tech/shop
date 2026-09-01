@@ -72,12 +72,12 @@
 <div class="blob blob-2"></div>
 <div class="blob blob-3"></div>
 
-<div id="mobileOverlay" class="fixed inset-0 bg-black/30 z-40 hidden lg:hidden" onclick="toggleMobileSidebar()"></div>
+<div id="mobileOverlay" class="fixed inset-0 bg-black/60 z-[50] hidden lg:hidden" onclick="toggleMobileSidebar(false)"></div>
 
 <div class="flex h-screen overflow-hidden relative z-10">
 
 <!-- ==================== LEFT SIDEBAR ==================== -->
-<aside id="sidebar" class="w-[240px] glass-strong flex flex-col py-6 px-4 fixed lg:relative h-full z-50 -translate-x-full lg:translate-x-0 transition-transform duration-300">
+<aside id="sidebar" class="w-[260px] flex flex-col py-6 px-4 fixed lg:relative h-full z-[55] -translate-x-full lg:translate-x-0 transition-transform duration-300" style="background:rgba(245,240,255,0.97);backdrop-filter:blur(24px);border-right:1px solid rgba(255,255,255,0.6);">
     <div class="flex items-center gap-3 px-3 mb-6">
         <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
             <i class="fa-solid fa-bag-shopping text-white text-sm"></i>
@@ -128,6 +128,9 @@
         </a>
         <a href="dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
             <i class="fa-solid fa-chart-line w-5 text-center"></i> <span data-i18n="nav_dashboard">Dashboard</span>
+        </a>
+        <a href="admin.html" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+            <i class="fa-solid fa-gear w-5 text-center"></i> <span data-i18n="nav_admin">Admin Panel</span>
         </a>
     </nav>
 
@@ -214,21 +217,33 @@
                     <div class="w-12 h-12 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center text-xl">🛍️</div>
                     <span class="text-[11px] font-semibold text-slate-600" data-i18n="cat_all">All</span>
                 </div>
-                <div onclick="loadCategory('electronics')" class="category-pill flex flex-col items-center gap-2 min-w-[80px] p-4 rounded-2xl glass-card cursor-pointer">
-                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center text-xl">📱</div>
-                    <span class="text-[11px] font-semibold text-slate-600" data-i18n="cat_electronics">Electronics</span>
+                <div onclick="loadCategory('laptops')" class="category-pill flex flex-col items-center gap-2 min-w-[80px] p-4 rounded-2xl glass-card cursor-pointer">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center text-xl">💻</div>
+                    <span class="text-[11px] font-semibold text-slate-600">Laptops</span>
                 </div>
-                <div onclick="loadCategory('jewelery')" class="category-pill flex flex-col items-center gap-2 min-w-[80px] p-4 rounded-2xl glass-card cursor-pointer">
-                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center text-xl">💍</div>
-                    <span class="text-[11px] font-semibold text-slate-600" data-i18n="cat_jewelry">Jewelry</span>
+                <div onclick="loadCategory('watches')" class="category-pill flex flex-col items-center gap-2 min-w-[80px] p-4 rounded-2xl glass-card cursor-pointer">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center text-xl">⌚</div>
+                    <span class="text-[11px] font-semibold text-slate-600">Watches</span>
                 </div>
-                <div onclick="loadCategory(\"men's clothing\")" class="category-pill flex flex-col items-center gap-2 min-w-[80px] p-4 rounded-2xl glass-card cursor-pointer">
+                <div onclick="loadCategory('shirts')" class="category-pill flex flex-col items-center gap-2 min-w-[80px] p-4 rounded-2xl glass-card cursor-pointer">
                     <div class="w-12 h-12 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center text-xl">👔</div>
-                    <span class="text-[11px] font-semibold text-slate-600" data-i18n="cat_men">Men</span>
+                    <span class="text-[11px] font-semibold text-slate-600">Shirts</span>
                 </div>
-                <div onclick="loadCategory(\"women's clothing\")" class="category-pill flex flex-col items-center gap-2 min-w-[80px] p-4 rounded-2xl glass-card cursor-pointer">
-                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-100 to-rose-100 flex items-center justify-center text-xl">👗</div>
-                    <span class="text-[11px] font-semibold text-slate-600" data-i18n="cat_women">Women</span>
+                <div onclick="loadCategory('beauty')" class="category-pill flex flex-col items-center gap-2 min-w-[80px] p-4 rounded-2xl glass-card cursor-pointer">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-pink-100 to-rose-100 flex items-center justify-center text-xl">💄</div>
+                    <span class="text-[11px] font-semibold text-slate-600">Beauty</span>
+                </div>
+                <div onclick="loadCategory('fragrances')" class="category-pill flex flex-col items-center gap-2 min-w-[80px] p-4 rounded-2xl glass-card cursor-pointer">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-rose-100 to-red-100 flex items-center justify-center text-xl">🌸</div>
+                    <span class="text-[11px] font-semibold text-slate-600">Fragrances</span>
+                </div>
+                <div onclick="loadCategory('groceries')" class="category-pill flex flex-col items-center gap-2 min-w-[80px] p-4 rounded-2xl glass-card cursor-pointer">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-lime-100 to-green-100 flex items-center justify-center text-xl">🍎</div>
+                    <span class="text-[11px] font-semibold text-slate-600">Groceries</span>
+                </div>
+                <div onclick="loadCategory('furniture')" class="category-pill flex flex-col items-center gap-2 min-w-[80px] p-4 rounded-2xl glass-card cursor-pointer">
+                    <div class="w-12 h-12 rounded-full bg-gradient-to-br from-stone-100 to-amber-100 flex items-center justify-center text-xl">🏠</div>
+                    <span class="text-[11px] font-semibold text-slate-600">Furniture</span>
                 </div>
             </div>
         </section>
@@ -368,7 +383,7 @@
 </button>
 
 <!-- Mobile Cart Panel -->
-<div id="mobileCart" class="fixed inset-0 z-[60] hidden">
+<div id="mobileCart" class="fixed inset-0 z-[65] hidden">
     <div class="absolute inset-0 bg-black/30" onclick="closeCartMobile()"></div>
     <div class="absolute right-0 top-0 h-full w-[90%] max-w-[360px] glass-strong flex flex-col" id="mobileCartPanel">
         <div class="px-5 py-4 border-b border-white/30 flex items-center justify-between">
@@ -428,7 +443,7 @@ const i18n = {
     en: {
         nav_home: 'Home', nav_deals: 'Deals', nav_new: 'New Arrivals', nav_best: 'Best Sellers', nav_brands: 'Brands',
         nav_orders: 'My Orders', nav_wishlist: 'Wishlist', nav_coupons: 'Coupons', nav_addresses: 'Addresses',
-        nav_login: 'Login / Sign Up', nav_dashboard: 'Dashboard',
+        nav_login: 'Login / Sign Up', nav_dashboard: 'Dashboard', nav_admin: 'Admin Panel',
         search_placeholder: 'Search for products, brands and more...',
         hero_badge: 'New Collection', hero_title: 'Find Your Style,<br>Love Your Look ✨',
         hero_desc: 'Discover the latest trends in fashion, beauty, and lifestyle.', hero_btn: 'Shop Now',
@@ -454,7 +469,7 @@ const i18n = {
     bn: {
         nav_home: 'হোম', nav_deals: 'ডিলস', nav_new: 'নতুন আগমন', nav_best: 'সেরা বিক্রেতা', nav_brands: 'ব্র্যান্ড',
         nav_orders: 'আমার অর্ডার', nav_wishlist: 'ইচ্ছাতালিকা', nav_coupons: 'কুপন', nav_addresses: 'ঠিকানা',
-        nav_login: 'লগইন / সাইন আপ', nav_dashboard: 'ড্যাশবোর্ড',
+        nav_login: 'লগইন / সাইন আপ', nav_dashboard: 'ড্যাশবোর্ড', nav_admin: 'অ্যাডমিন প্যানেল',
         search_placeholder: 'পণ্য, ব্র্যান্ড এবং আরও অনুসন্ধান করুন...',
         hero_badge: 'নতুন সংগ্রহ', hero_title: 'আপনার স্টাইল খুঁজুন,<br>আপনার লুক ভালোবাসুন ✨',
         hero_desc: 'ফ্যাশন, সৌন্দর্য এবং লাইফস্টাইলের সর্বশেষ ট্রেন্ড আবিষ্কার করুন।', hero_btn: 'এখনই কিনুন',
@@ -511,23 +526,26 @@ let wishlist = JSON.parse(localStorage.getItem('novaWishlist') || '[]');
 let currentCategory = 'all';
 let modalProduct = null;
 
-// ===================== FAKESTORE API =====================
-const API_BASE = 'https://fakestoreapi.com';
+// ===================== DUMMYJSON API =====================
+const API_BASE = 'https://dummyjson.com';
 
 async function fetchProducts() {
-    const res = await fetch(`${API_BASE}/products`);
-    return res.json();
+    const res = await fetch(`${API_BASE}/products?limit=30`);
+    const data = await res.json();
+    return data.products || [];
 }
 
 async function fetchByCategory(cat) {
     if (cat === 'all') return fetchProducts();
     const res = await fetch(`${API_BASE}/products/category/${encodeURIComponent(cat)}`);
-    return res.json();
+    const data = await res.json();
+    return data.products || [];
 }
 
 async function searchProducts(query) {
-    const all = await fetchProducts();
-    return all.filter(p => p.title.toLowerCase().includes(query.toLowerCase()) || p.category.toLowerCase().includes(query.toLowerCase()));
+    const res = await fetch(`${API_BASE}/products/search?q=${encodeURIComponent(query)}`);
+    const data = await res.json();
+    return data.products || [];
 }
 
 // ===================== INIT =====================
@@ -561,7 +579,7 @@ async function loadCategory(cat) {
     currentCategory = cat;
     document.querySelectorAll('.category-pill').forEach(p => {
         const label = p.querySelector('span')?.textContent.trim().toLowerCase();
-        const map = { 'all': 'all', 'electronics': 'electronics', 'jewelry': 'jewelery', 'men': "men's clothing", 'women': "women's clothing" };
+        const map = { 'all': 'all', 'laptops': 'laptops', 'watches': 'watches', 'shirts': 'shirts', 'beauty': 'beauty', 'fragrances': 'fragrances', 'groceries': 'groceries', 'furniture': 'furniture' };
         p.classList.toggle('active', map[label] === cat);
     });
     document.getElementById('dealsGrid').innerHTML = `<div class="col-span-full text-center py-8"><div class="w-10 h-10 border-3 border-indigo-300 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div><p class="text-sm text-slate-500" data-i18n="loading">${i18n[currentLang].loading}</p></div>`;
@@ -579,27 +597,32 @@ function renderProductGrid(containerId, products, showBadge) {
     container.innerHTML = products.map((p, i) => {
         const inWishlist = wishlist.includes(p.id);
         const inCart = cart.find(c => c.id === p.id);
-        const rating = p.rating?.rate || 0;
+        const rating = typeof p.rating === 'number' ? p.rating : (p.rating?.rate || 0);
+        const count = typeof p.rating === 'object' ? (p.rating?.count || 0) : 0;
         const stars = '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating));
-        const badge = showBadge && i < 3 ? `<span class="badge-discount absolute top-3 left-3 text-white text-[9px] font-bold px-2 py-1 rounded-lg z-10">-20%</span>` : '';
+        const discount = p.discountPercentage || 0;
+        const img = p.thumbnail || p.image || (p.images && p.images[0]) || '';
+    const badge = showBadge && discount > 0 ? `<span class="badge-discount absolute top-3 left-3 text-white text-[9px] font-bold px-2 py-1 rounded-lg z-10">-${Math.round(discount)}%</span>` : showBadge && i < 6 ? `<span class="badge-new absolute top-3 left-3 text-white text-[9px] font-bold px-2 py-1 rounded-lg z-10">NEW</span>` : '';
+        const safeJson = JSON.stringify(p).replace(/\\/g, '\\\\').replace(/'/g,"&#39;").replace(/"/g,"&quot;");
         return `
         <div class="product-card glass-card fade-in" style="animation-delay:${i * 0.05}s">
-            <div class="relative bg-white/50 h-40 overflow-hidden cursor-pointer" onclick='openModal(${JSON.stringify(p).replace(/'/g,"&#39;").replace(/"/g,"&quot;")})'>
+            <div class="relative bg-white/50 h-40 overflow-hidden cursor-pointer" onclick='openModal(this.dataset.product)' data-product='${safeJson}'>
                 ${badge}
-                <img src="${p.image}" alt="${p.title}" class="product-img w-full h-full object-contain p-3" loading="lazy">
+                <img src="${img}" alt="${p.title}" class="product-img w-full h-full object-contain p-3" loading="lazy">
                 <button onclick="event.stopPropagation();toggleWishlist(${p.id})" class="wishlist-btn absolute top-3 right-3 w-8 h-8 glass rounded-full flex items-center justify-center text-slate-400 hover:text-red-400 transition z-10">
                     <i class="fa-${inWishlist ? 'solid' : 'regular'} fa-heart text-xs"></i>
                 </button>
             </div>
             <div class="p-3">
                 <p class="text-[9px] font-bold text-indigo-400 uppercase tracking-wider mb-0.5 truncate">${p.category}</p>
-                <h3 class="text-xs font-bold text-slate-700 truncate mb-1 cursor-pointer hover:text-indigo-500 transition" onclick='openModal(${JSON.stringify(p).replace(/'/g,"&#39;").replace(/"/g,"&quot;")})'>${p.title}</h3>
+                <h3 class="text-xs font-bold text-slate-700 truncate mb-1 cursor-pointer hover:text-indigo-500 transition" onclick='openModal(this.closest(".product-card").querySelector(".relative").dataset.product)'>${p.title}</h3>
                 <div class="flex items-center gap-1 mb-1.5">
                     <span class="text-amber-400 text-[10px]">${stars}</span>
-                    <span class="text-[10px] text-slate-400">(${p.rating?.count || 0})</span>
+                    <span class="text-[10px] text-slate-400">(${count})</span>
                 </div>
                 <div class="flex items-center gap-2">
                     <span class="text-sm font-extrabold text-slate-800">$${p.price.toFixed(2)}</span>
+                    ${discount > 0 ? `<span class="text-[10px] text-slate-400 line-through">$${(p.price / (1 - discount/100)).toFixed(2)}</span>` : ''}
                 </div>
                 <button onclick="addToCart(${p.id})"
                     class="mt-2 w-full ${inCart ? 'bg-indigo-100 text-indigo-600' : 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white'} text-[11px] font-bold py-2 rounded-xl flex items-center justify-center gap-1 hover:opacity-90 transition">
@@ -648,7 +671,7 @@ function renderCart() {
 
     const itemHTML = cart.map(item => `
         <div class="flex gap-3 p-3 glass-card">
-            <img src="${item.image}" class="w-16 h-16 rounded-xl object-contain bg-white/50 flex-shrink-0 p-1">
+            <img src="${item.thumbnail || item.image}" class="w-16 h-16 rounded-xl object-contain bg-white/50 flex-shrink-0 p-1">
             <div class="flex-1 min-w-0">
                 <h4 class="text-xs font-bold text-slate-700 truncate">${item.title}</h4>
                 <p class="text-[10px] text-slate-400">${item.category}</p>
@@ -675,17 +698,24 @@ function renderCart() {
 }
 
 // ===================== MODAL =====================
-function openModal(product) {
+function openModal(productOrStr) {
+    let product;
+    if (typeof productOrStr === 'string') {
+        try { product = JSON.parse(productOrStr); } catch(e) { return; }
+    } else {
+        product = productOrStr;
+    }
     modalProduct = product;
-    document.getElementById('modalImg').src = product.image;
+    const img = product.thumbnail || product.image || (product.images && product.images[0]) || '';
+    document.getElementById('modalImg').src = img;
     document.getElementById('modalCategory').textContent = product.category;
     document.getElementById('modalTitle').textContent = product.title;
     document.getElementById('modalDesc').textContent = product.description;
     document.getElementById('modalPrice').textContent = `$${product.price.toFixed(2)}`;
-    const rating = product.rating?.rate || 0;
+    const rating = typeof product.rating === 'number' ? product.rating : (product.rating?.rate || 0);
     const stars = Math.round(rating);
     document.getElementById('modalStars').innerHTML = '★'.repeat(stars) + '☆'.repeat(5 - stars);
-    document.getElementById('modalRating').textContent = `${rating.toFixed(1)} (${product.rating?.count || 0})`;
+    document.getElementById('modalRating').textContent = `${rating.toFixed(1)}`;
     const inCart = cart.find(c => c.id === product.id);
     const btn = document.getElementById('modalAddBtn');
     btn.innerHTML = inCart ? `<i class="fa-solid fa-check text-xs"></i> ${i18n[currentLang].added}` : `<i class="fa-solid fa-bag-shopping text-xs"></i> ${i18n[currentLang].add_to_cart}`;
@@ -758,13 +788,20 @@ function checkLoginState() {
 
 // ===================== SIDEBAR =====================
 function setActive(el) { document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active')); el.classList.add('active'); toggleMobileSidebar(false); }
-function toggleMobileSidebar(open) {
+let sidebarOpen = false;
+function toggleMobileSidebar(forceClose) {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('mobileOverlay');
-    if (open === false || sidebar.classList.contains('translate-x-0')) {
-        sidebar.classList.remove('translate-x-0'); sidebar.classList.add('-translate-x-full'); overlay.classList.add('hidden');
+    if (forceClose === false || sidebarOpen) {
+        sidebar.classList.remove('translate-x-0');
+        sidebar.classList.add('-translate-x-full');
+        overlay.classList.add('hidden');
+        sidebarOpen = false;
     } else {
-        sidebar.classList.remove('-translate-x-full'); sidebar.classList.add('translate-x-0'); overlay.classList.remove('hidden');
+        sidebar.classList.remove('-translate-x-full');
+        sidebar.classList.add('translate-x-0');
+        overlay.classList.remove('hidden');
+        sidebarOpen = true;
     }
 }
 
