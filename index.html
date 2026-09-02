@@ -72,12 +72,12 @@
 <div class="blob blob-2"></div>
 <div class="blob blob-3"></div>
 
-<div id="mobileOverlay" class="fixed inset-0 bg-black/60 z-[50] hidden lg:hidden" onclick="toggleMobileSidebar(false)"></div>
+<div id="mobileOverlay" class="fixed inset-0 z-[50] hidden lg:hidden" onclick="toggleMobileSidebar(false)" style="background:rgba(0,0,0,0.7);backdrop-filter:blur(2px);"></div>
 
 <div class="flex h-screen overflow-hidden relative z-10">
 
 <!-- ==================== LEFT SIDEBAR ==================== -->
-<aside id="sidebar" class="w-[260px] flex flex-col py-6 px-4 fixed lg:relative h-full z-[55] -translate-x-full lg:translate-x-0 transition-transform duration-300" style="background:rgba(245,240,255,0.97);backdrop-filter:blur(24px);border-right:1px solid rgba(255,255,255,0.6);">
+<aside id="sidebar" class="w-[280px] flex flex-col py-6 px-4 fixed lg:relative h-full z-[55] -translate-x-full lg:translate-x-0 transition-transform duration-300" style="background:rgba(245,240,255,1);border-right:1px solid rgba(255,255,255,0.6);">
     <div class="flex items-center gap-3 px-3 mb-6">
         <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
             <i class="fa-solid fa-bag-shopping text-white text-sm"></i>
@@ -377,7 +377,7 @@
 </div>
 
 <!-- Mobile Cart Button -->
-<button onclick="openCartMobile()" class="lg:hidden fixed bottom-6 right-6 z-50 w-14 h-14 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center shadow-2xl text-white">
+<button id="mobileCartBtn" onclick="openCartMobile()" class="lg:hidden fixed bottom-6 right-6 z-[45] w-14 h-14 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center shadow-2xl text-white transition-all duration-300">
     <i class="fa-solid fa-bag-shopping"></i>
     <span id="mobileCartBadge" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center hidden">0</span>
 </button>
@@ -530,9 +530,12 @@ let modalProduct = null;
 const API_BASE = 'https://dummyjson.com';
 
 async function fetchProducts() {
-    const res = await fetch(`${API_BASE}/products?limit=30`);
-    const data = await res.json();
-    return data.products || [];
+    // Fetch ALL products (DummyJSON has ~194 products, fetch in batches)
+    const batch1 = await fetch(`${API_BASE}/products?limit=100&skip=0`);
+    const d1 = await batch1.json();
+    const batch2 = await fetch(`${API_BASE}/products?limit=100&skip=100`);
+    const d2 = await batch2.json();
+    return [...(d1.products || []), ...(d2.products || [])];
 }
 
 async function fetchByCategory(cat) {
@@ -566,12 +569,13 @@ async function loadProducts(cat) {
     try {
         const data = await fetchByCategory(cat);
         allProducts = data || [];
-        const deals = allProducts.slice(0, 8);
-        const recommended = allProducts.slice(8, 16);
-        renderProductGrid('dealsGrid', deals, true);
-        renderProductGrid('recommendedGrid', recommended, false);
+        // Show ALL products in deals grid
+        renderProductGrid('dealsGrid', allProducts, true);
+        // Show first 8 as recommended
+        renderProductGrid('recommendedGrid', allProducts.slice(0, 8), false);
     } catch (err) {
         console.error('Failed to load products:', err);
+        document.getElementById('dealsGrid').innerHTML = '<div class="col-span-full text-center py-8 text-sm text-red-400">Failed to load products</div>';
     }
 }
 
@@ -734,8 +738,8 @@ async function handleSearch(query) {
         try {
             const data = await searchProducts(query.trim());
             allProducts = data || [];
-            renderProductGrid('dealsGrid', allProducts.slice(0, 8), true);
-            renderProductGrid('recommendedGrid', allProducts.slice(8, 16), false);
+            renderProductGrid('dealsGrid', allProducts, true);
+            renderProductGrid('recommendedGrid', allProducts.slice(0, 8), false);
         } catch (err) { console.error('Search failed:', err); }
     }, 400);
 }
@@ -747,8 +751,8 @@ function toggleWishlist(productId) {
     else { wishlist.splice(idx, 1); showToast(i18n[currentLang].removed_from_wishlist); }
     localStorage.setItem('novaWishlist', JSON.stringify(wishlist));
     updateWishlistCount();
-    renderProductGrid('dealsGrid', allProducts.slice(0, 8), true);
-    renderProductGrid('recommendedGrid', allProducts.slice(8, 16), false);
+    renderProductGrid('dealsGrid', allProducts, true);
+    renderProductGrid('recommendedGrid', allProducts.slice(0, 8), false);
 }
 function updateWishlistCount() {
     const count = wishlist.length;
@@ -791,16 +795,19 @@ function setActive(el) { document.querySelectorAll('.sidebar-item').forEach(s =>
 let sidebarOpen = false;
 function toggleMobileSidebar(forceClose) {
     const sidebar = document.getElementById('sidebar');
+    const cartBtn = document.getElementById('mobileCartBtn');
     const overlay = document.getElementById('mobileOverlay');
     if (forceClose === false || sidebarOpen) {
         sidebar.classList.remove('translate-x-0');
         sidebar.classList.add('-translate-x-full');
         overlay.classList.add('hidden');
+        if (cartBtn) cartBtn.style.display = '';
         sidebarOpen = false;
     } else {
         sidebar.classList.remove('-translate-x-full');
         sidebar.classList.add('translate-x-0');
         overlay.classList.remove('hidden');
+        if (cartBtn) cartBtn.style.display = 'none';
         sidebarOpen = true;
     }
 }
