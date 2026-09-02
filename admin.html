@@ -3,802 +3,457 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NovaShop — Admin Panel</title>
+    <title>HR ShopBD — Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: { extend: { fontFamily: { 'inter': ['Inter', 'sans-serif'] } } }
-        }
-    </script>
+    <script>tailwind.config = { theme: { extend: { fontFamily: { 'inter': ['Inter', 'sans-serif'] } } } }</script>
     <style>
         * { font-family: 'Inter', sans-serif; }
-        body { background: linear-gradient(135deg, #f0f0ff 0%, #e8e0f0 30%, #f5f0ff 60%, #eef0ff 100%); }
-        .glass { background: rgba(255,255,255,0.45); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.6); }
+        body { background: linear-gradient(135deg, #f0f0ff 0%, #e8e0f0 30%, #f5f0ff 60%, #eef0ff 100%); overflow-x: hidden; }
+        .blob { position: fixed; border-radius: 50%; filter: blur(80px); z-index: 0; opacity: 0.4; pointer-events: none; }
+        .blob-1 { top: -10%; left: -5%; width: 400px; height: 400px; background: #c7b8f5; }
+        .blob-2 { top: 40%; right: -5%; width: 350px; height: 350px; background: #a5b4fc; }
         .glass-strong { background: rgba(255,255,255,0.65); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.7); }
         .glass-card { background: rgba(255,255,255,0.5); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); border-radius: 20px; transition: all 0.3s ease; }
-        .glass-card:hover { background: rgba(255,255,255,0.7); box-shadow: 0 12px 40px rgba(0,0,0,0.06); }
-        .blob { position: absolute; border-radius: 50%; filter: blur(80px); z-index: 0; opacity: 0.4; pointer-events: none; }
-        .blob-1 { top: -10%; left: -5%; width: 400px; height: 400px; background: #c7b8f5; }
-        .blob-2 { top: 30%; right: -5%; width: 350px; height: 350px; background: #a5b4fc; }
-        .blob-3 { bottom: 5%; left: 15%; width: 300px; height: 300px; background: #ddd6fe; }
-        .hero-gradient { background: linear-gradient(135deg, #a78bfa 0%, #c084fc 30%, #f0abfc 60%, #fda4af 100%); }
+        .glass-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.06); }
         .sidebar-item { transition: all 0.2s ease; border-radius: 12px; }
-        .sidebar-item:hover, .sidebar-item.active { background: rgba(99,102,241,0.1); color: #6366f1; }
+        .sidebar-item:hover { background: rgba(99,102,241,0.1); color: #6366f1; }
         .sidebar-item.active { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; }
-        .badge-hot { background: linear-gradient(135deg, #f43f5e, #ec4899); }
-        .promo-gradient { background: linear-gradient(135deg, #c084fc 0%, #f472b6 50%, #fb923c 100%); }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #c4b5fd; border-radius: 10px; }
-        .fade-in { animation: fadeIn 0.5s ease forwards; opacity: 0; }
-        @keyframes fadeIn { to { opacity:1; } }
-        .slide-up { animation: slideUp 0.6s ease forwards; opacity:0; transform: translateY(20px); }
-        @keyframes slideUp { to { opacity:1; transform: translateY(0); } }
-        .modal-overlay { background: rgba(0,0,0,0.4); backdrop-filter: blur(4px); }
-        .stat-card { background: rgba(255,255,255,0.5); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); border-radius: 16px; }
-        table { border-collapse: separate; border-spacing: 0; }
-        th { position: sticky; top: 0; z-index: 10; }
+        .input-field { background: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.8); border-radius: 12px; padding: 10px 14px; width: 100%; font-size: 13px; outline: none; transition: all 0.3s; }
+        .input-field:focus { box-shadow: 0 0 0 3px rgba(99,102,241,0.15); border-color: #818cf8; }
+        .slide-up { animation: slideUp 0.5s ease forwards; opacity: 0; transform: translateY(15px); }
+        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
+        .lang-toggle { transition: all 0.3s ease; }
+        .lang-toggle.active { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; }
+        select.input-field { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236366f1' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
     </style>
 </head>
-<body class="min-h-screen relative overflow-x-hidden">
+<body class="min-h-screen relative">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
 
-<div class="blob blob-1"></div>
-<div class="blob blob-2"></div>
-<div class="blob blob-3"></div>
+    <div id="mobileOverlay" class="fixed inset-0 z-[50] hidden lg:hidden" onclick="toggleMobileSidebar(false)" style="background:rgba(0,0,0,0.7);backdrop-filter:blur(2px);"></div>
 
-<!-- Mobile Overlay -->
-<div id="mobileOverlay" class="fixed inset-0 bg-black/60 z-[50] hidden lg:hidden" onclick="toggleMobileSidebar(false)"></div>
-
-<div class="flex h-screen overflow-hidden relative z-10">
-
-<!-- ==================== LEFT SIDEBAR ==================== -->
-<aside id="sidebar" class="w-[260px] flex flex-col py-6 px-4 fixed lg:relative h-full z-[55] -translate-x-full lg:translate-x-0 transition-transform duration-300" style="background:rgba(245,240,255,0.97);backdrop-filter:blur(24px);border-right:1px solid rgba(255,255,255,0.6);">
-    <div class="flex items-center gap-3 px-3 mb-6">
-        <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
-            <i class="fa-solid fa-bag-shopping text-white text-sm"></i>
-        </div>
-        <span class="font-extrabold text-lg text-slate-800">Nova<span class="text-indigo-500">Shop</span></span>
-    </div>
-
-    <!-- Language Toggle -->
-    <div class="flex gap-1 p-1 rounded-xl bg-white/30 mb-5 mx-3">
-        <button onclick="setLang('en')" id="langEn" class="flex-1 py-1.5 rounded-lg text-[11px] font-bold transition active" style="background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;">EN</button>
-        <button onclick="setLang('bn')" id="langBn" class="flex-1 py-1.5 rounded-lg text-[11px] font-bold text-slate-500 transition">বাং</button>
-    </div>
-
-    <nav class="flex-1 space-y-1 overflow-y-auto">
-        <a href="index.html" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-house w-5 text-center"></i> <span data-i18n="nav_home">Home</span>
-        </a>
-        <div class="border-t border-slate-200/50 my-3"></div>
-        <a href="#" onclick="showSection('dashboard');setActive(this);return false;" class="sidebar-item active flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-chart-pie w-5 text-center"></i> <span>Dashboard</span>
-        </a>
-        <a href="#" onclick="showSection('products');setActive(this);return false;" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-box-open w-5 text-center"></i> <span>Products</span>
-        </a>
-        <a href="#" onclick="showSection('add');setActive(this);return false;" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-plus-circle w-5 text-center"></i> <span>Add Product</span>
-        </a>
-        <a href="#" onclick="showSection('orders');setActive(this);return false;" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-truck w-5 text-center"></i> <span>Orders</span>
-        </a>
-        <div class="border-t border-slate-200/50 my-3"></div>
-        <a href="login.html" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-right-to-bracket w-5 text-center"></i> <span data-i18n="nav_login">Login / Sign Up</span>
-        </a>
-        <a href="dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-chart-line w-5 text-center"></i> <span data-i18n="nav_dashboard">Dashboard</span>
-        </a>
-    </nav>
-
-    <div class="mt-4 promo-gradient rounded-2xl p-5 text-white relative overflow-hidden">
-        <div class="absolute -top-4 -right-4 w-20 h-20 bg-white/20 rounded-full"></div>
-        <p class="text-[10px] font-bold uppercase tracking-wider mb-1 opacity-90">Admin Panel</p>
-        <h3 class="font-extrabold text-lg leading-tight mb-2">Manage Your<br>Store</h3>
-    </div>
-</aside>
-
-<!-- ==================== MAIN CONTENT ==================== -->
-<main class="flex-1 overflow-y-auto">
-    <header class="sticky top-0 z-30 glass-strong px-6 py-3 flex items-center gap-4">
-        <button onclick="toggleMobileSidebar()" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/50 transition">
-            <i class="fa-solid fa-bars text-slate-600"></i>
-        </button>
-        <div class="flex-1 relative">
-            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-            <input type="text" id="searchInput" placeholder="Search products..."
-                class="w-full bg-white/60 border border-white/80 rounded-full px-12 py-2.5 text-sm text-slate-700 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-indigo-300 transition"
-                oninput="handleSearch(this.value)">
-        </div>
-        <a href="index.html" class="glass-btn px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-white/70 transition flex items-center gap-2">
-            <i class="fa-solid fa-store text-xs"></i> View Store
-        </a>
-    </header>
-
-    <div class="p-6" id="adminContent">
-
-        <!-- ==================== DASHBOARD SECTION ==================== -->
-        <section id="sectionDashboard" class="space-y-6">
-            <div class="flex items-center justify-between mb-4">
-                <h1 class="text-2xl font-extrabold text-slate-800">📊 Admin Dashboard</h1>
-                <span id="lastUpdated" class="text-xs text-slate-400"></span>
+    <div class="flex h-screen overflow-hidden relative z-10">
+        <!-- SIDEBAR -->
+        <aside id="sidebar" class="w-[280px] flex flex-col py-6 px-4 fixed lg:relative h-full z-[55] -translate-x-full lg:translate-x-0 transition-transform duration-300" style="background:rgba(245,240,255,1);border-right:1px solid rgba(255,255,255,0.6);">
+            <div class="flex items-center gap-3 px-3 mb-6">
+                <a href="index.html" class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg"><i class="fa-solid fa-store text-white text-sm"></i></div>
+                    <span class="font-extrabold text-lg text-slate-800">HR <span class="text-indigo-500">ShopBD</span></span>
+                </a>
             </div>
-
-            <!-- Stats -->
-            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 slide-up">
-                <div class="stat-card p-5 text-center">
-                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center mx-auto mb-3">
-                        <i class="fa-solid fa-box text-indigo-500"></i>
-                    </div>
-                    <p class="text-2xl font-extrabold text-slate-800" id="statProducts">-</p>
-                    <p class="text-[11px] text-slate-500 mt-1">Total Products</p>
-                </div>
-                <div class="stat-card p-5 text-center">
-                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-100 to-cyan-100 flex items-center justify-center mx-auto mb-3">
-                        <i class="fa-solid fa-tags text-blue-500"></i>
-                    </div>
-                    <p class="text-2xl font-extrabold text-slate-800" id="statCategories">-</p>
-                    <p class="text-[11px] text-slate-500 mt-1">Categories</p>
-                </div>
-                <div class="stat-card p-5 text-center">
-                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center mx-auto mb-3">
-                        <i class="fa-solid fa-star text-green-500"></i>
-                    </div>
-                    <p class="text-2xl font-extrabold text-slate-800" id="statAvgRating">-</p>
-                    <p class="text-[11px] text-slate-500 mt-1">Avg Rating</p>
-                </div>
-                <div class="stat-card p-5 text-center">
-                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center mx-auto mb-3">
-                        <i class="fa-solid fa-dollar-sign text-amber-500"></i>
-                    </div>
-                    <p class="text-2xl font-extrabold text-slate-800" id="statAvgPrice">-</p>
-                    <p class="text-[11px] text-slate-500 mt-1">Avg Price</p>
-                </div>
+            <div class="flex gap-1 p-1 rounded-xl bg-white/30 mb-5 mx-3">
+                <button onclick="setLang('en')" id="langEn" class="flex-1 py-1.5 rounded-lg text-[11px] font-bold transition lang-toggle active">EN</button>
+                <button onclick="setLang('bn')" id="langBn" class="flex-1 py-1.5 rounded-lg text-[11px] font-bold text-slate-500 transition lang-toggle">বাং</button>
             </div>
+            <nav class="flex-1 space-y-1 overflow-y-auto">
+                <a href="index.html" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+                    <i class="fa-solid fa-house w-5 text-center"></i> <span data-i18n="nav_home">Home</span>
+                </a>
+                <a href="#" onclick="showSection('dashboard');setActive(this)" class="sidebar-item active flex items-center gap-3 px-4 py-3 text-sm font-medium">
+                    <i class="fa-solid fa-chart-line w-5 text-center"></i> <span data-i18n="nav_overview">Overview</span>
+                </a>
+                <a href="#" onclick="showSection('products');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+                    <i class="fa-solid fa-box w-5 text-center"></i> <span data-i18n="nav_products">Products</span>
+                </a>
+                <a href="#" onclick="showSection('addProduct');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+                    <i class="fa-solid fa-plus-circle w-5 text-center"></i> <span data-i18n="nav_add">Add Product</span>
+                </a>
+                <a href="#" onclick="showSection('categories');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+                    <i class="fa-solid fa-tags w-5 text-center"></i> <span data-i18n="nav_categories">Categories</span>
+                </a>
+                <div class="border-t border-slate-200/50 my-3"></div>
+                <a href="dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+                    <i class="fa-solid fa-user w-5 text-center"></i> <span data-i18n="nav_customer">Customer Panel</span>
+                </a>
+                <a href="login.html" onclick="logout()" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+                    <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> <span data-i18n="nav_logout">Logout</span>
+                </a>
+            </nav>
+        </aside>
 
-            <!-- Recent Products -->
-            <div class="glass-card p-6 slide-up" style="animation-delay:0.1s">
-                <h3 class="font-extrabold text-sm text-slate-800 mb-4">Recently Added</h3>
-                <div id="recentProducts" class="grid grid-cols-2 md:grid-cols-4 gap-3"></div>
-            </div>
+        <!-- MAIN -->
+        <main class="flex-1 overflow-y-auto">
+            <header class="sticky top-0 z-30 glass-strong px-6 py-3 flex items-center gap-4">
+                <button onclick="toggleMobileSidebar()" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/50 transition"><i class="fa-solid fa-bars text-slate-600"></i></button>
+                <h2 class="font-extrabold text-lg text-slate-800" data-i18n="dash_title">Admin Dashboard</h2>
+                <div class="flex-1"></div>
+                <div class="relative flex-1 max-w-sm hidden md:block">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="adminSearch" oninput="handleAdminSearch(this.value)" placeholder="Search products..." class="w-full bg-white/60 border border-white/80 rounded-full px-10 py-2 text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:shadow-[0_0_0_3px_rgba(99,102,241,0.15)] transition">
+                </div>
+                <a href="index.html" class="w-10 h-10 flex items-center justify-center glass rounded-full hover:bg-white/70 transition text-slate-500"><i class="fa-solid fa-house text-sm"></i></a>
+            </header>
 
-            <!-- Category Breakdown -->
-            <div class="glass-card p-6 slide-up" style="animation-delay:0.2s">
-                <h3 class="font-extrabold text-sm text-slate-800 mb-4">Products by Category</h3>
-                <div id="categoryBreakdown" class="space-y-3"></div>
-            </div>
-        </section>
-
-        <!-- ==================== PRODUCTS SECTION ==================== -->
-        <section id="sectionProducts" class="hidden space-y-4">
-            <div class="flex items-center justify-between mb-4">
-                <h1 class="text-2xl font-extrabold text-slate-800">📦 All Products</h1>
-                <div class="flex items-center gap-3">
-                    <select id="sortSelect" onchange="handleSort(this.value)" class="bg-white/60 border border-white/80 rounded-xl px-4 py-2 text-sm text-slate-600 focus:outline-none">
-                        <option value="">Sort by...</option>
-                        <option value="title-asc">Title A→Z</option>
-                        <option value="title-desc">Title Z→A</option>
-                        <option value="price-asc">Price Low→High</option>
-                        <option value="price-desc">Price High→Low</option>
-                        <option value="rating-asc">Rating Low→High</option>
-                        <option value="rating-desc">Rating High→Low</option>
-                    </select>
-                    <button onclick="showSection('add')" class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-sm px-5 py-2.5 rounded-xl hover:opacity-90 transition shadow-lg flex items-center gap-2">
-                        <i class="fa-solid fa-plus text-xs"></i> Add Product
-                    </button>
-                </div>
-            </div>
-            <div class="glass-card overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="w-full" id="productsTable">
-                        <thead>
-                            <tr class="border-b border-white/30">
-                                <th class="text-left px-4 py-3 text-[11px] font-bold text-slate-500 uppercase">Image</th>
-                                <th class="text-left px-4 py-3 text-[11px] font-bold text-slate-500 uppercase">Title</th>
-                                <th class="text-left px-4 py-3 text-[11px] font-bold text-slate-500 uppercase">Category</th>
-                                <th class="text-left px-4 py-3 text-[11px] font-bold text-slate-500 uppercase">Price</th>
-                                <th class="text-left px-4 py-3 text-[11px] font-bold text-slate-500 uppercase">Stock</th>
-                                <th class="text-left px-4 py-3 text-[11px] font-bold text-slate-500 uppercase">Rating</th>
-                                <th class="text-center px-4 py-3 text-[11px] font-bold text-slate-500 uppercase">Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="productsTableBody"></tbody>
-                    </table>
-                </div>
-                <div id="tableLoader" class="hidden text-center py-8">
-                    <div class="w-10 h-10 border-3 border-indigo-300 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-                    <p class="text-sm text-slate-500">Loading products...</p>
-                </div>
-                <!-- Pagination -->
-                <div class="flex items-center justify-between px-4 py-3 border-t border-white/20">
-                    <p class="text-xs text-slate-500" id="paginationInfo"></p>
-                    <div class="flex items-center gap-2" id="paginationButtons"></div>
-                </div>
-            </div>
-        </section>
-
-        <!-- ==================== ADD/EDIT PRODUCT SECTION ==================== -->
-        <section id="sectionAdd" class="hidden">
-            <div class="max-w-2xl mx-auto">
-                <h1 class="text-2xl font-extrabold text-slate-800 mb-6" id="formTitle">➕ Add New Product</h1>
-                <form id="productForm" class="glass-card p-6 space-y-5" onsubmit="return false;">
-                    <input type="hidden" id="editProductId" value="">
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">Title *</label>
-                            <input type="text" id="formTitleInput" required placeholder="Product title"
-                                class="w-full bg-white/60 border border-white/80 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">Price *</label>
-                            <input type="number" id="formPrice" required step="0.01" min="0" placeholder="0.00"
-                                class="w-full bg-white/60 border border-white/80 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                        </div>
+            <div class="p-6">
+                <!-- DASHBOARD SECTION -->
+                <div id="sectionDashboard" class="slide-up">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                        <div class="glass-card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center"><i class="fa-solid fa-box text-indigo-500 text-sm"></i></div><div><p class="text-[10px] text-slate-400 font-semibold" data-i18n="stat_total_products">Total Products</p><p class="text-lg font-extrabold text-slate-800" id="statTotalProducts">0</p></div></div></div>
+                        <div class="glass-card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center"><i class="fa-solid fa-tags text-green-500 text-sm"></i></div><div><p class="text-[10px] text-slate-400 font-semibold" data-i18n="stat_categories">Categories</p><p class="text-lg font-extrabold text-slate-800" id="statCategories">0</p></div></div></div>
+                        <div class="glass-card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center"><i class="fa-solid fa-dollar-sign text-amber-500 text-sm"></i></div><div><p class="text-[10px] text-slate-400 font-semibold" data-i18n="stat_avg_price">Avg Price</p><p class="text-lg font-extrabold text-slate-800" id="statAvgPrice">$0</p></div></div></div>
+                        <div class="glass-card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-100 to-rose-100 flex items-center justify-center"><i class="fa-solid fa-star text-pink-500 text-sm"></i></div><div><p class="text-[10px] text-slate-400 font-semibold" data-i18n="stat_avg_rating">Avg Rating</p><p class="text-lg font-extrabold text-slate-800" id="statAvgRating">0</p></div></div></div>
                     </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1.5">Description *</label>
-                        <textarea id="formDescription" required rows="3" placeholder="Product description"
-                            class="w-full bg-white/60 border border-white/80 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-300 resize-none"></textarea>
+                    <div class="glass-card p-6">
+                        <h3 class="font-bold text-slate-800 mb-3" data-i18n="recent_products">Recent Products</h3>
+                        <div id="recentProducts" class="space-y-2"></div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">Category *</label>
-                            <select id="formCategory" required
-                                class="w-full bg-white/60 border border-white/80 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                                <option value="">Select category</option>
-                                <option value="beauty">Beauty</option>
-                                <option value="fragrances">Fragrances</option>
-                                <option value="furniture">Furniture</option>
-                                <option value="groceries">Groceries</option>
-                                <option value="home-decoration">Home Decoration</option>
-                                <option value="kitchen-accessories">Kitchen Accessories</option>
-                                <option value="laptops">Laptops</option>
-                                <option value="motorcycles">Motorcycles</option>
-                                <option value="shirts">Shirts</option>
-                                <option value="shoes">Shoes</option>
-                                <option value="watches">Watches</option>
-                                <option value="tops">Tops</option>
-                                <option value="womens-bags">Women's Bags</option>
-                                <option value="womens-dresses">Women's Dresses</option>
-                                <option value="womens-jewellery">Women's Jewellery</option>
-                                <option value="womens-shoes">Women's Shoes</option>
-                                <option value="womens-watches">Women's Watches</option>
+                </div>
+
+                <!-- PRODUCTS SECTION -->
+                <div id="sectionProducts" class="hidden slide-up">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-extrabold text-slate-800" data-i18n="all_products">All Products</h3>
+                        <div class="flex gap-2">
+                            <select id="filterCategory" onchange="filterByCategory(this.value)" class="input-field w-auto text-xs" style="padding:8px 32px 8px 12px;">
+                                <option value="all" data-i18n="filter_all">All Categories</option>
                             </select>
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">Brand</label>
-                            <input type="text" id="formBrand" placeholder="Brand name"
-                                class="w-full bg-white/60 border border-white/80 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
+                            <button onclick="showSection('addProduct')" class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xs font-bold px-4 py-2 rounded-xl hover:opacity-90 transition">
+                                <i class="fa-solid fa-plus mr-1"></i> <span data-i18n="add_product">Add Product</span>
+                            </button>
                         </div>
                     </div>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">Discount %</label>
-                            <input type="number" id="formDiscount" step="0.01" min="0" max="100" placeholder="0"
-                                class="w-full bg-white/60 border border-white/80 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">Stock</label>
-                            <input type="number" id="formStock" min="0" placeholder="0"
-                                class="w-full bg-white/60 border border-white/80 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                        </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-600 mb-1.5">Rating</label>
-                            <input type="number" id="formRating" step="0.01" min="0" max="5" placeholder="0.0"
-                                class="w-full bg-white/60 border border-white/80 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1.5">Image URL</label>
-                        <input type="url" id="formImage" placeholder="https://..."
-                            class="w-full bg-white/60 border border-white/80 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                        <div id="imagePreview" class="mt-2 hidden">
-                            <img src="" class="w-20 h-20 rounded-xl object-contain bg-white/50 border border-white/60 p-1">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-xs font-bold text-slate-600 mb-1.5">Tags (comma separated)</label>
-                        <input type="text" id="formTags" placeholder="tag1, tag2, tag3"
-                            class="w-full bg-white/60 border border-white/80 rounded-xl px-4 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                    </div>
-                    <div class="flex items-center gap-3 pt-2">
-                        <button type="button" onclick="submitProduct()" id="formSubmitBtn"
-                            class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-sm px-8 py-3 rounded-xl hover:opacity-90 transition shadow-lg flex items-center gap-2">
-                            <i class="fa-solid fa-plus text-xs"></i> <span>Add Product</span>
-                        </button>
-                        <button type="button" onclick="resetForm()" class="bg-white/60 text-slate-600 font-bold text-sm px-6 py-3 rounded-xl hover:bg-white/80 transition">
-                            Cancel
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </section>
-
-        <!-- ==================== ORDERS SECTION ==================== -->
-        <section id="sectionOrders" class="hidden">
-            <h1 class="text-2xl font-extrabold text-slate-800 mb-6">🚚 Orders</h1>
-            <div class="glass-card p-8 text-center">
-                <div class="w-20 h-20 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center mx-auto mb-4">
-                    <i class="fa-solid fa-truck text-2xl text-indigo-400"></i>
+                    <div id="productsList" class="space-y-3"></div>
                 </div>
-                <h3 class="font-bold text-slate-700 mb-2">Orders coming soon!</h3>
-                <p class="text-sm text-slate-400">This section will show all customer orders.</p>
-            </div>
-        </section>
 
+                <!-- ADD PRODUCT SECTION -->
+                <div id="sectionAddProduct" class="hidden slide-up">
+                    <h3 class="font-extrabold text-slate-800 mb-4" id="formTitle" data-i18n="add_new_product">Add New Product</h3>
+                    <div class="glass-card p-6 max-w-2xl">
+                        <input type="hidden" id="editProductId">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="md:col-span-2">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Product Title *</label>
+                                <input type="text" id="prodTitle" class="input-field mt-1" placeholder="Enter product title">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Description *</label>
+                                <textarea id="prodDesc" class="input-field mt-1" rows="3" placeholder="Enter product description"></textarea>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Price ($) *</label>
+                                <input type="number" id="prodPrice" class="input-field mt-1" placeholder="0.00" step="0.01">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Category *</label>
+                                <select id="prodCategory" class="input-field mt-1"></select>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Discount %</label>
+                                <input type="number" id="prodDiscount" class="input-field mt-1" placeholder="0" max="100">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Stock</label>
+                                <input type="number" id="prodStock" class="input-field mt-1" placeholder="0">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Brand</label>
+                                <input type="text" id="prodBrand" class="input-field mt-1" placeholder="Brand name">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">SKU</label>
+                                <input type="text" id="prodSku" class="input-field mt-1" placeholder="SKU code">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Image URL</label>
+                                <input type="url" id="prodImage" class="input-field mt-1" placeholder="https://example.com/image.jpg">
+                            </div>
+                        </div>
+                        <div class="flex gap-3 mt-6">
+                            <button onclick="resetForm()" class="px-6 py-3 rounded-xl bg-slate-100 text-slate-600 text-sm font-bold hover:bg-slate-200 transition" data-i18n="cancel">Cancel</button>
+                            <button onclick="saveProduct()" class="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-sm font-bold hover:opacity-90 transition" id="saveBtn"><i class="fa-solid fa-plus mr-1"></i> <span data-i18n="add_product">Add Product</span></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CATEGORIES SECTION -->
+                <div id="sectionCategories" class="hidden slide-up">
+                    <h3 class="font-extrabold text-slate-800 mb-4" data-i18n="all_categories">All Categories</h3>
+                    <div id="categoriesGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+                </div>
+            </div>
+        </main>
     </div>
-</main>
-</div>
 
-<!-- ==================== EDIT MODAL ==================== -->
-<div id="editModal" class="fixed inset-0 z-[70] hidden">
-    <div class="absolute inset-0 modal-overlay" onclick="closeEditModal()"></div>
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[95%] max-w-2xl glass-strong rounded-3xl overflow-hidden max-h-[90vh] overflow-y-auto">
-        <div class="p-6">
-            <div class="flex items-center justify-between mb-5">
-                <h3 class="font-extrabold text-lg text-slate-800">Edit Product</h3>
-                <button onclick="closeEditModal()" class="w-9 h-9 glass rounded-full flex items-center justify-center hover:bg-white/80 transition">
-                    <i class="fa-solid fa-xmark text-slate-600"></i>
-                </button>
+    <!-- Delete Confirmation Modal -->
+    <div id="deleteModal" class="fixed inset-0 z-[70] hidden">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-sm glass-strong rounded-3xl p-6 text-center">
+            <div class="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-trash text-red-500 text-xl"></i></div>
+            <h3 class="font-bold text-slate-800 mb-1" data-i18n="delete_title">Delete Product?</h3>
+            <p class="text-xs text-slate-400 mb-5" data-i18n="delete_desc">This action cannot be undone.</p>
+            <div class="flex gap-3">
+                <button onclick="closeDeleteModal()" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 text-sm font-bold hover:bg-slate-200 transition" data-i18n="cancel">Cancel</button>
+                <button onclick="confirmDelete()" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-red-500 to-rose-500 text-white text-sm font-bold hover:opacity-90 transition" data-i18n="delete">Delete</button>
             </div>
-            <form id="editForm" onsubmit="return false;" class="space-y-4">
-                <input type="hidden" id="editId">
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Title</label>
-                        <input type="text" id="editTitle" class="w-full bg-white/60 border border-white/80 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Price</label>
-                        <input type="number" id="editPrice" step="0.01" class="w-full bg-white/60 border border-white/80 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-600 mb-1">Description</label>
-                    <textarea id="editDescription" rows="3" class="w-full bg-white/60 border border-white/80 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300 resize-none"></textarea>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Category</label>
-                        <input type="text" id="editCategory" class="w-full bg-white/60 border border-white/80 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Brand</label>
-                        <input type="text" id="editBrand" class="w-full bg-white/60 border border-white/80 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Discount %</label>
-                        <input type="number" id="editDiscount" step="0.01" class="w-full bg-white/60 border border-white/80 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                    </div>
-                    <div>
-                        <label class="block text-[11px] font-bold text-slate-600 mb-1">Stock</label>
-                        <input type="number" id="editStock" class="w-full bg-white/60 border border-white/80 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                    </div>
-                </div>
-                <div>
-                    <label class="block text-[11px] font-bold text-slate-600 mb-1">Image URL</label>
-                    <input type="url" id="editImage" class="w-full bg-white/60 border border-white/80 rounded-xl px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-300">
-                </div>
-                <div class="flex gap-3 pt-2">
-                    <button type="button" onclick="submitEdit()" class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-sm px-6 py-2.5 rounded-xl hover:opacity-90 transition shadow-lg flex items-center gap-2">
-                        <i class="fa-solid fa-check text-xs"></i> Save Changes
-                    </button>
-                    <button type="button" onclick="closeEditModal()" class="bg-white/60 text-slate-600 font-bold text-sm px-6 py-2.5 rounded-xl hover:bg-white/80 transition">
-                        Cancel
-                    </button>
-                </div>
-            </form>
         </div>
     </div>
-</div>
 
-<!-- Toast Container -->
-<div id="toastContainer"></div>
+    <div id="toast" class="fixed top-5 right-5 z-[200] px-5 py-3 rounded-xl text-white text-xs font-bold shadow-2xl transition-all opacity-0" style="transition:all 0.3s;"></div>
 
-<script>
-// ===================== i18n =====================
-const i18n = {
-    en: {
-        nav_home: 'Home', nav_login: 'Login / Sign Up', nav_dashboard: 'Dashboard', nav_admin: 'Admin Panel',
-        loading: 'Loading...', no_products: 'No products found',
-    },
-    bn: {
-        nav_home: 'হোম', nav_login: 'লগইন / সাইন আপ', nav_dashboard: 'ড্যাশবোর্ড', nav_admin: 'অ্যাডমিন প্যানেল',
-        loading: 'লোড হচ্ছে...', no_products: 'কোনো পণ্য পাওয়া যায়নি',
-    }
-};
-let currentLang = localStorage.getItem('novaLang') || 'en';
-
-function setLang(lang) {
-    currentLang = lang;
-    localStorage.setItem('novaLang', lang);
-    document.getElementById('langEn').classList.toggle('active', lang === 'en');
-    document.getElementById('langBn').classList.toggle('active', lang === 'bn');
-    if (lang === 'en') {
-        document.getElementById('langEn').style.background = 'linear-gradient(135deg,#6366f1,#8b5cf6)';
-        document.getElementById('langEn').style.color = 'white';
-        document.getElementById('langBn').style.background = 'transparent';
-        document.getElementById('langBn').style.color = '#64748b';
-    } else {
-        document.getElementById('langBn').style.background = 'linear-gradient(135deg,#6366f1,#8b5cf6)';
-        document.getElementById('langBn').style.color = 'white';
-        document.getElementById('langEn').style.background = 'transparent';
-        document.getElementById('langEn').style.color = '#64748b';
-    }
-    document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (i18n[lang][key]) el.textContent = i18n[lang][key];
-    });
-}
-
-// ===================== STATE =====================
-const API_BASE = 'https://dummyjson.com';
-let allProducts = [];
-let categories = [];
-let currentPage = 1;
-const PAGE_SIZE = 20;
-
-// ===================== INIT =====================
-document.addEventListener('DOMContentLoaded', async () => {
-    document.getElementById('lastUpdated').textContent = 'Updated: ' + new Date().toLocaleString();
-    await loadDashboard();
-    // Image preview for form
-    document.getElementById('formImage').addEventListener('input', (e) => {
-        const preview = document.getElementById('imagePreview');
-        if (e.target.value) {
-            preview.querySelector('img').src = e.target.value;
-            preview.classList.remove('hidden');
-        } else {
-            preview.classList.add('hidden');
+    <script>
+    // i18n
+    const i18n = {
+        en: {
+            nav_home: 'Home', nav_overview: 'Overview', nav_products: 'Products', nav_add: 'Add Product', nav_categories: 'Categories', nav_customer: 'Customer Panel', nav_logout: 'Logout',
+            dash_title: 'Admin Dashboard',
+            stat_total_products: 'Total Products', stat_categories: 'Categories', stat_avg_price: 'Avg Price', stat_avg_rating: 'Avg Rating',
+            recent_products: 'Recent Products', all_products: 'All Products', add_new_product: 'Add New Product', add_product: 'Add Product',
+            edit_product: 'Edit Product', filter_all: 'All Categories', all_categories: 'All Categories',
+            cancel: 'Cancel', delete: 'Delete', delete_title: 'Delete Product?', delete_desc: 'This action cannot be undone.',
+            toast_saved: 'Product saved!', toast_deleted: 'Product deleted!', toast_fill: 'Please fill all required fields.',
+            products_per_cat: 'products'
+        },
+        bn: {
+            nav_home: 'হোম', nav_overview: 'সংক্ষিপ্ত বিবরণ', nav_products: 'পণ্য', nav_add: 'পণ্য যোগ করুন', nav_categories: 'ক্যাটাগরি', nav_customer: 'কাস্টমার প্যানেল', nav_logout: 'লগআউট',
+            dash_title: 'অ্যাডমিন ড্যাশবোর্ড',
+            stat_total_products: 'মোট পণ্য', stat_categories: 'ক্যাটাগরি', stat_avg_price: 'গড় মূল্য', stat_avg_rating: 'গড় রেটিং',
+            recent_products: 'সাম্প্রতিক পণ্য', all_products: 'সব পণ্য', add_new_product: 'নতুন পণ্য যোগ করুন', add_product: 'পণ্য যোগ করুন',
+            edit_product: 'পণ্য সম্পাদনা', filter_all: 'সব ক্যাটাগরি', all_categories: 'সব ক্যাটাগরি',
+            cancel: 'বাতিল', delete: 'মুছুন', delete_title: 'পণ্য মুছবেন?', delete_desc: 'এই কাজ পূর্বাবস্থায় ফেরানো যাবে না।',
+            toast_saved: 'পণ্য সংরক্ষিত!', toast_deleted: 'পণ্য মুছে ফেলা হয়েছে!', toast_fill: 'সব প্রয়োজনীয় ক্ষেত্র পূরণ করুন।',
+            products_per_cat: 'পণ্য'
         }
-    });
-});
+    };
+    let currentLang = localStorage.getItem('novaLang') || 'en';
+    function setLang(lang) { currentLang = lang; localStorage.setItem('novaLang', lang); document.querySelectorAll('.lang-toggle').forEach(el => { el.classList.remove('active','text-slate-500'); el.classList.add('text-slate-500'); }); document.getElementById(lang==='en'?'langEn':'langBn').classList.add('active'); document.getElementById(lang==='en'?'langEn':'langBn').classList.remove('text-slate-500'); applyTranslations(); loadProductsForAdmin(); }
+    function applyTranslations() { const t = i18n[currentLang]; document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if (t[key]) el.innerHTML = t[key]; }); }
 
-// ===================== SIDEBAR =====================
-function setActive(el) {
-    document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
-    el.classList.add('active');
-    toggleMobileSidebar(false);
-}
-let sidebarOpen = false;
-function toggleMobileSidebar(forceClose) {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('mobileOverlay');
-    if (forceClose === false || sidebarOpen) {
-        sidebar.classList.remove('translate-x-0');
-        sidebar.classList.add('-translate-x-full');
-        overlay.classList.add('hidden');
-        sidebarOpen = false;
-    } else {
-        sidebar.classList.remove('-translate-x-full');
-        sidebar.classList.add('translate-x-0');
-        overlay.classList.remove('hidden');
-        sidebarOpen = true;
+    const API = 'https://dummyjson.com';
+    let allProducts = [];
+    let categories = [];
+    let deleteId = null;
+
+    // SECTIONS
+    function showSection(name) {
+        ['dashboard','products','addProduct','categories'].forEach(s => {
+            const el = document.getElementById('section' + s.charAt(0).toUpperCase() + s.slice(1));
+            if (el) el.classList.add('hidden');
+        });
+        const target = document.getElementById('section' + name.charAt(0).toUpperCase() + name.slice(1));
+        if (target) target.classList.remove('hidden');
+        if (name === 'products') renderProductsList();
+        if (name === 'categories') renderCategories();
     }
-}
+    function setActive(el) { document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active')); el.classList.add('active'); toggleMobileSidebar(false); }
+    let sidebarOpen = false;
+    function toggleMobileSidebar(forceClose) {
+        const sidebar = document.getElementById('sidebar'); const overlay = document.getElementById('mobileOverlay');
+        if (forceClose === false || sidebarOpen) { sidebar.classList.remove('translate-x-0'); sidebar.classList.add('-translate-x-full'); overlay.classList.add('hidden'); sidebarOpen = false; }
+        else { sidebar.classList.remove('-translate-x-full'); sidebar.classList.add('translate-x-0'); overlay.classList.remove('hidden'); sidebarOpen = true; }
+    }
 
-// ===================== NAVIGATION =====================
-function showSection(name) {
-    document.getElementById('sectionDashboard').classList.add('hidden');
-    document.getElementById('sectionProducts').classList.add('hidden');
-    document.getElementById('sectionAdd').classList.add('hidden');
-    document.getElementById('sectionOrders').classList.add('hidden');
-    document.getElementById('section' + name.charAt(0).toUpperCase() + name.slice(1)).classList.remove('hidden');
-    if (name === 'products') loadProductsTable();
-}
+    // FETCH
+    async function loadAll() {
+        try {
+            const [p1, p2, cats] = await Promise.all([
+                fetch(`${API}/products?limit=100&skip=0`).then(r => r.json()),
+                fetch(`${API}/products?limit=100&skip=100`).then(r => r.json()),
+                fetch(`${API}/products/category-list`).then(r => r.json())
+            ]);
+            allProducts = [...(p1.products || []), ...(p2.products || [])];
+            categories = cats || [];
+            renderDashboard();
+            populateCategorySelects();
+        } catch (e) { console.error('Load failed:', e); }
+    }
 
-// ===================== DASHBOARD =====================
-async function loadDashboard() {
-    try {
-        const res = await fetch(`${API_BASE}/products?limit=100`);
-        const data = await res.json();
-        allProducts = data.products || [];
+    function loadProductsForAdmin() { loadAll(); }
 
-        // Stats
-        document.getElementById('statProducts').textContent = allProducts.length;
-        const cats = [...new Set(allProducts.map(p => p.category))];
-        document.getElementById('statCategories').textContent = cats.length;
-        const avgRating = (allProducts.reduce((s, p) => s + (typeof p.rating === 'number' ? p.rating : 0), 0) / allProducts.length).toFixed(1);
-        document.getElementById('statAvgRating').textContent = avgRating;
-        const avgPrice = (allProducts.reduce((s, p) => s + p.price, 0) / allProducts.length).toFixed(2);
-        document.getElementById('statAvgPrice').textContent = '$' + avgPrice;
-
-        // Recent products
-        const recent = allProducts.slice(-4).reverse();
+    // DASHBOARD
+    function renderDashboard() {
+        document.getElementById('statTotalProducts').textContent = allProducts.length;
+        document.getElementById('statCategories').textContent = categories.length;
+        const avgPrice = allProducts.length > 0 ? allProducts.reduce((s, p) => s + p.price, 0) / allProducts.length : 0;
+        document.getElementById('statAvgPrice').textContent = '$' + avgPrice.toFixed(2);
+        const avgRating = allProducts.length > 0 ? allProducts.reduce((s, p) => s + (typeof p.rating === 'number' ? p.rating : (p.rating?.rate || 0)), 0) / allProducts.length : 0;
+        document.getElementById('statAvgRating').textContent = avgRating.toFixed(1);
+        const recent = allProducts.slice(-5).reverse();
         document.getElementById('recentProducts').innerHTML = recent.map(p => `
-            <div class="glass-card p-3 flex gap-3 items-center cursor-pointer" onclick="editProduct(${p.id})">
-                <img src="${p.thumbnail || (p.images && p.images[0]) || ''}" class="w-14 h-14 rounded-xl object-contain bg-white/50 flex-shrink-0">
-                <div class="min-w-0">
-                    <p class="text-xs font-bold text-slate-700 truncate">${p.title}</p>
-                    <p class="text-[10px] text-slate-400">${p.category}</p>
-                    <p class="text-xs font-extrabold text-indigo-500 mt-0.5">$${p.price.toFixed(2)}</p>
+            <div class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/30 transition">
+                <img src="${p.thumbnail || p.image || ''}" class="w-10 h-10 rounded-lg object-contain bg-white/50 p-1">
+                <div class="flex-1 min-w-0"><p class="text-xs font-bold text-slate-700 truncate">${p.title}</p><p class="text-[10px] text-slate-400">${p.category}</p></div>
+                <p class="text-xs font-extrabold text-slate-800">$${p.price.toFixed(2)}</p>
+            </div>
+        `).join('');
+    }
+
+    // PRODUCTS LIST
+    function renderProductsList(filter = 'all', search = '') {
+        let items = allProducts;
+        if (filter !== 'all') items = items.filter(p => p.category === filter);
+        if (search) items = items.filter(p => p.title.toLowerCase().includes(search.toLowerCase()) || p.category.toLowerCase().includes(search.toLowerCase()));
+        const t = i18n[currentLang];
+        document.getElementById('productsList').innerHTML = items.length === 0 ? '<div class="glass-card p-12 text-center text-sm text-slate-400">No products found</div>' : items.map(p => `
+            <div class="glass-card p-4 flex items-center gap-4 slide-up">
+                <img src="${p.thumbnail || p.image || ''}" class="w-14 h-14 rounded-xl object-contain bg-white/50 p-1 flex-shrink-0">
+                <div class="flex-1 min-w-0">
+                    <p class="text-xs font-bold text-slate-800 truncate">${p.title}</p>
+                    <p class="text-[10px] text-slate-400">${p.category} ${p.brand ? '• ' + p.brand : ''}</p>
+                    <div class="flex items-center gap-2 mt-1">
+                        <span class="text-xs font-extrabold text-indigo-500">$${p.price.toFixed(2)}</span>
+                        ${p.discountPercentage ? `<span class="text-[9px] bg-red-50 text-red-500 px-1.5 py-0.5 rounded font-bold">-${p.discountPercentage}%</span>` : ''}
+                        ${p.stock !== undefined ? `<span class="text-[9px] ${p.stock > 0 ? 'bg-green-50 text-green-500' : 'bg-red-50 text-red-500'} px-1.5 py-0.5 rounded font-bold">${p.stock > 0 ? 'In Stock' : 'Out'}</span>` : ''}
+                    </div>
+                </div>
+                <div class="flex gap-2">
+                    <button onclick="editProduct(${p.id})" class="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-500 hover:bg-indigo-100 transition"><i class="fa-solid fa-pen text-xs"></i></button>
+                    <button onclick="promptDelete(${p.id})" class="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center text-red-500 hover:bg-red-100 transition"><i class="fa-solid fa-trash text-xs"></i></button>
                 </div>
             </div>
         `).join('');
+    }
 
-        // Category breakdown
+    function filterByCategory(cat) { renderProductsList(cat); }
+    let searchTimeout;
+    function handleAdminSearch(q) { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => renderProductsList(document.getElementById('filterCategory').value, q), 300); }
+
+    // CATEGORIES
+    function renderCategories() {
         const catCounts = {};
         allProducts.forEach(p => { catCounts[p.category] = (catCounts[p.category] || 0) + 1; });
-        const sortedCats = Object.entries(catCounts).sort((a, b) => b[1] - a[1]);
-        const maxCount = Math.max(...Object.values(catCounts));
-        document.getElementById('categoryBreakdown').innerHTML = sortedCats.map(([cat, count]) => `
-            <div class="flex items-center gap-3">
-                <span class="text-xs font-semibold text-slate-600 w-36 truncate">${cat}</span>
-                <div class="flex-1 h-3 bg-white/40 rounded-full overflow-hidden">
-                    <div class="h-full rounded-full transition-all duration-700" style="width:${(count/maxCount*100).toFixed(0)}%;background:linear-gradient(90deg,#6366f1,#8b5cf6)"></div>
-                </div>
-                <span class="text-xs font-bold text-slate-500 w-8 text-right">${count}</span>
+        const emojis = { beauty: '💄', fragrances: '🌸', furniture: '🏠', groceries: '🍎', laptops: '💻', smartphones: '📱', motorcycles: '🏍️', watches: '⌚', 'mens-shirts': '👔', 'mens-shoes': '👟', 'mens-watches': '⌚', skincare: '🧪', sports-accessories: '⚽', sunglasses: '🕶️', tablets: '📱', tops: '👕', vehicle: '🚗', 'womens-bags': '👜', 'womens-dresses': '👗', 'womens-jewellery': '💍', 'womens-shoes': '👠', 'womens-watches': '⌚' };
+        document.getElementById('categoriesGrid').innerHTML = categories.map(cat => `
+            <div class="glass-card p-5 text-center cursor-pointer" onclick="showSection('products');document.getElementById('filterCategory').value='${cat}';renderProductsList('${cat}')">
+                <div class="w-14 h-14 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center text-2xl mx-auto mb-3">${emojis[cat] || '📦'}</div>
+                <p class="text-xs font-bold text-slate-800 capitalize mb-0.5">${cat.replace(/-/g, ' ')}</p>
+                <p class="text-[10px] text-slate-400">${catCounts[cat] || 0} ${i18n[currentLang].products_per_cat}</p>
             </div>
         `).join('');
-
-        categories = cats;
-    } catch (err) {
-        console.error('Dashboard load error:', err);
-        showToast('Failed to load dashboard data', 'error');
     }
-}
 
-// ===================== PRODUCTS TABLE =====================
-async function loadProductsTable(page = 1, sort = '', search = '') {
-    const loader = document.getElementById('tableLoader');
-    const tbody = document.getElementById('productsTableBody');
-    loader.classList.remove('hidden');
-    tbody.innerHTML = '';
+    function populateCategorySelects() {
+        const select = document.getElementById('prodCategory');
+        const filter = document.getElementById('filterCategory');
+        select.innerHTML = categories.map(c => `<option value="${c}">${c.charAt(0).toUpperCase() + c.slice(1).replace(/-/g, ' ')}</option>`).join('');
+        filter.innerHTML = `<option value="all">${i18n[currentLang].filter_all}</option>` + categories.map(c => `<option value="${c}">${c.charAt(0).toUpperCase() + c.slice(1).replace(/-/g, ' ')}</option>`).join('');
+    }
 
-    try {
-        let url;
-        if (search) {
-            url = `${API_BASE}/products/search?q=${encodeURIComponent(search)}`;
-        } else if (sort) {
-            const [field, order] = sort.split('-');
-            url = `${API_BASE}/products?sortBy=${field}&order=${order}&limit=${PAGE_SIZE}&skip=${(page - 1) * PAGE_SIZE}`;
+    // ADD / EDIT
+    function saveProduct() {
+        const title = document.getElementById('prodTitle').value.trim();
+        const desc = document.getElementById('prodDesc').value.trim();
+        const price = parseFloat(document.getElementById('prodPrice').value);
+        const category = document.getElementById('prodCategory').value;
+        const discount = parseFloat(document.getElementById('prodDiscount').value) || 0;
+        const stock = parseInt(document.getElementById('prodStock').value) || 0;
+        const brand = document.getElementById('prodBrand').value.trim();
+        const sku = document.getElementById('prodSku').value.trim();
+        const image = document.getElementById('prodImage').value.trim();
+        const editId = document.getElementById('editProductId').value;
+
+        if (!title || !desc || isNaN(price) || !category) { showToast(i18n[currentLang].toast_fill, 'error'); return; }
+
+        const productData = { title, description: desc, price, category, discountPercentage: discount, stock, brand, sku, thumbnail: image || `https://cdn.dummyjson.com/product-images/${category}/thumbnail.webp`, images: image ? [image] : [] };
+
+        if (editId) {
+            // Update via API
+            fetch(`${API}/products/${editId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(productData)
+            }).then(r => r.json()).then(updated => {
+                const idx = allProducts.findIndex(p => p.id === parseInt(editId));
+                if (idx !== -1) allProducts[idx] = { ...allProducts[idx], ...productData, id: parseInt(editId) };
+                showToast(i18n[currentLang].toast_saved, 'success');
+                resetForm();
+                showSection('products');
+            }).catch(e => {
+                // Still update locally
+                const idx = allProducts.findIndex(p => p.id === parseInt(editId));
+                if (idx !== -1) allProducts[idx] = { ...allProducts[idx], ...productData };
+                showToast(i18n[currentLang].toast_saved, 'success');
+                resetForm();
+                showSection('products');
+            });
         } else {
-            url = `${API_BASE}/products?limit=${PAGE_SIZE}&skip=${(page - 1) * PAGE_SIZE}`;
+            // Add via API
+            fetch(`${API}/products/add`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(productData)
+            }).then(r => r.json()).then(added => {
+                const newProduct = { ...productData, id: added.id || allProducts.length + 1, rating: 0 };
+                allProducts.push(newProduct);
+                showToast(i18n[currentLang].toast_saved, 'success');
+                resetForm();
+                showSection('products');
+            }).catch(e => {
+                const newProduct = { ...productData, id: allProducts.length + 100, rating: 0 };
+                allProducts.push(newProduct);
+                showToast(i18n[currentLang].toast_saved, 'success');
+                resetForm();
+                showSection('products');
+            });
         }
-
-        const res = await fetch(url);
-        const data = await res.json();
-        const products = data.products || [];
-        const total = data.total || products.length;
-
-        loader.classList.add('hidden');
-
-        if (products.length === 0) {
-            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-sm text-slate-400">No products found</td></tr>`;
-            return;
-        }
-
-        tbody.innerHTML = products.map((p, i) => {
-            const img = p.thumbnail || (p.images && p.images[0]) || '';
-            const rating = typeof p.rating === 'number' ? p.rating : 0;
-            const stars = '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating));
-            return `
-            <tr class="border-b border-white/20 hover:bg-white/30 transition fade-in" style="animation-delay:${i * 0.03}s">
-                <td class="px-4 py-3"><img src="${img}" class="w-12 h-12 rounded-xl object-contain bg-white/50" loading="lazy"></td>
-                <td class="px-4 py-3">
-                    <p class="text-xs font-bold text-slate-700 max-w-[200px] truncate">${p.title}</p>
-                    <p class="text-[10px] text-slate-400 truncate max-w-[200px]">${p.brand || '—'}</p>
-                </td>
-                <td class="px-4 py-3"><span class="text-[10px] font-bold text-indigo-400 bg-indigo-50/50 px-2 py-1 rounded-lg">${p.category}</span></td>
-                <td class="px-4 py-3">
-                    <p class="text-sm font-extrabold text-slate-800">$${p.price.toFixed(2)}</p>
-                    ${p.discountPercentage > 0 ? `<p class="text-[9px] text-green-500">-${p.discountPercentage}%</p>` : ''}
-                </td>
-                <td class="px-4 py-3">
-                    <span class="text-xs font-semibold ${p.stock > 10 ? 'text-green-500' : p.stock > 0 ? 'text-amber-500' : 'text-red-500'}">${p.stock}</span>
-                </td>
-                <td class="px-4 py-3">
-                    <span class="text-amber-400 text-[10px]">${stars}</span>
-                    <span class="text-[10px] text-slate-400 ml-1">${rating.toFixed(1)}</span>
-                </td>
-                <td class="px-4 py-3">
-                    <div class="flex items-center justify-center gap-1">
-                        <button onclick="editProduct(${p.id})" class="w-8 h-8 rounded-lg bg-blue-50 flex items-center justify-center text-blue-500 hover:bg-blue-100 transition" title="Edit">
-                            <i class="fa-solid fa-pen text-[10px]"></i>
-                        </button>
-                        <button onclick="deleteProduct(${p.id}, '${p.title.replace(/'/g, "\\'")}')" class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500 hover:bg-red-100 transition" title="Delete">
-                            <i class="fa-solid fa-trash text-[10px]"></i>
-                        </button>
-                    </div>
-                </td>
-            </tr>`;
-        }).join('');
-
-        // Pagination
-        const totalPages = Math.ceil(total / PAGE_SIZE);
-        currentPage = page;
-        document.getElementById('paginationInfo').textContent = `Showing ${(page-1)*PAGE_SIZE + 1}-${Math.min(page*PAGE_SIZE, total)} of ${total}`;
-
-        let pagBtns = '';
-        if (page > 1) pagBtns += `<button onclick="loadProductsTable(${page-1},'${sort}')" class="w-8 h-8 rounded-lg bg-white/50 flex items-center justify-center text-xs font-bold text-slate-600 hover:bg-white/80 transition"><i class="fa-solid fa-chevron-left text-[10px]"></i></button>`;
-        for (let i = Math.max(1, page-2); i <= Math.min(totalPages, page+2); i++) {
-            pagBtns += `<button onclick="loadProductsTable(${i},'${sort}')" class="w-8 h-8 rounded-lg ${i === page ? 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white' : 'bg-white/50 text-slate-600'} flex items-center justify-center text-xs font-bold hover:opacity-90 transition">${i}</button>`;
-        }
-        if (page < totalPages) pagBtns += `<button onclick="loadProductsTable(${page+1},'${sort}')" class="w-8 h-8 rounded-lg bg-white/50 flex items-center justify-center text-xs font-bold text-slate-600 hover:bg-white/80 transition"><i class="fa-solid fa-chevron-right text-[10px]"></i></button>`;
-        document.getElementById('paginationButtons').innerHTML = pagBtns;
-
-    } catch (err) {
-        loader.classList.add('hidden');
-        console.error('Products table error:', err);
-        tbody.innerHTML = `<tr><td colspan="7" class="text-center py-8 text-sm text-red-400">Failed to load products</td></tr>`;
-    }
-}
-
-// ===================== SEARCH & SORT =====================
-let searchTimeout;
-async function handleSearch(query) {
-    clearTimeout(searchTimeout);
-    searchTimeout = setTimeout(() => {
-        if (query.trim().length < 2) {
-            loadProductsTable(currentPage);
-            return;
-        }
-        loadProductsTable(1, '', query.trim());
-    }, 400);
-}
-
-function handleSort(value) {
-    loadProductsTable(1, value);
-}
-
-// ===================== CREATE PRODUCT =====================
-async function submitProduct() {
-    const title = document.getElementById('formTitleInput').value.trim();
-    const price = parseFloat(document.getElementById('formPrice').value);
-    const description = document.getElementById('formDescription').value.trim();
-    const category = document.getElementById('formCategory').value;
-    const brand = document.getElementById('formBrand').value.trim();
-    const discount = parseFloat(document.getElementById('formDiscount').value) || 0;
-    const stock = parseInt(document.getElementById('formStock').value) || 0;
-    const rating = parseFloat(document.getElementById('formRating').value) || 0;
-    const image = document.getElementById('formImage').value.trim();
-    const tags = document.getElementById('formTags').value.split(',').map(t => t.trim()).filter(Boolean);
-
-    if (!title || !price || !description || !category) {
-        showToast('Please fill all required fields', 'error');
-        return;
     }
 
-    const productData = { title, price, description, category, discountPercentage: discount, stock, rating };
-    if (brand) productData.brand = brand;
-    if (image) productData.thumbnail = image;
-    if (tags.length) productData.tags = tags;
+    function editProduct(id) {
+        const p = allProducts.find(x => x.id === id);
+        if (!p) return;
+        document.getElementById('editProductId').value = p.id;
+        document.getElementById('prodTitle').value = p.title;
+        document.getElementById('prodDesc').value = p.description || '';
+        document.getElementById('prodPrice').value = p.price;
+        document.getElementById('prodCategory').value = p.category;
+        document.getElementById('prodDiscount').value = p.discountPercentage || 0;
+        document.getElementById('prodStock').value = p.stock || 0;
+        document.getElementById('prodBrand').value = p.brand || '';
+        document.getElementById('prodSku').value = p.sku || '';
+        document.getElementById('prodImage').value = p.thumbnail || p.image || '';
+        document.getElementById('formTitle').innerHTML = i18n[currentLang].edit_product;
+        document.getElementById('saveBtn').innerHTML = `<i class="fa-solid fa-check mr-1"></i> ${i18n[currentLang].edit_product}`;
+        showSection('addProduct');
+    }
 
-    try {
-        const res = await fetch(`${API_BASE}/products/add`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(productData)
+    function resetForm() {
+        document.getElementById('editProductId').value = '';
+        ['prodTitle','prodDesc','prodPrice','prodDiscount','prodStock','prodBrand','prodSku','prodImage'].forEach(id => document.getElementById(id).value = '');
+        if (categories.length > 0) document.getElementById('prodCategory').value = categories[0];
+        document.getElementById('formTitle').innerHTML = i18n[currentLang].add_new_product;
+        document.getElementById('saveBtn').innerHTML = `<i class="fa-solid fa-plus mr-1"></i> ${i18n[currentLang].add_product}`;
+    }
+
+    // DELETE
+    function promptDelete(id) { deleteId = id; document.getElementById('deleteModal').classList.remove('hidden'); }
+    function closeDeleteModal() { document.getElementById('deleteModal').classList.add('hidden'); deleteId = null; }
+    function confirmDelete() {
+        if (!deleteId) return;
+        fetch(`${API}/products/${deleteId}`, { method: 'DELETE' }).then(() => {
+            allProducts = allProducts.filter(p => p.id !== deleteId);
+            showToast(i18n[currentLang].toast_deleted, 'success');
+            closeDeleteModal();
+            renderProductsList();
+            renderDashboard();
+        }).catch(() => {
+            allProducts = allProducts.filter(p => p.id !== deleteId);
+            showToast(i18n[currentLang].toast_deleted, 'success');
+            closeDeleteModal();
+            renderProductsList();
+            renderDashboard();
         });
-        const result = await res.json();
-        if (result.id) {
-            showToast('Product added successfully! (ID: ' + result.id + ')');
-            resetForm();
-            loadDashboard();
-        } else {
-            showToast('Failed to add product', 'error');
-        }
-    } catch (err) {
-        console.error('Add product error:', err);
-        showToast('Failed to add product', 'error');
-    }
-}
-
-function resetForm() {
-    document.getElementById('productForm').reset();
-    document.getElementById('editProductId').value = '';
-    document.getElementById('formTitle').textContent = '➕ Add New Product';
-    document.getElementById('formSubmitBtn').innerHTML = '<i class="fa-solid fa-plus text-xs"></i> <span>Add Product</span>';
-    document.getElementById('imagePreview').classList.add('hidden');
-}
-
-// ===================== EDIT PRODUCT =====================
-async function editProduct(id) {
-    try {
-        const res = await fetch(`${API_BASE}/products/${id}`);
-        const product = await res.json();
-        if (!product.id) { showToast('Product not found', 'error'); return; }
-
-        document.getElementById('editId').value = product.id;
-        document.getElementById('editTitle').value = product.title || '';
-        document.getElementById('editPrice').value = product.price || '';
-        document.getElementById('editDescription').value = product.description || '';
-        document.getElementById('editCategory').value = product.category || '';
-        document.getElementById('editBrand').value = product.brand || '';
-        document.getElementById('editDiscount').value = product.discountPercentage || '';
-        document.getElementById('editStock').value = product.stock || '';
-        document.getElementById('editImage').value = product.thumbnail || (product.images && product.images[0]) || '';
-
-        document.getElementById('editModal').classList.remove('hidden');
-        document.body.style.overflow = 'hidden';
-    } catch (err) {
-        console.error('Edit fetch error:', err);
-        showToast('Failed to load product', 'error');
-    }
-}
-
-function closeEditModal() {
-    document.getElementById('editModal').classList.add('hidden');
-    document.body.style.overflow = '';
-}
-
-async function submitEdit() {
-    const id = document.getElementById('editId').value;
-    const data = {
-        title: document.getElementById('editTitle').value.trim(),
-        price: parseFloat(document.getElementById('editPrice').value),
-        description: document.getElementById('editDescription').value.trim(),
-        category: document.getElementById('editCategory').value.trim(),
-        brand: document.getElementById('editBrand').value.trim(),
-        discountPercentage: parseFloat(document.getElementById('editDiscount').value) || 0,
-        stock: parseInt(document.getElementById('editStock').value) || 0,
-        thumbnail: document.getElementById('editImage').value.trim()
-    };
-
-    if (!data.title || !data.price) {
-        showToast('Title and price are required', 'error');
-        return;
     }
 
-    try {
-        const res = await fetch(`${API_BASE}/products/${id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        });
-        const result = await res.json();
-        if (result.id) {
-            showToast('Product updated successfully!');
-            closeEditModal();
-            loadProductsTable(currentPage);
-            loadDashboard();
-        } else {
-            showToast('Failed to update product', 'error');
-        }
-    } catch (err) {
-        console.error('Update error:', err);
-        showToast('Failed to update product', 'error');
+    // TOAST
+    function showToast(msg, type) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.background = type === 'success' ? 'linear-gradient(135deg, #10b981, #34d399)' : type === 'error' ? 'linear-gradient(135deg, #ef4444, #f97316)' : 'linear-gradient(135deg, #6366f1, #8b5cf6)';
+        toast.style.opacity = '1'; toast.style.transform = 'translateY(0)';
+        setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateY(-10px)'; }, 2500);
     }
-}
 
-// ===================== DELETE PRODUCT =====================
-async function deleteProduct(id, title) {
-    if (!confirm(`Delete "${title}"? This action cannot be undone.`)) return;
-
-    try {
-        const res = await fetch(`${API_BASE}/products/${id}`, { method: 'DELETE' });
-        const result = await res.json();
-        if (result.isDeleted) {
-            showToast('Product deleted successfully!');
-            loadProductsTable(currentPage);
-            loadDashboard();
-        } else {
-            showToast('Failed to delete product', 'error');
-        }
-    } catch (err) {
-        console.error('Delete error:', err);
-        showToast('Failed to delete product', 'error');
+    function logout() {
+        localStorage.removeItem('novaShopAuth');
+        window.location.href = 'index.html';
     }
-}
 
-// ===================== TOAST =====================
-function showToast(msg, type = 'success') {
-    const toast = document.createElement('div');
-    const bg = type === 'error' ? 'from-red-500 to-rose-500' : 'from-indigo-500 to-purple-500';
-    toast.className = `fixed top-6 right-6 z-[200] bg-gradient-to-r ${bg} text-white text-xs font-bold px-5 py-3 rounded-xl shadow-2xl transition-all opacity-0`;
-    toast.textContent = msg;
-    document.getElementById('toastContainer').appendChild(toast);
-    requestAnimationFrame(() => toast.style.opacity = '1');
-    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
-}
-
-// ===================== KEYBOARD =====================
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeEditModal(); });
-</script>
+    document.addEventListener('DOMContentLoaded', () => {
+        applyTranslations();
+        loadAll();
+    });
+    </script>
 </body>
 </html>
