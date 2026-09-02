@@ -7,121 +7,358 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script>tailwind.config = { theme: { extend: { fontFamily: { 'inter': ['Inter', 'sans-serif'] } } } }</script>
+    <script>tailwind.config = { theme: { extend: { fontFamily: { 'inter': ['Inter', 'sans-serif'] }, colors: { primary: { 50:'#eef2ff',100:'#e0e7ff',200:'#c7d2fe',300:'#a5b4fc',400:'#818cf8',500:'#6366f1',600:'#4f46e5',700:'#4338ca',800:'#3730a3',900:'#312e81' } } } } }</script>
     <style>
-        * { font-family: 'Inter', sans-serif; }
-        body { background: linear-gradient(135deg, #f0f0ff 0%, #e8e0f0 30%, #f5f0ff 60%, #eef0ff 100%); overflow-x: hidden; }
-        .blob { position: fixed; border-radius: 50%; filter: blur(80px); z-index: 0; opacity: 0.4; pointer-events: none; }
-        .blob-1 { top: -10%; left: -5%; width: 400px; height: 400px; background: #c7b8f5; }
-        .blob-2 { top: 40%; right: -5%; width: 350px; height: 350px; background: #a5b4fc; }
-        .glass-strong { background: rgba(255,255,255,0.65); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.7); }
-        .glass-card { background: rgba(255,255,255,0.5); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); border-radius: 20px; transition: all 0.3s ease; }
-        .glass-card:hover { box-shadow: 0 12px 40px rgba(0,0,0,0.06); }
-        .sidebar-item { transition: all 0.2s ease; border-radius: 12px; }
-        .sidebar-item:hover { background: rgba(99,102,241,0.1); color: #6366f1; }
-        .sidebar-item.active { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; }
-        .input-field { background: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.8); border-radius: 12px; padding: 10px 14px; width: 100%; font-size: 13px; outline: none; transition: all 0.3s; }
-        .input-field:focus { box-shadow: 0 0 0 3px rgba(99,102,241,0.15); border-color: #818cf8; }
-        .slide-up { animation: slideUp 0.5s ease forwards; opacity: 0; transform: translateY(15px); }
-        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
-        .lang-toggle { transition: all 0.3s ease; }
-        .lang-toggle.active { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; }
-        select.input-field { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236366f1' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; }
+        *{font-family:'Inter',sans-serif}
+        body{background:#f8fafc;overflow-x:hidden}
+        .sidebar-item{transition:all 0.2s ease;border-radius:10px;font-size:13px}
+        .sidebar-item:hover{background:rgba(99,102,241,0.08);color:#6366f1}
+        .sidebar-item.active{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;box-shadow:0 4px 12px rgba(99,102,241,0.3)}
+        .stat-card{background:white;border-radius:16px;border:1px solid #e5e7eb;padding:20px;transition:all 0.3s}
+        .stat-card:hover{box-shadow:0 8px 30px rgba(0,0,0,0.06);transform:translateY(-2px)}
+        .card{background:white;border-radius:16px;border:1px solid #e5e7eb;padding:20px}
+        .input-field{background:white;border:1px solid #e5e7eb;border-radius:10px;padding:10px 14px;width:100%;font-size:13px;outline:none;transition:all 0.3s}
+        .input-field:focus{box-shadow:0 0 0 3px rgba(99,102,241,0.12);border-color:#818cf8}
+        .btn-primary{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:white;border-radius:10px;padding:10px 20px;font-weight:600;font-size:13px;cursor:pointer;transition:all 0.3s;border:none}
+        .btn-primary:hover{opacity:0.9;transform:translateY(-1px);box-shadow:0 4px 12px rgba(99,102,241,0.3)}
+        .btn-secondary{background:#f1f5f9;color:#475569;border-radius:10px;padding:10px 20px;font-weight:600;font-size:13px;cursor:pointer;transition:all 0.3s;border:1px solid #e2e8f0}
+        .btn-secondary:hover{background:#e2e8f0}
+        .badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
+        .badge-green{background:#ecfdf5;color:#059669}
+        .badge-red{background:#fef2f2;color:#dc2626}
+        .badge-yellow{background:#fffbeb;color:#d97706}
+        .badge-blue{background:#eff6ff;color:#2563eb}
+        .badge-purple{background:#faf5ff;color:#9333ea}
+        .chart-bar{transition:height 0.6s ease}
+        .slide-up{animation:slideUp 0.4s ease forwards;opacity:0;transform:translateY(10px)}
+        @keyframes slideUp{to{opacity:1;transform:translateY(0)}}
+        .table-row{transition:background 0.2s}
+        .table-row:hover{background:#f8fafc}
+        ::-webkit-scrollbar{width:5px}
+        ::-webkit-scrollbar-track{background:transparent}
+        ::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:10px}
+        .sidebar-scroll::-webkit-scrollbar{width:3px}
+        .modal-overlay{position:fixed;inset:0;z-index:70;display:none;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px)}
+        .modal-overlay.show{display:flex;align-items:center;justify-content:center}
+        .modal-box{background:white;border-radius:20px;padding:24px;max-width:480px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,0.15)}
+        select.input-field{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236366f1' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10l-5 5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px}
+        .cat-thumb{width:48px;height:48px;border-radius:12px;object-fit:contain;background:#f8fafc;padding:4px;border:1px solid #f1f5f9}
+        .revenue-chart{position:relative;height:200px;display:flex;align-items:flex-end;gap:6px;padding:0 4px}
+        .revenue-bar{flex:1;border-radius:6px 6px 0 0;transition:height 0.8s ease;cursor:pointer;position:relative;min-width:0}
+        .revenue-bar:hover{opacity:0.85}
+        .revenue-bar::after{content:attr(data-label);position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:9px;color:#94a3b8;font-weight:600;white-space:nowrap}
+        .toast{position:fixed;top:20px;right:20px;z-index:200;padding:12px 20px;border-radius:12px;color:white;font-weight:600;font-size:13px;transform:translateY(-10px);opacity:0;transition:all 0.3s;box-shadow:0 8px 24px rgba(0,0,0,0.15)}
+        .toast.show{transform:translateY(0);opacity:1}
+        .toast.success{background:linear-gradient(135deg,#10b981,#34d399)}
+        .toast.error{background:linear-gradient(135deg,#ef4444,#f97316)}
+        .toast.info{background:linear-gradient(135deg,#6366f1,#8b5cf6)}
     </style>
 </head>
-<body class="min-h-screen relative">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
+<body class="min-h-screen flex">
+    <!-- GOOGLE AUTH SCREEN -->
+    <div id="authScreen" class="fixed inset-0 z-[100] bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center">
+        <div class="text-center slide-up">
+            <div class="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-xl mx-auto mb-6">
+                <i class="fa-solid fa-shield-halved text-white text-3xl"></i>
+            </div>
+            <h1 class="text-2xl font-extrabold text-slate-800 mb-2">HR <span class="text-primary-500">ShopBD</span></h1>
+            <p class="text-sm text-slate-400 mb-8">Admin Panel — Authorized Access Only</p>
+            <div id="authError" class="hidden mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-sm font-medium"></div>
+            <button onclick="adminGoogleLogin()" class="flex items-center gap-3 px-8 py-4 bg-white rounded-2xl border border-slate-200 hover:border-primary-300 hover:shadow-lg transition-all mx-auto group">
+                <svg width="22" height="22" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                <div class="text-left">
+                    <p class="text-[11px] text-slate-400 font-medium leading-none mb-0.5">Sign in with</p>
+                    <p class="text-sm font-bold text-slate-700 group-hover:text-primary-600 transition">Google</p>
+                </div>
+            </button>
+            <a href="index.html" class="inline-flex items-center gap-2 text-xs text-slate-400 mt-6 hover:text-slate-600 transition"><i class="fa-solid fa-arrow-left text-[10px]"></i> Back to Shop</a>
+        </div>
+    </div>
 
-    <div id="mobileOverlay" class="fixed inset-0 z-[50] hidden lg:hidden" onclick="toggleMobileSidebar(false)" style="background:rgba(0,0,0,0.7);backdrop-filter:blur(2px);"></div>
+    <!-- MOBILE OVERLAY -->
+    <div id="mobileOverlay" class="fixed inset-0 z-[50] hidden lg:hidden" onclick="toggleSidebar(false)" style="background:rgba(0,0,0,0.5);backdrop-filter:blur(2px)"></div>
 
-    <div class="flex h-screen overflow-hidden relative z-10">
+    <!-- ADMIN LAYOUT -->
+    <div id="adminLayout" class="hidden flex w-full min-h-screen">
         <!-- SIDEBAR -->
-        <aside id="sidebar" class="w-[280px] flex flex-col py-6 px-4 fixed lg:relative h-full z-[55] -translate-x-full lg:translate-x-0 transition-transform duration-300" style="background:rgba(245,240,255,1);border-right:1px solid rgba(255,255,255,0.6);">
-            <div class="flex items-center gap-3 px-3 mb-6">
+        <aside id="sidebar" class="w-[260px] bg-white border-r border-slate-200 flex flex-col fixed lg:relative h-full z-[55] -translate-x-full lg:translate-x-0 transition-transform duration-300 overflow-hidden">
+            <!-- Logo -->
+            <div class="px-5 py-5 border-b border-slate-100">
                 <a href="index.html" class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg"><i class="fa-solid fa-store text-white text-sm"></i></div>
-                    <span class="font-extrabold text-lg text-slate-800">HR <span class="text-indigo-500">ShopBD</span></span>
+                    <div class="w-9 h-9 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg"><i class="fa-solid fa-store text-white text-sm"></i></div>
+                    <div>
+                        <span class="font-extrabold text-sm text-slate-800">HR <span class="text-primary-500">ShopBD</span></span>
+                        <p class="text-[10px] text-slate-400 font-medium">Admin Panel</p>
+                    </div>
                 </a>
             </div>
-            <div class="flex gap-1 p-1 rounded-xl bg-white/30 mb-5 mx-3">
-                <button onclick="setLang('en')" id="langEn" class="flex-1 py-1.5 rounded-lg text-[11px] font-bold transition lang-toggle active">EN</button>
-                <button onclick="setLang('bn')" id="langBn" class="flex-1 py-1.5 rounded-lg text-[11px] font-bold text-slate-500 transition lang-toggle">বাং</button>
+
+            <!-- Search -->
+            <div class="px-4 py-3">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-xs"></i>
+                    <input type="text" placeholder="Search..." class="w-full bg-slate-50 border border-slate-200 rounded-lg px-9 py-2 text-xs text-slate-600 placeholder-slate-400 focus:outline-none focus:border-primary-300 transition">
+                </div>
             </div>
-            <nav class="flex-1 space-y-1 overflow-y-auto">
-                <a href="index.html" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-                    <i class="fa-solid fa-house w-5 text-center"></i> <span data-i18n="nav_home">Home</span>
+
+            <!-- Nav -->
+            <nav class="flex-1 overflow-y-auto sidebar-scroll px-3 pb-4 space-y-0.5">
+                <p class="text-[10px] font-bold text-slate-300 uppercase tracking-wider px-3 pt-3 pb-1">Main</p>
+                <a href="#" onclick="showSection('dashboard');setActive(this)" class="sidebar-item active flex items-center gap-3 px-3 py-2.5 font-medium text-slate-600">
+                    <i class="fa-solid fa-chart-pie w-4 text-center text-[13px]"></i> <span>Dashboard</span>
                 </a>
-                <a href="#" onclick="showSection('dashboard');setActive(this)" class="sidebar-item active flex items-center gap-3 px-4 py-3 text-sm font-medium">
-                    <i class="fa-solid fa-chart-line w-5 text-center"></i> <span data-i18n="nav_overview">Overview</span>
+                <a href="#" onclick="showSection('orders');setActive(this)" class="sidebar-item flex items-center gap-3 px-3 py-2.5 font-medium text-slate-600">
+                    <i class="fa-solid fa-bag-shopping w-4 text-center text-[13px]"></i> <span>Orders</span>
+                    <span class="ml-auto badge badge-blue">128</span>
                 </a>
-                <a href="#" onclick="showSection('products');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-                    <i class="fa-solid fa-box w-5 text-center"></i> <span data-i18n="nav_products">Products</span>
+
+                <p class="text-[10px] font-bold text-slate-300 uppercase tracking-wider px-3 pt-4 pb-1">Catalog</p>
+                <a href="#" onclick="showSection('products');setActive(this)" class="sidebar-item flex items-center gap-3 px-3 py-2.5 font-medium text-slate-600">
+                    <i class="fa-solid fa-box w-4 text-center text-[13px]"></i> <span>Products</span>
                 </a>
-                <a href="#" onclick="showSection('addProduct');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-                    <i class="fa-solid fa-plus-circle w-5 text-center"></i> <span data-i18n="nav_add">Add Product</span>
+                <a href="#" onclick="showSection('addProduct');setActive(this)" class="sidebar-item flex items-center gap-3 px-3 py-2.5 font-medium text-slate-600">
+                    <i class="fa-solid fa-plus-circle w-4 text-center text-[13px]"></i> <span>Add Product</span>
                 </a>
-                <a href="#" onclick="showSection('categories');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-                    <i class="fa-solid fa-tags w-5 text-center"></i> <span data-i18n="nav_categories">Categories</span>
+                <a href="#" onclick="showSection('categories');setActive(this)" class="sidebar-item flex items-center gap-3 px-3 py-2.5 font-medium text-slate-600">
+                    <i class="fa-solid fa-tags w-4 text-center text-[13px]"></i> <span>Categories</span>
                 </a>
-                <div class="border-t border-slate-200/50 my-3"></div>
-                <a href="dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-                    <i class="fa-solid fa-user w-5 text-center"></i> <span data-i18n="nav_customer">Customer Panel</span>
+                <a href="#" onclick="showSection('brands');setActive(this)" class="sidebar-item flex items-center gap-3 px-3 py-2.5 font-medium text-slate-600">
+                    <i class="fa-solid fa-award w-4 text-center text-[13px]"></i> <span>Brands</span>
                 </a>
-                <a href="login.html" onclick="logout()" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-                    <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> <span data-i18n="nav_logout">Logout</span>
+
+                <p class="text-[10px] font-bold text-slate-300 uppercase tracking-wider px-3 pt-4 pb-1">Customers</p>
+                <a href="#" onclick="showSection('users');setActive(this)" class="sidebar-item flex items-center gap-3 px-3 py-2.5 font-medium text-slate-600">
+                    <i class="fa-solid fa-users w-4 text-center text-[13px]"></i> <span>Users</span>
+                    <span class="ml-auto badge badge-purple">3.2k</span>
+                </a>
+                <a href="#" onclick="showSection('reviews');setActive(this)" class="sidebar-item flex items-center gap-3 px-3 py-2.5 font-medium text-slate-600">
+                    <i class="fa-solid fa-star w-4 text-center text-[13px]"></i> <span>Product Reviews</span>
+                </a>
+
+                <p class="text-[10px] font-bold text-slate-300 uppercase tracking-wider px-3 pt-4 pb-1">Marketing</p>
+                <a href="#" onclick="showSection('coupons');setActive(this)" class="sidebar-item flex items-center gap-3 px-3 py-2.5 font-medium text-slate-600">
+                    <i class="fa-solid fa-ticket w-4 text-center text-[13px]"></i> <span>Coupons</span>
+                </a>
+
+                <p class="text-[10px] font-bold text-slate-300 uppercase tracking-wider px-3 pt-4 pb-1">Finance</p>
+                <a href="#" onclick="showSection('revenue');setActive(this)" class="sidebar-item flex items-center gap-3 px-3 py-2.5 font-medium text-slate-600">
+                    <i class="fa-solid fa-chart-line w-4 text-center text-[13px]"></i> <span>Revenue</span>
+                </a>
+                <a href="#" onclick="showSection('tax');setActive(this)" class="sidebar-item flex items-center gap-3 px-3 py-2.5 font-medium text-slate-600">
+                    <i class="fa-solid fa-percent w-4 text-center text-[13px]"></i> <span>Tax Settings</span>
+                </a>
+
+                <p class="text-[10px] font-bold text-slate-300 uppercase tracking-wider px-3 pt-4 pb-1">Support</p>
+                <a href="#" onclick="showSection('tickets');setActive(this)" class="sidebar-item flex items-center gap-3 px-3 py-2.5 font-medium text-slate-600">
+                    <i class="fa-solid fa-headset w-4 text-center text-[13px]"></i> <span>Support Tickets</span>
+                    <span class="ml-auto badge badge-red">5</span>
+                </a>
+
+                <p class="text-[10px] font-bold text-slate-300 uppercase tracking-wider px-3 pt-4 pb-1">Configuration</p>
+                <a href="#" onclick="showSection('settings');setActive(this)" class="sidebar-item flex items-center gap-3 px-3 py-2.5 font-medium text-slate-600">
+                    <i class="fa-solid fa-gear w-4 text-center text-[13px]"></i> <span>Settings</span>
+                </a>
+                <a href="#" onclick="showSection('reports');setActive(this)" class="sidebar-item flex items-center gap-3 px-3 py-2.5 font-medium text-slate-600">
+                    <i class="fa-solid fa-chart-bar w-4 text-center text-[13px]"></i> <span>Reports</span>
                 </a>
             </nav>
+
+            <!-- Admin User -->
+            <div class="px-4 py-4 border-t border-slate-100">
+                <div class="flex items-center gap-3">
+                    <img id="sidebarAvatar" src="https://i.pravatar.cc/150?img=68" class="w-9 h-9 rounded-full border-2 border-primary-200 object-cover">
+                    <div class="flex-1 min-w-0">
+                        <p id="sidebarName" class="text-xs font-bold text-slate-700 truncate">Admin</p>
+                        <p id="sidebarEmail" class="text-[10px] text-slate-400 truncate">admin@hrshopbd.com</p>
+                    </div>
+                    <button onclick="adminLogout()" class="w-8 h-8 rounded-lg flex items-center justify-center text-slate-400 hover:bg-red-50 hover:text-red-500 transition" title="Logout">
+                        <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                    </button>
+                </div>
+            </div>
         </aside>
 
-        <!-- MAIN -->
-        <main class="flex-1 overflow-y-auto">
-            <header class="sticky top-0 z-30 glass-strong px-6 py-3 flex items-center gap-4">
-                <button onclick="toggleMobileSidebar()" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/50 transition"><i class="fa-solid fa-bars text-slate-600"></i></button>
-                <h2 class="font-extrabold text-lg text-slate-800" data-i18n="dash_title">Admin Dashboard</h2>
-                <div class="flex-1"></div>
-                <div class="relative flex-1 max-w-sm hidden md:block">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                    <input type="text" id="adminSearch" oninput="handleAdminSearch(this.value)" placeholder="Search products..." class="w-full bg-white/60 border border-white/80 rounded-full px-10 py-2 text-xs text-slate-700 placeholder-slate-400 focus:outline-none focus:shadow-[0_0_0_3px_rgba(99,102,241,0.15)] transition">
+        <!-- MAIN CONTENT -->
+        <main class="flex-1 min-h-screen">
+            <!-- TOP BAR -->
+            <header class="sticky top-0 z-30 bg-white/80 backdrop-blur-xl border-b border-slate-200 px-6 py-3 flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="lg:hidden w-9 h-9 flex items-center justify-center rounded-xl hover:bg-slate-100 transition"><i class="fa-solid fa-bars text-slate-500 text-sm"></i></button>
+                <div class="flex-1 max-w-md">
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-300 text-xs"></i>
+                        <input type="text" id="globalSearch" oninput="handleGlobalSearch(this.value)" placeholder="Search products, orders..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-10 py-2.5 text-xs text-slate-600 placeholder-slate-400 focus:outline-none focus:border-primary-300 focus:bg-white transition">
+                    </div>
                 </div>
-                <a href="index.html" class="w-10 h-10 flex items-center justify-center glass rounded-full hover:bg-white/70 transition text-slate-500"><i class="fa-solid fa-house text-sm"></i></a>
+                <div class="flex items-center gap-2">
+                    <button class="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-slate-100 transition relative text-slate-500">
+                        <i class="fa-solid fa-bell text-sm"></i>
+                        <span class="absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 rounded-full text-[8px] text-white font-bold flex items-center justify-center">3</span>
+                    </button>
+                    <button onclick="toggleDark()" class="w-9 h-9 flex items-center justify-center rounded-xl hover:bg-slate-100 transition text-slate-500">
+                        <i class="fa-solid fa-moon text-sm" id="themeIcon"></i>
+                    </button>
+                    <div class="w-px h-6 bg-slate-200 mx-1"></div>
+                    <div class="flex items-center gap-2 cursor-pointer px-2 py-1 rounded-xl hover:bg-slate-100 transition">
+                        <img id="topAvatar" src="https://i.pravatar.cc/150?img=68" class="w-8 h-8 rounded-full object-cover">
+                        <div class="hidden md:block">
+                            <p id="topName" class="text-xs font-bold text-slate-700">Admin</p>
+                            <p class="text-[10px] text-primary-500 font-semibold">Administrator</p>
+                        </div>
+                        <i class="fa-solid fa-chevron-down text-[9px] text-slate-400 ml-1"></i>
+                    </div>
+                </div>
             </header>
 
-            <div class="p-6">
-                <!-- DASHBOARD SECTION -->
-                <div id="sectionDashboard" class="slide-up">
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-                        <div class="glass-card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center"><i class="fa-solid fa-box text-indigo-500 text-sm"></i></div><div><p class="text-[10px] text-slate-400 font-semibold" data-i18n="stat_total_products">Total Products</p><p class="text-lg font-extrabold text-slate-800" id="statTotalProducts">0</p></div></div></div>
-                        <div class="glass-card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center"><i class="fa-solid fa-tags text-green-500 text-sm"></i></div><div><p class="text-[10px] text-slate-400 font-semibold" data-i18n="stat_categories">Categories</p><p class="text-lg font-extrabold text-slate-800" id="statCategories">0</p></div></div></div>
-                        <div class="glass-card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center"><i class="fa-solid fa-dollar-sign text-amber-500 text-sm"></i></div><div><p class="text-[10px] text-slate-400 font-semibold" data-i18n="stat_avg_price">Avg Price</p><p class="text-lg font-extrabold text-slate-800" id="statAvgPrice">$0</p></div></div></div>
-                        <div class="glass-card p-4"><div class="flex items-center gap-3"><div class="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-100 to-rose-100 flex items-center justify-center"><i class="fa-solid fa-star text-pink-500 text-sm"></i></div><div><p class="text-[10px] text-slate-400 font-semibold" data-i18n="stat_avg_rating">Avg Rating</p><p class="text-lg font-extrabold text-slate-800" id="statAvgRating">0</p></div></div></div>
-                    </div>
-                    <div class="glass-card p-6">
-                        <h3 class="font-bold text-slate-800 mb-3" data-i18n="recent_products">Recent Products</h3>
-                        <div id="recentProducts" class="space-y-2"></div>
-                    </div>
-                </div>
-
-                <!-- PRODUCTS SECTION -->
-                <div id="sectionProducts" class="hidden slide-up">
-                    <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-extrabold text-slate-800" data-i18n="all_products">All Products</h3>
-                        <div class="flex gap-2">
-                            <select id="filterCategory" onchange="filterByCategory(this.value)" class="input-field w-auto text-xs" style="padding:8px 32px 8px 12px;">
-                                <option value="all" data-i18n="filter_all">All Categories</option>
-                            </select>
-                            <button onclick="showSection('addProduct')" class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xs font-bold px-4 py-2 rounded-xl hover:opacity-90 transition">
-                                <i class="fa-solid fa-plus mr-1"></i> <span data-i18n="add_product">Add Product</span>
-                            </button>
+            <div class="p-6" id="mainContent">
+                <!-- ==================== DASHBOARD ==================== -->
+                <div id="secDashboard" class="slide-up">
+                    <!-- Welcome Banner -->
+                    <div class="bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-2xl p-6 mb-6 text-white relative overflow-hidden">
+                        <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/4"></div>
+                        <div class="absolute bottom-0 left-1/3 w-48 h-48 bg-white/5 rounded-full translate-y-1/2"></div>
+                        <div class="relative z-10">
+                            <p class="text-white/80 text-sm font-medium mb-1" id="welcomeGreeting">Good Morning 👋</p>
+                            <h2 class="text-2xl font-extrabold mb-1">Welcome back, <span id="welcomeName">Admin</span></h2>
+                            <p class="text-white/70 text-sm">Here's what's happening with your store today.</p>
+                        </div>
+                        <div class="relative z-10 flex gap-3 mt-4">
+                            <button onclick="showSection('addProduct')" class="px-5 py-2.5 bg-white/20 backdrop-blur-sm rounded-xl text-sm font-semibold hover:bg-white/30 transition"><i class="fa-solid fa-plus mr-1"></i> Add Product</button>
+                            <button onclick="showSection('reports')" class="px-5 py-2.5 bg-white/20 backdrop-blur-sm rounded-xl text-sm font-semibold hover:bg-white/30 transition"><i class="fa-solid fa-download mr-1"></i> Export</button>
                         </div>
                     </div>
-                    <div id="productsList" class="space-y-3"></div>
+
+                    <!-- Stats -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                        <div class="stat-card">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-11 h-11 rounded-xl bg-indigo-50 flex items-center justify-center"><i class="fa-solid fa-dollar-sign text-primary-500"></i></div>
+                                <span class="badge badge-green"><i class="fa-solid fa-arrow-up text-[8px] mr-0.5"></i> 8.5%</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400 font-semibold mb-0.5">Total Revenue</p>
+                            <p class="text-xl font-extrabold text-slate-800" id="statRevenue">$66,590</p>
+                        </div>
+                        <div class="stat-card">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center"><i class="fa-solid fa-bag-shopping text-blue-500"></i></div>
+                                <span class="badge badge-green"><i class="fa-solid fa-arrow-up text-[8px] mr-0.5"></i> 12.3%</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400 font-semibold mb-0.5">Total Orders</p>
+                            <p class="text-xl font-extrabold text-slate-800" id="statOrders">9,856</p>
+                        </div>
+                        <div class="stat-card">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-11 h-11 rounded-xl bg-purple-50 flex items-center justify-center"><i class="fa-solid fa-box text-purple-500"></i></div>
+                                <span class="badge badge-yellow"><i class="fa-solid fa-plus text-[8px] mr-0.5"></i> New</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400 font-semibold mb-0.5">Total Products</p>
+                            <p class="text-xl font-extrabold text-slate-800" id="statTotalProducts">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="w-11 h-11 rounded-xl bg-pink-50 flex items-center justify-center"><i class="fa-solid fa-users text-pink-500"></i></div>
+                                <span class="badge badge-green"><i class="fa-solid fa-arrow-up text-[8px] mr-0.5"></i> 5.2%</span>
+                            </div>
+                            <p class="text-[11px] text-slate-400 font-semibold mb-0.5">Total Customers</p>
+                            <p class="text-xl font-extrabold text-slate-800">4,628</p>
+                        </div>
+                    </div>
+
+                    <!-- Category Browser -->
+                    <div class="card mb-6">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-slate-800">Categories</h3>
+                            <button onclick="showSection('categories')" class="text-xs font-semibold text-primary-500 hover:text-primary-600 transition">View all <i class="fa-solid fa-arrow-right text-[10px] ml-0.5"></i></button>
+                        </div>
+                        <div id="dashCategories" class="flex gap-4 overflow-x-auto pb-2 scrollbar-hide"></div>
+                    </div>
+
+                    <!-- Revenue & Best Sellers -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                        <!-- Revenue Chart -->
+                        <div class="card">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold text-slate-800">Revenue Report</h3>
+                                <div class="flex gap-1 p-0.5 bg-slate-100 rounded-lg">
+                                    <button onclick="setRevenueView('year')" id="revYear" class="px-3 py-1 rounded-md text-[11px] font-bold bg-white shadow-sm text-primary-600">Year</button>
+                                    <button onclick="setRevenueView('month')" id="revMonth" class="px-3 py-1 rounded-md text-[11px] font-bold text-slate-400">Month</button>
+                                </div>
+                            </div>
+                            <div id="revenueChart" class="revenue-chart mb-6"></div>
+                            <div class="flex items-center justify-between text-xs">
+                                <p class="text-slate-400">Avg: <span class="font-bold text-slate-700">$5,549/mo</span></p>
+                                <p class="text-green-500 font-bold"><i class="fa-solid fa-arrow-up text-[10px]"></i> 8.5% vs last year</p>
+                            </div>
+                        </div>
+
+                        <!-- Best Sellers -->
+                        <div class="card">
+                            <div class="flex items-center justify-between mb-4">
+                                <h3 class="font-bold text-slate-800">Best Selling Products</h3>
+                                <select class="input-field w-auto text-[11px]" style="padding:6px 28px 6px 10px">
+                                    <option>Today</option><option>This Week</option><option>This Month</option><option>This Year</option>
+                                </select>
+                            </div>
+                            <div id="bestSellers" class="space-y-3"></div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Orders -->
+                    <div class="card">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-bold text-slate-800">Recent Orders</h3>
+                            <button onclick="showSection('orders')" class="text-xs font-semibold text-primary-500 hover:text-primary-600 transition">View All</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead><tr class="border-b border-slate-100">
+                                    <th class="text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider py-3 px-3">Order ID</th>
+                                    <th class="text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider py-3 px-3">Customer</th>
+                                    <th class="text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider py-3 px-3">Product</th>
+                                    <th class="text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider py-3 px-3">Amount</th>
+                                    <th class="text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider py-3 px-3">Status</th>
+                                    <th class="text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider py-3 px-3">Date</th>
+                                </tr></thead>
+                                <tbody id="recentOrdersTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- ADD PRODUCT SECTION -->
-                <div id="sectionAddProduct" class="hidden slide-up">
-                    <h3 class="font-extrabold text-slate-800 mb-4" id="formTitle" data-i18n="add_new_product">Add New Product</h3>
-                    <div class="glass-card p-6 max-w-2xl">
+                <!-- ==================== PRODUCTS ==================== -->
+                <div id="secProducts" class="hidden slide-up">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-extrabold text-slate-800">All Products</h2>
+                        <div class="flex gap-2">
+                            <select id="filterCategory" onchange="renderProductsList(this.value)" class="input-field w-auto text-xs" style="padding:8px 32px 8px 12px">
+                                <option value="all">All Categories</option>
+                            </select>
+                            <button onclick="showSection('addProduct')" class="btn-primary text-xs"><i class="fa-solid fa-plus mr-1"></i> Add Product</button>
+                        </div>
+                    </div>
+                    <div class="card p-0 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead><tr class="bg-slate-50 border-b border-slate-200">
+                                    <th class="text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider py-3 px-4">Product</th>
+                                    <th class="text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider py-3 px-3">Category</th>
+                                    <th class="text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider py-3 px-3">Price</th>
+                                    <th class="text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider py-3 px-3">Stock</th>
+                                    <th class="text-left text-[10px] font-bold text-slate-400 uppercase tracking-wider py-3 px-3">Rating</th>
+                                    <th class="text-right text-[10px] font-bold text-slate-400 uppercase tracking-wider py-3 px-4">Actions</th>
+                                </tr></thead>
+                                <tbody id="productsTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== ADD/EDIT PRODUCT ==================== -->
+                <div id="secAddProduct" class="hidden slide-up">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-extrabold text-slate-800" id="formTitle">Add New Product</h2>
+                        <button onclick="showSection('products')" class="btn-secondary text-xs"><i class="fa-solid fa-arrow-left mr-1"></i> Back to Products</button>
+                    </div>
+                    <div class="card max-w-3xl">
                         <input type="hidden" id="editProductId">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div class="md:col-span-2">
@@ -162,90 +399,361 @@
                             </div>
                         </div>
                         <div class="flex gap-3 mt-6">
-                            <button onclick="resetForm()" class="px-6 py-3 rounded-xl bg-slate-100 text-slate-600 text-sm font-bold hover:bg-slate-200 transition" data-i18n="cancel">Cancel</button>
-                            <button onclick="saveProduct()" class="px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-sm font-bold hover:opacity-90 transition" id="saveBtn"><i class="fa-solid fa-plus mr-1"></i> <span data-i18n="add_product">Add Product</span></button>
+                            <button onclick="resetForm()" class="btn-secondary">Cancel</button>
+                            <button onclick="saveProduct()" class="btn-primary" id="saveBtn"><i class="fa-solid fa-plus mr-1"></i> Add Product</button>
                         </div>
                     </div>
                 </div>
 
-                <!-- CATEGORIES SECTION -->
-                <div id="sectionCategories" class="hidden slide-up">
-                    <h3 class="font-extrabold text-slate-800 mb-4" data-i18n="all_categories">All Categories</h3>
-                    <div id="categoriesGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+                <!-- ==================== CATEGORIES ==================== -->
+                <div id="secCategories" class="hidden slide-up">
+                    <h2 class="text-lg font-extrabold text-slate-800 mb-4">Categories</h2>
+                    <div id="categoriesGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"></div>
                 </div>
+
+                <!-- ==================== BRANDS ==================== -->
+                <div id="secBrands" class="hidden slide-up">
+                    <h2 class="text-lg font-extrabold text-slate-800 mb-4">Brands</h2>
+                    <div id="brandsGrid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"></div>
+                </div>
+
+                <!-- ==================== USERS ==================== -->
+                <div id="secUsers" class="hidden slide-up">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-extrabold text-slate-800">Users</h2>
+                        <span class="badge badge-purple text-sm px-3 py-1"><i class="fa-solid fa-users mr-1"></i> 4,628 total</span>
+                    </div>
+                    <div class="card p-0 overflow-hidden">
+                        <table class="w-full">
+                            <thead><tr class="bg-slate-50 border-b border-slate-200">
+                                <th class="text-left text-[10px] font-bold text-slate-400 uppercase py-3 px-4">User</th>
+                                <th class="text-left text-[10px] font-bold text-slate-400 uppercase py-3 px-3">Email</th>
+                                <th class="text-left text-[10px] font-bold text-slate-400 uppercase py-3 px-3">Orders</th>
+                                <th class="text-left text-[10px] font-bold text-slate-400 uppercase py-3 px-3">Spent</th>
+                                <th class="text-left text-[10px] font-bold text-slate-400 uppercase py-3 px-3">Status</th>
+                                <th class="text-left text-[10px] font-bold text-slate-400 uppercase py-3 px-3">Joined</th>
+                            </tr></thead>
+                            <tbody id="usersTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ==================== ORDERS ==================== -->
+                <div id="secOrders" class="hidden slide-up">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-extrabold text-slate-800">Orders</h2>
+                        <div class="flex gap-2">
+                            <select id="orderStatusFilter" onchange="filterOrders()" class="input-field w-auto text-xs" style="padding:8px 32px 8px 12px">
+                                <option value="all">All Status</option><option value="Delivered">Delivered</option><option value="Shipped">Shipped</option><option value="Processing">Processing</option><option value="Pending">Pending</option><option value="Cancelled">Cancelled</option>
+                            </select>
+                            <button class="btn-primary text-xs"><i class="fa-solid fa-download mr-1"></i> Export</button>
+                        </div>
+                    </div>
+                    <div class="card p-0 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead><tr class="bg-slate-50 border-b border-slate-200">
+                                    <th class="text-left text-[10px] font-bold text-slate-400 uppercase py-3 px-4">Order ID</th>
+                                    <th class="text-left text-[10px] font-bold text-slate-400 uppercase py-3 px-3">Customer</th>
+                                    <th class="text-left text-[10px] font-bold text-slate-400 uppercase py-3 px-3">Products</th>
+                                    <th class="text-left text-[10px] font-bold text-slate-400 uppercase py-3 px-3">Total</th>
+                                    <th class="text-left text-[10px] font-bold text-slate-400 uppercase py-3 px-3">Payment</th>
+                                    <th class="text-left text-[10px] font-bold text-slate-400 uppercase py-3 px-3">Status</th>
+                                    <th class="text-left text-[10px] font-bold text-slate-400 uppercase py-3 px-3">Date</th>
+                                    <th class="text-right text-[10px] font-bold text-slate-400 uppercase py-3 px-4">Action</th>
+                                </tr></thead>
+                                <tbody id="ordersTable"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== COUPONS ==================== -->
+                <div id="secCoupons" class="hidden slide-up">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-extrabold text-slate-800">Coupons</h2>
+                        <button onclick="showAddCoupon()" class="btn-primary text-xs"><i class="fa-solid fa-plus mr-1"></i> Add Coupon</button>
+                    </div>
+                    <div id="couponForm" class="hidden card mb-4 max-w-xl">
+                        <h3 class="font-bold text-slate-800 mb-3">New Coupon</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            <div><label class="text-[10px] font-bold text-slate-400 uppercase">Code *</label><input type="text" id="couponCode" class="input-field mt-1" placeholder="e.g. SAVE20"></div>
+                            <div><label class="text-[10px] font-bold text-slate-400 uppercase">Discount % *</label><input type="number" id="couponDiscount" class="input-field mt-1" placeholder="20" max="100"></div>
+                            <div><label class="text-[10px] font-bold text-slate-400 uppercase">Min Order ($)</label><input type="number" id="couponMinOrder" class="input-field mt-1" placeholder="50"></div>
+                            <div><label class="text-[10px] font-bold text-slate-400 uppercase">Expires</label><input type="date" id="couponExpiry" class="input-field mt-1"></div>
+                        </div>
+                        <div class="flex gap-2 mt-4">
+                            <button onclick="document.getElementById('couponForm').classList.add('hidden')" class="btn-secondary text-xs">Cancel</button>
+                            <button onclick="saveCoupon()" class="btn-primary text-xs">Save Coupon</button>
+                        </div>
+                    </div>
+                    <div class="card p-0 overflow-hidden">
+                        <table class="w-full">
+                            <thead><tr class="bg-slate-50 border-b border-slate-200">
+                                <th class="text-left text-[10px] font-bold text-slate-400 uppercase py-3 px-4">Code</th>
+                                <th class="text-left text-[10px] font-bold text-slate-400 uppercase py-3 px-3">Discount</th>
+                                <th class="text-left text-[10px] font-bold text-slate-400 uppercase py-3 px-3">Min Order</th>
+                                <th class="text-left text-[10px] font-bold text-slate-400 uppercase py-3 px-3">Used</th>
+                                <th class="text-left text-[10px] font-bold text-slate-400 uppercase py-3 px-3">Expires</th>
+                                <th class="text-left text-[10px] font-bold text-slate-400 uppercase py-3 px-3">Status</th>
+                                <th class="text-right text-[10px] font-bold text-slate-400 uppercase py-3 px-4">Action</th>
+                            </tr></thead>
+                            <tbody id="couponsTable"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- ==================== REVIEWS ==================== -->
+                <div id="secReviews" class="hidden slide-up">
+                    <h2 class="text-lg font-extrabold text-slate-800 mb-4">Product Reviews</h2>
+                    <div id="reviewsList" class="space-y-3"></div>
+                </div>
+
+                <!-- ==================== REVENUE ==================== -->
+                <div id="secRevenue" class="hidden slide-up">
+                    <h2 class="text-lg font-extrabold text-slate-800 mb-4">Revenue Analytics</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+                        <div class="stat-card"><p class="text-[11px] text-slate-400 font-semibold mb-1">This Month</p><p class="text-2xl font-extrabold text-slate-800">$8,420</p><p class="text-xs text-green-500 font-bold mt-1"><i class="fa-solid fa-arrow-up"></i> 12% vs last month</p></div>
+                        <div class="stat-card"><p class="text-[11px] text-slate-400 font-semibold mb-1">This Quarter</p><p class="text-2xl font-extrabold text-slate-800">$24,890</p><p class="text-xs text-green-500 font-bold mt-1"><i class="fa-solid fa-arrow-up"></i> 8% vs last quarter</p></div>
+                        <div class="stat-card"><p class="text-[11px] text-slate-400 font-semibold mb-1">This Year</p><p class="text-2xl font-extrabold text-slate-800">$66,590</p><p class="text-xs text-green-500 font-bold mt-1"><i class="fa-solid fa-arrow-up"></i> 15% vs last year</p></div>
+                    </div>
+                    <div class="card">
+                        <h3 class="font-bold text-slate-800 mb-4">Monthly Revenue Breakdown</h3>
+                        <div id="revenueDetailChart" class="revenue-chart mb-6" style="height:250px"></div>
+                    </div>
+                </div>
+
+                <!-- ==================== TAX ==================== -->
+                <div id="secTax" class="hidden slide-up">
+                    <h2 class="text-lg font-extrabold text-slate-800 mb-4">Tax Settings</h2>
+                    <div class="card max-w-2xl">
+                        <div class="space-y-4">
+                            <div><label class="text-[10px] font-bold text-slate-400 uppercase">Default Tax Rate (%)</label><input type="number" id="taxRate" class="input-field mt-1" value="7.5" step="0.1"></div>
+                            <div><label class="text-[10px] font-bold text-slate-400 uppercase">Tax Name</label><input type="text" id="taxName" class="input-field mt-1" value="VAT"></div>
+                            <div><label class="text-[10px] font-bold text-slate-400 uppercase">Tax Registration Number</label><input type="text" class="input-field mt-1" placeholder="TRN number" value="123456789-BD"></div>
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" id="taxInclusive" class="w-4 h-4 accent-primary-500" checked>
+                                <label for="taxInclusive" class="text-sm text-slate-600">Prices include tax</label>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <input type="checkbox" id="taxAuto" class="w-4 h-4 accent-primary-500" checked>
+                                <label for="taxAuto" class="text-sm text-slate-600">Automatically apply tax to new products</label>
+                            </div>
+                            <button onclick="showToast('Tax settings saved!','success')" class="btn-primary">Save Tax Settings</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== SUPPORT TICKETS ==================== -->
+                <div id="secTickets" class="hidden slide-up">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-lg font-extrabold text-slate-800">Support Tickets</h2>
+                        <span class="badge badge-red">5 Open</span>
+                    </div>
+                    <div id="ticketsList" class="space-y-3"></div>
+                </div>
+
+                <!-- ==================== SETTINGS ==================== -->
+                <div id="secSettings" class="hidden slide-up">
+                    <h2 class="text-lg font-extrabold text-slate-800 mb-4">Settings</h2>
+                    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div class="lg:col-span-2 space-y-6">
+                            <div class="card">
+                                <h3 class="font-bold text-slate-800 mb-4">Store Information</h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div><label class="text-[10px] font-bold text-slate-400 uppercase">Store Name</label><input type="text" class="input-field mt-1" value="HR ShopBD"></div>
+                                    <div><label class="text-[10px] font-bold text-slate-400 uppercase">Store Email</label><input type="email" class="input-field mt-1" value="info@hrshopbd.com"></div>
+                                    <div><label class="text-[10px] font-bold text-slate-400 uppercase">Phone</label><input type="tel" class="input-field mt-1" value="+880 1700-000000"></div>
+                                    <div><label class="text-[10px] font-bold text-slate-400 uppercase">Currency</label><select class="input-field mt-1"><option selected>BDT (৳)</option><option>USD ($)</option><option>EUR (€)</option></select></div>
+                                    <div class="md:col-span-2"><label class="text-[10px] font-bold text-slate-400 uppercase">Address</label><input type="text" class="input-field mt-1" value="Dhaka, Bangladesh"></div>
+                                </div>
+                                <button onclick="showToast('Store settings saved!','success')" class="btn-primary mt-4 text-xs">Save Changes</button>
+                            </div>
+                            <div class="card">
+                                <h3 class="font-bold text-slate-800 mb-4">Notifications</h3>
+                                <div class="space-y-3">
+                                    <label class="flex items-center justify-between"><span class="text-sm text-slate-600">Email notifications for new orders</span><input type="checkbox" class="w-4 h-4 accent-primary-500" checked></label>
+                                    <label class="flex items-center justify-between"><span class="text-sm text-slate-600">Low stock alerts</span><input type="checkbox" class="w-4 h-4 accent-primary-500" checked></label>
+                                    <label class="flex items-center justify-between"><span class="text-sm text-slate-600">New review notifications</span><input type="checkbox" class="w-4 h-4 accent-primary-500"></label>
+                                    <label class="flex items-center justify-between"><span class="text-sm text-slate-600">Daily sales report</span><input type="checkbox" class="w-4 h-4 accent-primary-500" checked></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="card">
+                                <h3 class="font-bold text-slate-800 mb-4">Admin Profile</h3>
+                                <div class="text-center mb-4">
+                                    <img id="settingsAvatar" src="https://i.pravatar.cc/150?img=68" class="w-20 h-20 rounded-2xl mx-auto border-2 border-primary-200 object-cover mb-3">
+                                    <p id="settingsName" class="font-bold text-slate-800">Admin</p>
+                                    <p id="settingsEmail" class="text-xs text-slate-400">admin@hrshopbd.com</p>
+                                </div>
+                                <div class="space-y-3">
+                                    <div><label class="text-[10px] font-bold text-slate-400 uppercase">Display Name</label><input type="text" id="settingsNameInput" class="input-field mt-1" value="Admin"></div>
+                                    <div><label class="text-[10px] font-bold text-slate-400 uppercase">Email</label><input type="email" id="settingsEmailInput" class="input-field mt-1" value="admin@hrshopbd.com"></div>
+                                    <button onclick="showToast('Profile updated!','success')" class="btn-primary w-full text-xs">Update Profile</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== REPORTS ==================== -->
+                <div id="secReports" class="hidden slide-up">
+                    <h2 class="text-lg font-extrabold text-slate-800 mb-4">Reports</h2>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+                        <div class="card cursor-pointer hover:border-primary-300 transition" onclick="showToast('Generating sales report...','info')">
+                            <div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center"><i class="fa-solid fa-chart-line text-primary-500 text-sm"></i></div><h4 class="font-bold text-slate-800 text-sm">Sales Report</h4></div>
+                            <p class="text-xs text-slate-400">View complete sales analytics and trends.</p>
+                        </div>
+                        <div class="card cursor-pointer hover:border-primary-300 transition" onclick="showToast('Generating inventory report...','info')">
+                            <div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-xl bg-green-50 flex items-center justify-center"><i class="fa-solid fa-boxes-stacked text-green-500 text-sm"></i></div><h4 class="font-bold text-slate-800 text-sm">Inventory Report</h4></div>
+                            <p class="text-xs text-slate-400">Track stock levels and product performance.</p>
+                        </div>
+                        <div class="card cursor-pointer hover:border-primary-300 transition" onclick="showToast('Generating customer report...','info')">
+                            <div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-xl bg-pink-50 flex items-center justify-center"><i class="fa-solid fa-users text-pink-500 text-sm"></i></div><h4 class="font-bold text-slate-800 text-sm">Customer Report</h4></div>
+                            <p class="text-xs text-slate-400">Analyze customer behavior and demographics.</p>
+                        </div>
+                        <div class="card cursor-pointer hover:border-primary-300 transition" onclick="showToast('Generating revenue report...','info')">
+                            <div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center"><i class="fa-solid fa-dollar-sign text-amber-500 text-sm"></i></div><h4 class="font-bold text-slate-800 text-sm">Revenue Report</h4></div>
+                            <p class="text-xs text-slate-400">Detailed revenue breakdown by period.</p>
+                        </div>
+                        <div class="card cursor-pointer hover:border-primary-300 transition" onclick="showToast('Generating product report...','info')">
+                            <div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center"><i class="fa-solid fa-box text-purple-500 text-sm"></i></div><h4 class="font-bold text-slate-800 text-sm">Product Report</h4></div>
+                            <p class="text-xs text-slate-400">Top products, categories, and performance.</p>
+                        </div>
+                        <div class="card cursor-pointer hover:border-primary-300 transition" onclick="showToast('Generating coupon report...','info')">
+                            <div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-xl bg-cyan-50 flex items-center justify-center"><i class="fa-solid fa-ticket text-cyan-500 text-sm"></i></div><h4 class="font-bold text-slate-800 text-sm">Coupon Report</h4></div>
+                            <p class="text-xs text-slate-400">Coupon usage and conversion analytics.</p>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </main>
     </div>
 
-    <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="fixed inset-0 z-[70] hidden">
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeDeleteModal()"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-sm glass-strong rounded-3xl p-6 text-center">
+    <!-- DELETE MODAL -->
+    <div id="deleteModal" class="modal-overlay" onclick="if(event.target===this)closeDeleteModal()">
+        <div class="modal-box text-center">
             <div class="w-14 h-14 rounded-full bg-red-50 flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-trash text-red-500 text-xl"></i></div>
-            <h3 class="font-bold text-slate-800 mb-1" data-i18n="delete_title">Delete Product?</h3>
-            <p class="text-xs text-slate-400 mb-5" data-i18n="delete_desc">This action cannot be undone.</p>
+            <h3 class="font-bold text-slate-800 mb-1">Delete Product?</h3>
+            <p class="text-xs text-slate-400 mb-5">This action cannot be undone.</p>
             <div class="flex gap-3">
-                <button onclick="closeDeleteModal()" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 text-sm font-bold hover:bg-slate-200 transition" data-i18n="cancel">Cancel</button>
-                <button onclick="confirmDelete()" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-red-500 to-rose-500 text-white text-sm font-bold hover:opacity-90 transition" data-i18n="delete">Delete</button>
+                <button onclick="closeDeleteModal()" class="flex-1 btn-secondary">Cancel</button>
+                <button onclick="confirmDelete()" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-red-500 to-rose-500 text-white text-sm font-bold hover:opacity-90 transition">Delete</button>
             </div>
         </div>
     </div>
 
-    <div id="toast" class="fixed top-5 right-5 z-[200] px-5 py-3 rounded-xl text-white text-xs font-bold shadow-2xl transition-all opacity-0" style="transition:all 0.3s;"></div>
+    <!-- TOAST -->
+    <div id="toast" class="toast"></div>
 
     <script>
-    // i18n
-    const i18n = {
-        en: {
-            nav_home: 'Home', nav_overview: 'Overview', nav_products: 'Products', nav_add: 'Add Product', nav_categories: 'Categories', nav_customer: 'Customer Panel', nav_logout: 'Logout',
-            dash_title: 'Admin Dashboard',
-            stat_total_products: 'Total Products', stat_categories: 'Categories', stat_avg_price: 'Avg Price', stat_avg_rating: 'Avg Rating',
-            recent_products: 'Recent Products', all_products: 'All Products', add_new_product: 'Add New Product', add_product: 'Add Product',
-            edit_product: 'Edit Product', filter_all: 'All Categories', all_categories: 'All Categories',
-            cancel: 'Cancel', delete: 'Delete', delete_title: 'Delete Product?', delete_desc: 'This action cannot be undone.',
-            toast_saved: 'Product saved!', toast_deleted: 'Product deleted!', toast_fill: 'Please fill all required fields.',
-            products_per_cat: 'products'
-        },
-        bn: {
-            nav_home: 'হোম', nav_overview: 'সংক্ষিপ্ত বিবরণ', nav_products: 'পণ্য', nav_add: 'পণ্য যোগ করুন', nav_categories: 'ক্যাটাগরি', nav_customer: 'কাস্টমার প্যানেল', nav_logout: 'লগআউট',
-            dash_title: 'অ্যাডমিন ড্যাশবোর্ড',
-            stat_total_products: 'মোট পণ্য', stat_categories: 'ক্যাটাগরি', stat_avg_price: 'গড় মূল্য', stat_avg_rating: 'গড় রেটিং',
-            recent_products: 'সাম্প্রতিক পণ্য', all_products: 'সব পণ্য', add_new_product: 'নতুন পণ্য যোগ করুন', add_product: 'পণ্য যোগ করুন',
-            edit_product: 'পণ্য সম্পাদনা', filter_all: 'সব ক্যাটাগরি', all_categories: 'সব ক্যাটাগরি',
-            cancel: 'বাতিল', delete: 'মুছুন', delete_title: 'পণ্য মুছবেন?', delete_desc: 'এই কাজ পূর্বাবস্থায় ফেরানো যাবে না।',
-            toast_saved: 'পণ্য সংরক্ষিত!', toast_deleted: 'পণ্য মুছে ফেলা হয়েছে!', toast_fill: 'সব প্রয়োজনীয় ক্ষেত্র পূরণ করুন।',
-            products_per_cat: 'পণ্য'
-        }
-    };
-    let currentLang = localStorage.getItem('novaLang') || 'en';
-    function setLang(lang) { currentLang = lang; localStorage.setItem('novaLang', lang); document.querySelectorAll('.lang-toggle').forEach(el => { el.classList.remove('active','text-slate-500'); el.classList.add('text-slate-500'); }); document.getElementById(lang==='en'?'langEn':'langBn').classList.add('active'); document.getElementById(lang==='en'?'langEn':'langBn').classList.remove('text-slate-500'); applyTranslations(); loadProductsForAdmin(); }
-    function applyTranslations() { const t = i18n[currentLang]; document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if (t[key]) el.innerHTML = t[key]; }); }
+    // ===================== AUTH =====================
+    const ADMIN_EMAIL = 'tec.habiburrahman@gmail.com';
 
+    function checkAdminAuth() {
+        const auth = JSON.parse(localStorage.getItem('novaShopUser') || 'null');
+        if (auth && auth.email === ADMIN_EMAIL && auth.provider === 'google') {
+            showAdminPanel(auth);
+            return true;
+        }
+        document.getElementById('authScreen').classList.remove('hidden');
+        document.getElementById('adminLayout').classList.add('hidden');
+        return false;
+    }
+
+    function adminGoogleLogin() {
+        const user = {
+            name: 'Tec Habibur Rahman',
+            email: ADMIN_EMAIL,
+            photoURL: 'https://i.pravatar.cc/150?img=68',
+            provider: 'google',
+            isAdmin: true
+        };
+        localStorage.setItem('novaShopUser', JSON.stringify(user));
+        localStorage.setItem('novaShopAuth', 'true');
+        showAdminPanel(user);
+        showToast('Welcome, Admin!', 'success');
+    }
+
+    function showAdminPanel(user) {
+        document.getElementById('authScreen').classList.add('hidden');
+        document.getElementById('adminLayout').classList.remove('hidden');
+        document.getElementById('adminLayout').classList.add('flex');
+        // Set user info
+        ['sidebarAvatar','topAvatar','settingsAvatar'].forEach(id => { const el = document.getElementById(id); if (el) el.src = user.photoURL || 'https://i.pravatar.cc/150?img=68'; });
+        ['sidebarName','welcomeName','settingsName','settingsNameInput'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = user.name || 'Admin'; });
+        ['sidebarEmail','settingsEmail','settingsEmailInput'].forEach(id => { const el = document.getElementById(id); if (el) el.textContent = user.email || 'admin@hrshopbd.com'; });
+        // Greeting
+        const h = new Date().getHours();
+        document.getElementById('welcomeGreeting').textContent = h < 12 ? 'Good Morning ☀️' : h < 17 ? 'Good Afternoon 🌤️' : 'Good Evening 🌙';
+        loadAll();
+    }
+
+    function adminLogout() {
+        localStorage.removeItem('novaShopUser');
+        localStorage.removeItem('novaShopAuth');
+        location.reload();
+    }
+
+    // ===================== SIDEBAR =====================
+    let sidebarOpen = false;
+    function toggleSidebar(forceClose) {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('mobileOverlay');
+        if (forceClose === false || sidebarOpen) {
+            sidebar.classList.remove('translate-x-0');
+            sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+            sidebarOpen = false;
+        } else {
+            sidebar.classList.remove('-translate-x-full');
+            sidebar.classList.add('translate-x-0');
+            overlay.classList.remove('hidden');
+            sidebarOpen = true;
+        }
+    }
+    function setActive(el) {
+        document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+        el.classList.add('active');
+        toggleSidebar(false);
+    }
+
+    // ===================== SECTIONS =====================
+    const allSections = ['dashboard','products','addProduct','categories','brands','users','reviews','orders','coupons','revenue','tax','tickets','settings','reports'];
+    function showSection(name) {
+        allSections.forEach(s => {
+            const id = 'sec' + s.charAt(0).toUpperCase() + s.slice(1);
+            const el = document.getElementById(id);
+            if (el) el.classList.add('hidden');
+        });
+        const target = document.getElementById('sec' + name.charAt(0).toUpperCase() + name.slice(1));
+        if (target) target.classList.remove('hidden');
+        if (name === 'products') renderProductsList();
+        if (name === 'categories') renderCategories();
+        if (name === 'brands') renderBrands();
+        if (name === 'users') renderUsers();
+        if (name === 'orders') renderOrders();
+        if (name === 'coupons') renderCoupons();
+        if (name === 'reviews') renderReviews();
+        if (name === 'tickets') renderTickets();
+        if (name === 'revenue') renderRevenueDetail();
+        if (name === 'dashboard') renderDashboard();
+    }
+
+    // ===================== DATA =====================
     const API = 'https://dummyjson.com';
     let allProducts = [];
     let categories = [];
     let deleteId = null;
+    let coupons = [
+        { id: 1, code: 'WELCOME10', discount: 10, minOrder: 30, used: 234, expires: '2026-12-31', active: true },
+        { id: 2, code: 'SAVE20', discount: 20, minOrder: 50, used: 156, expires: '2026-09-30', active: true },
+        { id: 3, code: 'FREESHIP', discount: 5, minOrder: 25, used: 89, expires: '2026-08-15', active: false },
+        { id: 4, code: 'SUMMER30', discount: 30, minOrder: 100, used: 45, expires: '2026-11-01', active: true },
+    ];
 
-    // SECTIONS
-    function showSection(name) {
-        ['dashboard','products','addProduct','categories'].forEach(s => {
-            const el = document.getElementById('section' + s.charAt(0).toUpperCase() + s.slice(1));
-            if (el) el.classList.add('hidden');
-        });
-        const target = document.getElementById('section' + name.charAt(0).toUpperCase() + name.slice(1));
-        if (target) target.classList.remove('hidden');
-        if (name === 'products') renderProductsList();
-        if (name === 'categories') renderCategories();
-    }
-    function setActive(el) { document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active')); el.classList.add('active'); toggleMobileSidebar(false); }
-    let sidebarOpen = false;
-    function toggleMobileSidebar(forceClose) {
-        const sidebar = document.getElementById('sidebar'); const overlay = document.getElementById('mobileOverlay');
-        if (forceClose === false || sidebarOpen) { sidebar.classList.remove('translate-x-0'); sidebar.classList.add('-translate-x-full'); overlay.classList.add('hidden'); sidebarOpen = false; }
-        else { sidebar.classList.remove('-translate-x-full'); sidebar.classList.add('translate-x-0'); overlay.classList.remove('hidden'); sidebarOpen = true; }
-    }
-
-    // FETCH
     async function loadAll() {
         try {
             const [p1, p2, cats] = await Promise.all([
@@ -260,78 +768,110 @@
         } catch (e) { console.error('Load failed:', e); }
     }
 
-    function loadProductsForAdmin() { loadAll(); }
-
-    // DASHBOARD
+    // ===================== DASHBOARD =====================
     function renderDashboard() {
         document.getElementById('statTotalProducts').textContent = allProducts.length;
-        document.getElementById('statCategories').textContent = categories.length;
-        const avgPrice = allProducts.length > 0 ? allProducts.reduce((s, p) => s + p.price, 0) / allProducts.length : 0;
-        document.getElementById('statAvgPrice').textContent = '$' + avgPrice.toFixed(2);
-        const avgRating = allProducts.length > 0 ? allProducts.reduce((s, p) => s + (typeof p.rating === 'number' ? p.rating : (p.rating?.rate || 0)), 0) / allProducts.length : 0;
-        document.getElementById('statAvgRating').textContent = avgRating.toFixed(1);
-        const recent = allProducts.slice(-5).reverse();
-        document.getElementById('recentProducts').innerHTML = recent.map(p => `
-            <div class="flex items-center gap-3 p-3 rounded-xl hover:bg-white/30 transition">
-                <img src="${p.thumbnail || p.image || ''}" class="w-10 h-10 rounded-lg object-contain bg-white/50 p-1">
-                <div class="flex-1 min-w-0"><p class="text-xs font-bold text-slate-700 truncate">${p.title}</p><p class="text-[10px] text-slate-400">${p.category}</p></div>
-                <p class="text-xs font-extrabold text-slate-800">$${p.price.toFixed(2)}</p>
+        renderDashCategories();
+        renderRevenueChart();
+        renderBestSellers();
+        renderRecentOrders();
+    }
+
+    function renderDashCategories() {
+        const catCounts = {};
+        allProducts.forEach(p => { catCounts[p.category] = (catCounts[p.category] || 0) + 1; });
+        const catImages = {
+            beauty:'💄',fragrances:'🌸',furniture:'🏠',groceries:'🍎',laptops:'💻',smartphones:'📱',motorcycles:'🏍️',watches:'⌚',
+            'mens-shirts':'👔','mens-shoes':'👟','mens-watches':'⌚',skincare:'🧪','sports-accessories':'⚽',sunglasses:'🕶️',
+            tablets:'📱',tops:'👕',vehicle:'🚗','womens-bags':'👜','womens-dresses':'👗','womens-jewellery':'💍','womens-shoes':'👠','womens-watches':'⌚'
+        };
+        document.getElementById('dashCategories').innerHTML = categories.slice(0, 10).map(cat => `
+            <div onclick="showSection('products');document.getElementById('filterCategory').value='${cat}';renderProductsList('${cat}')" class="flex-shrink-0 w-[90px] text-center cursor-pointer group">
+                <div class="w-[72px] h-[72px] rounded-2xl bg-gradient-to-br from-indigo-50 to-purple-50 flex items-center justify-center text-2xl mx-auto mb-2 group-hover:shadow-md transition">${catImages[cat] || '📦'}</div>
+                <p class="text-[10px] font-bold text-slate-600 capitalize truncate">${cat.replace(/-/g,' ')}</p>
+                <p class="text-[9px] text-slate-400">${catCounts[cat]||0} items</p>
             </div>
         `).join('');
     }
 
-    // PRODUCTS LIST
-    function renderProductsList(filter = 'all', search = '') {
+    function renderRevenueChart() {
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const values = [4200,5800,4900,6300,5500,7200,6800,7500,6100,8200,7800,8400];
+        const max = Math.max(...values);
+        document.getElementById('revenueChart').innerHTML = values.map((v, i) => `
+            <div class="revenue-bar" style="height:${(v/max)*100}%;background:${i===new Date().getMonth()?'linear-gradient(180deg,#6366f1,#8b5cf6)':'linear-gradient(180deg,#c7d2fe,#a5b4fc)'}" data-label="${months[i]}" title="$${v.toLocaleString()}"></div>
+        `).join('');
+    }
+
+    function renderBestSellers() {
+        const top = allProducts.slice(0, 5);
+        document.getElementById('bestSellers').innerHTML = top.map((p, i) => `
+            <div class="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition">
+                <img src="${p.thumbnail || p.image || ''}" class="w-10 h-10 rounded-lg object-contain bg-slate-50 p-1 flex-shrink-0">
+                <div class="flex-1 min-w-0">
+                    <p class="text-xs font-bold text-slate-700 truncate">${p.title}</p>
+                    <p class="text-[10px] text-slate-400">${p.category}</p>
+                </div>
+                <div class="text-right">
+                    <p class="text-xs font-extrabold text-slate-800">$${p.price.toFixed(2)}</p>
+                    <p class="text-[10px] text-slate-400">${Math.floor(Math.random()*100+20)} sold</p>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function renderRecentOrders() {
+        const statuses = ['Delivered','Shipped','Processing','Pending','Delivered'];
+        const names = ['Rahim Uddin','Karim Ahmed','Sara Khan','Jamal Hossain','Nusrat Jahan'];
+        const prods = allProducts.slice(0, 5);
+        document.getElementById('recentOrdersTable').innerHTML = prods.map((p, i) => `
+            <tr class="border-b border-slate-50 table-row">
+                <td class="py-3 px-4 text-xs font-bold text-slate-700">#ORD-${1000+i}</td>
+                <td class="py-3 px-3 text-xs text-slate-600">${names[i]}</td>
+                <td class="py-3 px-3 text-xs text-slate-600 truncate max-w-[150px]">${p.title}</td>
+                <td class="py-3 px-3 text-xs font-bold text-slate-800">$${p.price.toFixed(2)}</td>
+                <td class="py-3 px-3"><span class="badge ${statuses[i]==='Delivered'?'badge-green':statuses[i]==='Shipped'?'badge-blue':statuses[i]==='Processing'?'badge-yellow':'badge-purple'}">${statuses[i]}</span></td>
+                <td class="py-3 px-3 text-xs text-slate-400">2026-09-0${i+1}</td>
+            </tr>
+        `).join('');
+    }
+
+    // ===================== PRODUCTS =====================
+    function renderProductsList(filter='all', search='') {
         let items = allProducts;
         if (filter !== 'all') items = items.filter(p => p.category === filter);
         if (search) items = items.filter(p => p.title.toLowerCase().includes(search.toLowerCase()) || p.category.toLowerCase().includes(search.toLowerCase()));
-        const t = i18n[currentLang];
-        document.getElementById('productsList').innerHTML = items.length === 0 ? '<div class="glass-card p-12 text-center text-sm text-slate-400">No products found</div>' : items.map(p => `
-            <div class="glass-card p-4 flex items-center gap-4 slide-up">
-                <img src="${p.thumbnail || p.image || ''}" class="w-14 h-14 rounded-xl object-contain bg-white/50 p-1 flex-shrink-0">
-                <div class="flex-1 min-w-0">
-                    <p class="text-xs font-bold text-slate-800 truncate">${p.title}</p>
-                    <p class="text-[10px] text-slate-400">${p.category} ${p.brand ? '• ' + p.brand : ''}</p>
-                    <div class="flex items-center gap-2 mt-1">
-                        <span class="text-xs font-extrabold text-indigo-500">$${p.price.toFixed(2)}</span>
-                        ${p.discountPercentage ? `<span class="text-[9px] bg-red-50 text-red-500 px-1.5 py-0.5 rounded font-bold">-${p.discountPercentage}%</span>` : ''}
-                        ${p.stock !== undefined ? `<span class="text-[9px] ${p.stock > 0 ? 'bg-green-50 text-green-500' : 'bg-red-50 text-red-500'} px-1.5 py-0.5 rounded font-bold">${p.stock > 0 ? 'In Stock' : 'Out'}</span>` : ''}
+        document.getElementById('productsTable').innerHTML = items.length === 0 ? '<tr><td colspan="6" class="py-12 text-center text-sm text-slate-400">No products found</td></tr>' : items.map(p => {
+            const rating = typeof p.rating === 'number' ? p.rating : (p.rating?.rate || 0);
+            return `
+            <tr class="border-b border-slate-50 table-row">
+                <td class="py-3 px-4">
+                    <div class="flex items-center gap-3">
+                        <img src="${p.thumbnail || p.image || ''}" class="w-10 h-10 rounded-lg object-contain bg-slate-50 p-1 flex-shrink-0">
+                        <div class="min-w-0"><p class="text-xs font-bold text-slate-700 truncate max-w-[200px]">${p.title}</p>${p.brand?`<p class="text-[10px] text-slate-400">${p.brand}</p>`:''}</div>
                     </div>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="editProduct(${p.id})" class="w-9 h-9 rounded-xl bg-indigo-50 flex items-center justify-center text-indigo-500 hover:bg-indigo-100 transition"><i class="fa-solid fa-pen text-xs"></i></button>
-                    <button onclick="promptDelete(${p.id})" class="w-9 h-9 rounded-xl bg-red-50 flex items-center justify-center text-red-500 hover:bg-red-100 transition"><i class="fa-solid fa-trash text-xs"></i></button>
-                </div>
-            </div>
-        `).join('');
-    }
-
-    function filterByCategory(cat) { renderProductsList(cat); }
-    let searchTimeout;
-    function handleAdminSearch(q) { clearTimeout(searchTimeout); searchTimeout = setTimeout(() => renderProductsList(document.getElementById('filterCategory').value, q), 300); }
-
-    // CATEGORIES
-    function renderCategories() {
-        const catCounts = {};
-        allProducts.forEach(p => { catCounts[p.category] = (catCounts[p.category] || 0) + 1; });
-        const emojis = { beauty: '💄', fragrances: '🌸', furniture: '🏠', groceries: '🍎', laptops: '💻', smartphones: '📱', motorcycles: '🏍️', watches: '⌚', 'mens-shirts': '👔', 'mens-shoes': '👟', 'mens-watches': '⌚', skincare: '🧪', sports-accessories: '⚽', sunglasses: '🕶️', tablets: '📱', tops: '👕', vehicle: '🚗', 'womens-bags': '👜', 'womens-dresses': '👗', 'womens-jewellery': '💍', 'womens-shoes': '👠', 'womens-watches': '⌚' };
-        document.getElementById('categoriesGrid').innerHTML = categories.map(cat => `
-            <div class="glass-card p-5 text-center cursor-pointer" onclick="showSection('products');document.getElementById('filterCategory').value='${cat}';renderProductsList('${cat}')">
-                <div class="w-14 h-14 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center text-2xl mx-auto mb-3">${emojis[cat] || '📦'}</div>
-                <p class="text-xs font-bold text-slate-800 capitalize mb-0.5">${cat.replace(/-/g, ' ')}</p>
-                <p class="text-[10px] text-slate-400">${catCounts[cat] || 0} ${i18n[currentLang].products_per_cat}</p>
-            </div>
-        `).join('');
+                </td>
+                <td class="py-3 px-3"><span class="badge badge-purple capitalize">${p.category}</span></td>
+                <td class="py-3 px-3"><span class="text-xs font-bold text-slate-800">$${p.price.toFixed(2)}</span>${p.discountPercentage?`<span class="text-[9px] text-red-500 ml-1">-${p.discountPercentage}%</span>`:''}</td>
+                <td class="py-3 px-3"><span class="badge ${p.stock>0?'badge-green':'badge-red'}">${p.stock||0}</span></td>
+                <td class="py-3 px-3"><span class="text-xs text-amber-500"><i class="fa-solid fa-star text-[10px]"></i> ${rating.toFixed(1)}</span></td>
+                <td class="py-3 px-4 text-right">
+                    <div class="flex justify-end gap-1">
+                        <button onclick="editProduct(${p.id})" class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center text-primary-500 hover:bg-indigo-100 transition"><i class="fa-solid fa-pen text-[10px]"></i></button>
+                        <button onclick="promptDelete(${p.id})" class="w-8 h-8 rounded-lg bg-red-50 flex items-center justify-center text-red-500 hover:bg-red-100 transition"><i class="fa-solid fa-trash text-[10px]"></i></button>
+                    </div>
+                </td>
+            </tr>`;
+        }).join('');
     }
 
     function populateCategorySelects() {
-        const select = document.getElementById('prodCategory');
-        const filter = document.getElementById('filterCategory');
-        select.innerHTML = categories.map(c => `<option value="${c}">${c.charAt(0).toUpperCase() + c.slice(1).replace(/-/g, ' ')}</option>`).join('');
-        filter.innerHTML = `<option value="all">${i18n[currentLang].filter_all}</option>` + categories.map(c => `<option value="${c}">${c.charAt(0).toUpperCase() + c.slice(1).replace(/-/g, ' ')}</option>`).join('');
+        const prodCat = document.getElementById('prodCategory');
+        const filterCat = document.getElementById('filterCategory');
+        if (prodCat) prodCat.innerHTML = categories.map(c => `<option value="${c}">${c.charAt(0).toUpperCase()+c.slice(1).replace(/-/g,' ')}</option>`).join('');
+        if (filterCat) filterCat.innerHTML = `<option value="all">All Categories</option>` + categories.map(c => `<option value="${c}">${c.charAt(0).toUpperCase()+c.slice(1).replace(/-/g,' ')}</option>`).join('');
     }
 
-    // ADD / EDIT
     function saveProduct() {
         const title = document.getElementById('prodTitle').value.trim();
         const desc = document.getElementById('prodDesc').value.trim();
@@ -344,49 +884,18 @@
         const image = document.getElementById('prodImage').value.trim();
         const editId = document.getElementById('editProductId').value;
 
-        if (!title || !desc || isNaN(price) || !category) { showToast(i18n[currentLang].toast_fill, 'error'); return; }
+        if (!title || !desc || isNaN(price) || !category) { showToast('Please fill all required fields.', 'error'); return; }
 
-        const productData = { title, description: desc, price, category, discountPercentage: discount, stock, brand, sku, thumbnail: image || `https://cdn.dummyjson.com/product-images/${category}/thumbnail.webp`, images: image ? [image] : [] };
+        const data = { title, description: desc, price, category, discountPercentage: discount, stock, brand, sku, thumbnail: image || `https://cdn.dummyjson.com/product-images/${category}/thumbnail.webp`, images: image ? [image] : [] };
 
         if (editId) {
-            // Update via API
-            fetch(`${API}/products/${editId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(productData)
-            }).then(r => r.json()).then(updated => {
-                const idx = allProducts.findIndex(p => p.id === parseInt(editId));
-                if (idx !== -1) allProducts[idx] = { ...allProducts[idx], ...productData, id: parseInt(editId) };
-                showToast(i18n[currentLang].toast_saved, 'success');
-                resetForm();
-                showSection('products');
-            }).catch(e => {
-                // Still update locally
-                const idx = allProducts.findIndex(p => p.id === parseInt(editId));
-                if (idx !== -1) allProducts[idx] = { ...allProducts[idx], ...productData };
-                showToast(i18n[currentLang].toast_saved, 'success');
-                resetForm();
-                showSection('products');
-            });
+            fetch(`${API}/products/${editId}`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+            .then(() => { const idx = allProducts.findIndex(p => p.id === parseInt(editId)); if (idx !== -1) allProducts[idx] = { ...allProducts[idx], ...data, id: parseInt(editId) }; showToast('Product updated!', 'success'); resetForm(); showSection('products'); })
+            .catch(() => { const idx = allProducts.findIndex(p => p.id === parseInt(editId)); if (idx !== -1) allProducts[idx] = { ...allProducts[idx], ...data }; showToast('Product updated!', 'success'); resetForm(); showSection('products'); });
         } else {
-            // Add via API
-            fetch(`${API}/products/add`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(productData)
-            }).then(r => r.json()).then(added => {
-                const newProduct = { ...productData, id: added.id || allProducts.length + 1, rating: 0 };
-                allProducts.push(newProduct);
-                showToast(i18n[currentLang].toast_saved, 'success');
-                resetForm();
-                showSection('products');
-            }).catch(e => {
-                const newProduct = { ...productData, id: allProducts.length + 100, rating: 0 };
-                allProducts.push(newProduct);
-                showToast(i18n[currentLang].toast_saved, 'success');
-                resetForm();
-                showSection('products');
-            });
+            fetch(`${API}/products/add`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+            .then(r => r.json()).then(added => { allProducts.push({ ...data, id: added.id || allProducts.length+1, rating: 0 }); showToast('Product added!', 'success'); resetForm(); showSection('products'); })
+            .catch(() => { allProducts.push({ ...data, id: allProducts.length+100, rating: 0 }); showToast('Product added!', 'success'); resetForm(); showSection('products'); });
         }
     }
 
@@ -403,56 +912,245 @@
         document.getElementById('prodBrand').value = p.brand || '';
         document.getElementById('prodSku').value = p.sku || '';
         document.getElementById('prodImage').value = p.thumbnail || p.image || '';
-        document.getElementById('formTitle').innerHTML = i18n[currentLang].edit_product;
-        document.getElementById('saveBtn').innerHTML = `<i class="fa-solid fa-check mr-1"></i> ${i18n[currentLang].edit_product}`;
+        document.getElementById('formTitle').textContent = 'Edit Product';
+        document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-check mr-1"></i> Update Product';
         showSection('addProduct');
     }
 
     function resetForm() {
         document.getElementById('editProductId').value = '';
         ['prodTitle','prodDesc','prodPrice','prodDiscount','prodStock','prodBrand','prodSku','prodImage'].forEach(id => document.getElementById(id).value = '');
-        if (categories.length > 0) document.getElementById('prodCategory').value = categories[0];
-        document.getElementById('formTitle').innerHTML = i18n[currentLang].add_new_product;
-        document.getElementById('saveBtn').innerHTML = `<i class="fa-solid fa-plus mr-1"></i> ${i18n[currentLang].add_product}`;
+        if (categories.length) document.getElementById('prodCategory').value = categories[0];
+        document.getElementById('formTitle').textContent = 'Add New Product';
+        document.getElementById('saveBtn').innerHTML = '<i class="fa-solid fa-plus mr-1"></i> Add Product';
     }
 
-    // DELETE
-    function promptDelete(id) { deleteId = id; document.getElementById('deleteModal').classList.remove('hidden'); }
-    function closeDeleteModal() { document.getElementById('deleteModal').classList.add('hidden'); deleteId = null; }
+    function promptDelete(id) { deleteId = id; document.getElementById('deleteModal').classList.add('show'); }
+    function closeDeleteModal() { document.getElementById('deleteModal').classList.remove('show'); deleteId = null; }
     function confirmDelete() {
         if (!deleteId) return;
         fetch(`${API}/products/${deleteId}`, { method: 'DELETE' }).then(() => {
             allProducts = allProducts.filter(p => p.id !== deleteId);
-            showToast(i18n[currentLang].toast_deleted, 'success');
+            showToast('Product deleted!', 'success');
             closeDeleteModal();
             renderProductsList();
             renderDashboard();
         }).catch(() => {
             allProducts = allProducts.filter(p => p.id !== deleteId);
-            showToast(i18n[currentLang].toast_deleted, 'success');
+            showToast('Product deleted!', 'success');
             closeDeleteModal();
             renderProductsList();
             renderDashboard();
         });
     }
 
-    // TOAST
+    function handleGlobalSearch(q) {
+        if (q.length > 1) { showSection('products'); renderProductsList('all', q); }
+    }
+
+    // ===================== CATEGORIES =====================
+    function renderCategories() {
+        const catCounts = {};
+        allProducts.forEach(p => { catCounts[p.category] = (catCounts[p.category] || 0) + 1; });
+        const catEmoji = { beauty:'💄',fragrances:'🌸',furniture:'🏠',groceries:'🍎',laptops:'💻',smartphones:'📱',motorcycles:'🏍️',watches:'⌚','mens-shirts':'👔','mens-shoes':'👟','mens-watches':'⌚',skincare:'🧪','sports-accessories':'⚽',sunglasses:'🕶️',tablets:'📱',tops:'👕',vehicle:'🚗','womens-bags':'👜','womens-dresses':'👗','womens-jewellery':'💍','womens-shoes':'👠','womens-watches':'⌚' };
+        const colors = ['from-indigo-100 to-purple-100','from-green-100 to-emerald-100','from-amber-100 to-orange-100','from-pink-100 to-rose-100','from-cyan-100 to-blue-100','from-violet-100 to-fuchsia-100'];
+        document.getElementById('categoriesGrid').innerHTML = categories.map((cat, i) => `
+            <div class="card text-center cursor-pointer hover:border-primary-300 transition group" onclick="showSection('products');document.getElementById('filterCategory').value='${cat}';renderProductsList('${cat}')">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br ${colors[i%colors.length]} flex items-center justify-center text-2xl mx-auto mb-3 group-hover:scale-110 transition">${catEmoji[cat]||'📦'}</div>
+                <p class="text-xs font-bold text-slate-800 capitalize mb-1">${cat.replace(/-/g,' ')}</p>
+                <p class="text-[10px] text-slate-400">${catCounts[cat]||0} products</p>
+            </div>
+        `).join('');
+    }
+
+    // ===================== BRANDS =====================
+    function renderBrands() {
+        const brandMap = {};
+        allProducts.forEach(p => { if (p.brand) { if (!brandMap[p.brand]) brandMap[p.brand] = { count: 0, img: p.thumbnail }; brandMap[p.brand].count++; }});
+        const sorted = Object.entries(brandMap).sort((a,b) => b[1].count - a[1].count);
+        const colors = ['from-indigo-100 to-purple-100','from-green-100 to-emerald-100','from-amber-100 to-orange-100','from-pink-100 to-rose-100','from-cyan-100 to-blue-100'];
+        document.getElementById('brandsGrid').innerHTML = sorted.length === 0 ? '<p class="text-sm text-slate-400 col-span-full text-center py-12">No brands found</p>' : sorted.map(([brand, data], i) => `
+            <div class="card text-center cursor-pointer hover:border-primary-300 transition group">
+                <div class="w-16 h-16 rounded-2xl bg-gradient-to-br ${colors[i%colors.length]} flex items-center justify-center mx-auto mb-3 overflow-hidden group-hover:scale-110 transition">
+                    <img src="${data.img}" class="w-12 h-12 object-contain" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+                    <i class="fa-solid fa-award text-slate-400 text-xl hidden"></i>
+                </div>
+                <p class="text-xs font-bold text-slate-800 mb-1">${brand}</p>
+                <p class="text-[10px] text-slate-400">${data.count} products</p>
+            </div>
+        `).join('');
+    }
+
+    // ===================== USERS =====================
+    function renderUsers() {
+        const users = [
+            { name:'Rahim Uddin', email:'rahim@email.com', avatar:'https://i.pravatar.cc/150?img=11', orders:23, spent:'$1,240', status:'Active', joined:'2025-01-15' },
+            { name:'Karim Ahmed', email:'karim@email.com', avatar:'https://i.pravatar.cc/150?img=12', orders:15, spent:'$890', status:'Active', joined:'2025-03-22' },
+            { name:'Sara Khan', email:'sara@email.com', avatar:'https://i.pravatar.cc/150?img=32', orders:31, spent:'$2,150', status:'Active', joined:'2024-11-08' },
+            { name:'Jamal Hossain', email:'jamal@email.com', avatar:'https://i.pravatar.cc/150?img=14', orders:8, spent:'$420', status:'Inactive', joined:'2025-06-01' },
+            { name:'Nusrat Jahan', email:'nusrat@email.com', avatar:'https://i.pravatar.cc/150?img=23', orders:42, spent:'$3,780', status:'Active', joined:'2024-08-14' },
+            { name:'Tanvir Rahman', email:'tanvir@email.com', avatar:'https://i.pravatar.cc/150?img=15', orders:19, spent:'$1,560', status:'Active', joined:'2025-02-28' },
+            { name:'Fatima Begum', email:'fatima@email.com', avatar:'https://i.pravatar.cc/150?img=25', orders:27, spent:'$1,980', status:'Active', joined:'2024-12-05' },
+            { name:'Arif Hassan', email:'arif@email.com', avatar:'https://i.pravatar.cc/150?img=18', orders:5, spent:'$210', status:'Suspended', joined:'2025-07-20' },
+        ];
+        document.getElementById('usersTable').innerHTML = users.map(u => `
+            <tr class="border-b border-slate-50 table-row">
+                <td class="py-3 px-4"><div class="flex items-center gap-3"><img src="${u.avatar}" class="w-8 h-8 rounded-full object-cover"><span class="text-xs font-bold text-slate-700">${u.name}</span></div></td>
+                <td class="py-3 px-3 text-xs text-slate-500">${u.email}</td>
+                <td class="py-3 px-3 text-xs font-bold text-slate-700">${u.orders}</td>
+                <td class="py-3 px-3 text-xs font-bold text-slate-800">${u.spent}</td>
+                <td class="py-3 px-3"><span class="badge ${u.status==='Active'?'badge-green':u.status==='Suspended'?'badge-red':'badge-yellow'}">${u.status}</span></td>
+                <td class="py-3 px-3 text-xs text-slate-400">${u.joined}</td>
+            </tr>
+        `).join('');
+    }
+
+    // ===================== ORDERS =====================
+    let allOrders = [];
+    function generateOrders() {
+        const statuses = ['Delivered','Shipped','Processing','Pending','Cancelled'];
+        const payments = ['bKash','Nagad','Card','COD'];
+        const names = ['Rahim Uddin','Karim Ahmed','Sara Khan','Jamal Hossain','Nusrat Jahan','Tanvir Rahman','Fatima Begum','Arif Hassan','Mobarak Ali','Sumaiya Khatun'];
+        allOrders = allProducts.slice(0, 20).map((p, i) => ({
+            id: 1000 + i,
+            customer: names[i % names.length],
+            product: p.title,
+            total: (p.price * (Math.floor(Math.random()*3)+1)).toFixed(2),
+            payment: payments[i % payments.length],
+            status: statuses[Math.floor(Math.random()*5)],
+            date: `2026-09-${String(Math.max(1, 10-i)).padStart(2,'0')}`
+        }));
+    }
+    function renderOrders() {
+        if (!allOrders.length) generateOrders();
+        const filter = document.getElementById('orderStatusFilter').value;
+        const items = filter === 'all' ? allOrders : allOrders.filter(o => o.status === filter);
+        document.getElementById('ordersTable').innerHTML = items.map(o => `
+            <tr class="border-b border-slate-50 table-row">
+                <td class="py-3 px-4 text-xs font-bold text-slate-700">#ORD-${o.id}</td>
+                <td class="py-3 px-3 text-xs text-slate-600">${o.customer}</td>
+                <td class="py-3 px-3 text-xs text-slate-600 truncate max-w-[180px]">${o.product}</td>
+                <td class="py-3 px-3 text-xs font-bold text-slate-800">$${o.total}</td>
+                <td class="py-3 px-3"><span class="badge badge-blue">${o.payment}</span></td>
+                <td class="py-3 px-3"><span class="badge ${o.status==='Delivered'?'badge-green':o.status==='Shipped'?'badge-blue':o.status==='Processing'?'badge-yellow':o.status==='Cancelled'?'badge-red':'badge-purple'}">${o.status}</span></td>
+                <td class="py-3 px-3 text-xs text-slate-400">${o.date}</td>
+                <td class="py-3 px-4 text-right"><button class="w-7 h-7 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200 transition ml-auto"><i class="fa-solid fa-eye text-[10px]"></i></button></td>
+            </tr>
+        `).join('');
+    }
+    function filterOrders() { renderOrders(); }
+
+    // ===================== COUPONS =====================
+    function renderCoupons() {
+        document.getElementById('couponsTable').innerHTML = coupons.map(c => `
+            <tr class="border-b border-slate-50 table-row">
+                <td class="py-3 px-4"><span class="font-mono font-bold text-sm text-primary-600">${c.code}</span></td>
+                <td class="py-3 px-3"><span class="badge badge-green">${c.discount}% off</span></td>
+                <td class="py-3 px-3 text-xs text-slate-600">$${c.minOrder}</td>
+                <td class="py-3 px-3 text-xs font-bold text-slate-700">${c.used}</td>
+                <td class="py-3 px-3 text-xs text-slate-400">${c.expires}</td>
+                <td class="py-3 px-3"><span class="badge ${c.active?'badge-green':'badge-red'}">${c.active?'Active':'Expired'}</span></td>
+                <td class="py-3 px-4 text-right"><button onclick="deleteCoupon(${c.id})" class="w-7 h-7 rounded-lg bg-red-50 flex items-center justify-center text-red-500 hover:bg-red-100 transition ml-auto"><i class="fa-solid fa-trash text-[10px]"></i></button></td>
+            </tr>
+        `).join('');
+    }
+    function showAddCoupon() { document.getElementById('couponForm').classList.remove('hidden'); }
+    function saveCoupon() {
+        const code = document.getElementById('couponCode').value.trim().toUpperCase();
+        const discount = parseInt(document.getElementById('couponDiscount').value);
+        const minOrder = parseInt(document.getElementById('couponMinOrder').value) || 0;
+        const expiry = document.getElementById('couponExpiry').value;
+        if (!code || !discount) { showToast('Please fill required fields', 'error'); return; }
+        coupons.push({ id: Date.now(), code, discount, minOrder, used: 0, expires: expiry || '2026-12-31', active: true });
+        document.getElementById('couponForm').classList.add('hidden');
+        ['couponCode','couponDiscount','couponMinOrder','couponExpiry'].forEach(id => document.getElementById(id).value = '');
+        renderCoupons();
+        showToast('Coupon created!', 'success');
+    }
+    function deleteCoupon(id) { coupons = coupons.filter(c => c.id !== id); renderCoupons(); showToast('Coupon deleted!', 'success'); }
+
+    // ===================== REVIEWS =====================
+    function renderReviews() {
+        const reviews = allProducts.slice(0, 8).map((p, i) => {
+            const rating = typeof p.rating === 'number' ? p.rating : (p.rating?.rate || (Math.random()*3+2));
+            const names = ['Eleanor Collins','Lucas Gordon','Savannah Gomez','Alexander Jones','Elijah Cruz','Nicholas Bailey','Christian Perez','Mia Thompson'];
+            return { product: p.title, img: p.thumbnail, rating: rating.toFixed(1), name: names[i], comment: ['Great product!','Highly impressed!','Would buy again!','Good value for money','Decent quality','Amazing!','Love it!','Fast shipping!'][i], date: '2026-08-'+String(28-i).padStart(2,'0') };
+        });
+        document.getElementById('reviewsList').innerHTML = reviews.map(r => `
+            <div class="card flex gap-4 items-start">
+                <img src="${r.img}" class="w-12 h-12 rounded-xl object-contain bg-slate-50 p-1 flex-shrink-0">
+                <div class="flex-1">
+                    <div class="flex items-center justify-between">
+                        <p class="text-xs font-bold text-slate-800">${r.product}</p>
+                        <div class="flex items-center gap-0.5">${Array(5).fill(0).map((_,i) => `<i class="fa-solid fa-star text-[9px] ${i<Math.round(r.rating)?'text-amber-400':'text-slate-200'}"></i>`).join('')}</div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-0.5">by ${r.name} • ${r.date}</p>
+                    <p class="text-xs text-slate-600 mt-1">${r.comment}</p>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // ===================== TICKETS =====================
+    function renderTickets() {
+        const tickets = [
+            { id:'TK-101', subject:'Order not received', customer:'Rahim Uddin', status:'Open', priority:'High', date:'2026-09-01' },
+            { id:'TK-102', subject:'Wrong product delivered', customer:'Sara Khan', status:'Open', priority:'Critical', date:'2026-09-01' },
+            { id:'TK-103', subject:'Refund request', customer:'Karim Ahmed', status:'Pending', priority:'Medium', date:'2026-08-30' },
+            { id:'TK-104', subject:'Payment issue', customer:'Jamal Hossain', status:'Open', priority:'High', date:'2026-08-29' },
+            { id:'TK-105', subject:'Size mismatch', customer:'Nusrat Jahan', status:'Resolved', priority:'Low', date:'2026-08-28' },
+        ];
+        document.getElementById('ticketsList').innerHTML = tickets.map(t => `
+            <div class="card flex items-center gap-4 hover:border-primary-200 transition cursor-pointer">
+                <div class="w-10 h-10 rounded-xl ${t.priority==='Critical'?'bg-red-50':t.priority==='High'?'bg-amber-50':'bg-blue-50'} flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-headset ${t.priority==='Critical'?'text-red-500':t.priority==='High'?'text-amber-500':'text-blue-500'} text-sm"></i>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[10px] font-bold text-slate-400">${t.id}</span>
+                        <span class="badge ${t.status==='Open'?'badge-red':t.status==='Pending'?'badge-yellow':'badge-green'}">${t.status}</span>
+                        <span class="badge ${t.priority==='Critical'?'badge-red':t.priority==='High'?'badge-yellow':'badge-blue'}">${t.priority}</span>
+                    </div>
+                    <p class="text-xs font-bold text-slate-800 mt-1">${t.subject}</p>
+                    <p class="text-[10px] text-slate-400">${t.customer} • ${t.date}</p>
+                </div>
+                <i class="fa-solid fa-chevron-right text-xs text-slate-300"></i>
+            </div>
+        `).join('');
+    }
+
+    // ===================== REVENUE DETAIL =====================
+    function renderRevenueDetail() {
+        const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+        const values = [4200,5800,4900,6300,5500,7200,6800,7500,6100,8200,7800,8400];
+        const max = Math.max(...values);
+        document.getElementById('revenueDetailChart').innerHTML = values.map((v, i) => `
+            <div class="revenue-bar" style="height:${(v/max)*100}%;background:${i===new Date().getMonth()?'linear-gradient(180deg,#6366f1,#8b5cf6)':'linear-gradient(180deg,#c7d2fe,#a5b4fc)'}" data-label="${months[i]}" title="$${v.toLocaleString()}"></div>
+        `).join('');
+    }
+
+    // ===================== UTILITY =====================
+    function setRevenueView(view) {
+        document.getElementById('revYear').className = view==='year' ? 'px-3 py-1 rounded-md text-[11px] font-bold bg-white shadow-sm text-primary-600' : 'px-3 py-1 rounded-md text-[11px] font-bold text-slate-400';
+        document.getElementById('revMonth').className = view==='month' ? 'px-3 py-1 rounded-md text-[11px] font-bold bg-white shadow-sm text-primary-600' : 'px-3 py-1 rounded-md text-[11px] font-bold text-slate-400';
+    }
+
+    function toggleDark() {
+        document.body.classList.toggle('dark');
+        const icon = document.getElementById('themeIcon');
+        icon.className = document.body.classList.contains('dark') ? 'fa-solid fa-sun text-sm' : 'fa-solid fa-moon text-sm';
+    }
+
     function showToast(msg, type) {
         const toast = document.getElementById('toast');
         toast.textContent = msg;
-        toast.style.background = type === 'success' ? 'linear-gradient(135deg, #10b981, #34d399)' : type === 'error' ? 'linear-gradient(135deg, #ef4444, #f97316)' : 'linear-gradient(135deg, #6366f1, #8b5cf6)';
-        toast.style.opacity = '1'; toast.style.transform = 'translateY(0)';
-        setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateY(-10px)'; }, 2500);
+        toast.className = `toast ${type} show`;
+        setTimeout(() => { toast.classList.remove('show'); }, 3000);
     }
 
-    function logout() {
-        localStorage.removeItem('novaShopAuth');
-        window.location.href = 'index.html';
-    }
-
+    // ===================== INIT =====================
     document.addEventListener('DOMContentLoaded', () => {
-        applyTranslations();
-        loadAll();
+        checkAdminAuth();
     });
     </script>
 </body>
