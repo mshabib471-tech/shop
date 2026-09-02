@@ -3,695 +3,655 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NovaShop — My Dashboard</title>
+    <title>HR ShopBD — My Dashboard</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { 'inter': ['Inter', 'sans-serif'] },
-                }
-            }
-        }
+        tailwind.config = { theme: { extend: { fontFamily: { 'inter': ['Inter', 'sans-serif'] } } } }
     </script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <style>
         * { font-family: 'Inter', sans-serif; }
         body { background: linear-gradient(135deg, #f0f0ff 0%, #e8e0f0 30%, #f5f0ff 60%, #eef0ff 100%); overflow-x: hidden; }
-
-        .glass { background: rgba(255,255,255,0.45); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.6); }
-        .glass-strong { background: rgba(255,255,255,0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.7); }
-        .glass-card { background: rgba(255,255,255,0.5); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); border-radius: 20px; transition: all 0.3s ease; }
-        .glass-card:hover { transform: translateY(-4px); background: rgba(255,255,255,0.7); box-shadow: 0 12px 40px rgba(0,0,0,0.06); }
-        .glass-btn { background: rgba(255,255,255,0.5); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.6); }
-
-        .blob { position: absolute; border-radius: 50%; filter: blur(80px); z-index: 0; opacity: 0.4; pointer-events: none; }
+        .blob { position: fixed; border-radius: 50%; filter: blur(80px); z-index: 0; opacity: 0.4; pointer-events: none; }
         .blob-1 { top: -10%; left: -5%; width: 400px; height: 400px; background: #c7b8f5; }
-        .blob-2 { top: 30%; right: -5%; width: 350px; height: 350px; background: #a5b4fc; }
-        .blob-3 { bottom: 5%; left: 15%; width: 300px; height: 300px; background: #ddd6fe; }
-
-        .hero-gradient { background: linear-gradient(135deg, #a78bfa 0%, #c084fc 30%, #f0abfc 60%, #fda4af 100%); }
-        .promo-gradient { background: linear-gradient(135deg, #c084fc 0%, #f472b6 50%, #fb923c 100%); }
-
+        .blob-2 { top: 40%; right: -5%; width: 350px; height: 350px; background: #a5b4fc; }
+        .blob-3 { bottom: 5%; left: 20%; width: 300px; height: 300px; background: #ddd6fe; }
+        .glass { background: rgba(255,255,255,0.45); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.6); }
+        .glass-strong { background: rgba(255,255,255,0.65); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.7); }
+        .glass-card { background: rgba(255,255,255,0.5); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); border-radius: 20px; transition: all 0.3s ease; }
+        .glass-card:hover { transform: translateY(-2px); box-shadow: 0 12px 40px rgba(0,0,0,0.06); }
         .sidebar-item { transition: all 0.2s ease; border-radius: 12px; }
-        .sidebar-item:hover, .sidebar-item.active { background: rgba(99,102,241,0.1); color: #6366f1; }
+        .sidebar-item:hover { background: rgba(99,102,241,0.1); color: #6366f1; }
         .sidebar-item.active { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; }
-
-        .slide-up { animation: slideUp 0.6s ease forwards; opacity: 0; transform: translateY(20px); }
+        .dash-tab { transition: all 0.25s ease; border-radius: 12px; }
+        .dash-tab:hover { background: rgba(99,102,241,0.08); }
+        .dash-tab.active { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; }
+        .status-badge { padding: 3px 10px; border-radius: 20px; font-size: 10px; font-weight: 700; }
+        .status-delivered { background: #dcfce7; color: #16a34a; }
+        .status-processing { background: #fef3c7; color: #d97706; }
+        .status-shipped { background: #dbeafe; color: #2563eb; }
+        .status-cancelled { background: #fee2e2; color: #dc2626; }
+        .slide-up { animation: slideUp 0.5s ease forwards; opacity: 0; transform: translateY(15px); }
         @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
-        .fade-in { animation: fadeIn 0.5s ease forwards; opacity: 0; }
-        @keyframes fadeIn { to { opacity: 1; } }
-
-        .stat-card { transition: all 0.3s ease; }
-        .stat-card:hover { transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.06); }
-
-        .progress-bar { background: linear-gradient(90deg, #6366f1, #8b5cf6, #c084fc); border-radius: 9999px; transition: width 1s ease; }
-
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #c4b5fd; border-radius: 10px; }
-
-        .toast {
-            position: fixed; top: 24px; right: 24px; z-index: 100;
-            padding: 14px 24px; border-radius: 14px; font-size: 13px; font-weight: 600;
-            backdrop-filter: blur(16px); transform: translateX(120%); transition: transform 0.4s cubic-bezier(0.4,0,0.2,1);
-        }
-        .toast.show { transform: translateX(0); }
-        .toast.success { background: rgba(34,197,94,0.9); color: white; }
-        .toast.error { background: rgba(239,68,68,0.9); color: white; }
-        .toast.info { background: rgba(99,102,241,0.9); color: white; }
+        .input-field { background: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.8); border-radius: 12px; padding: 10px 14px; width: 100%; font-size: 13px; outline: none; transition: all 0.3s; }
+        .input-field:focus { box-shadow: 0 0 0 3px rgba(99,102,241,0.15); border-color: #818cf8; }
+        .lang-toggle { transition: all 0.3s ease; }
+        .lang-toggle.active { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; }
     </style>
 </head>
 <body class="min-h-screen relative">
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
 
-<!-- Background Blobs -->
-<div class="blob blob-1"></div>
-<div class="blob blob-2"></div>
-<div class="blob blob-3"></div>
+    <div id="mobileOverlay" class="fixed inset-0 z-[50] hidden lg:hidden" onclick="toggleMobileSidebar(false)" style="background:rgba(0,0,0,0.7);backdrop-filter:blur(2px);"></div>
 
-<!-- Toast -->
-<div id="toast" class="toast"></div>
+    <div class="flex h-screen overflow-hidden relative z-10">
+        <!-- SIDEBAR -->
+        <aside id="sidebar" class="w-[280px] flex flex-col py-6 px-4 fixed lg:relative h-full z-[55] -translate-x-full lg:translate-x-0 transition-transform duration-300" style="background:rgba(245,240,255,1);border-right:1px solid rgba(255,255,255,0.6);">
+            <div class="flex items-center gap-3 px-3 mb-6">
+                <a href="index.html" class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
+                        <i class="fa-solid fa-store text-white text-sm"></i>
+                    </div>
+                    <span class="font-extrabold text-lg text-slate-800">HR <span class="text-indigo-500">ShopBD</span></span>
+                </a>
+            </div>
+            <div class="flex gap-1 p-1 rounded-xl bg-white/30 mb-5 mx-3">
+                <button onclick="setLang('en')" id="langEn" class="flex-1 py-1.5 rounded-lg text-[11px] font-bold transition lang-toggle active">EN</button>
+                <button onclick="setLang('bn')" id="langBn" class="flex-1 py-1.5 rounded-lg text-[11px] font-bold text-slate-500 transition lang-toggle">বাং</button>
+            </div>
+            <nav class="flex-1 space-y-1 overflow-y-auto">
+                <a href="index.html" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+                    <i class="fa-solid fa-house w-5 text-center"></i> <span data-i18n="nav_home">Home</span>
+                </a>
+                <a href="#orders" onclick="showSection('orders');setActive(this)" class="sidebar-item active flex items-center gap-3 px-4 py-3 text-sm font-medium">
+                    <i class="fa-solid fa-box w-5 text-center"></i> <span data-i18n="nav_orders">My Orders</span>
+                </a>
+                <a href="#wishlist" onclick="showSection('wishlist');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+                    <i class="fa-regular fa-heart w-5 text-center"></i> <span data-i18n="nav_wishlist">Wishlist</span>
+                    <span id="sidebarWishCount" class="ml-auto text-[10px] font-bold text-pink-500 hidden">0</span>
+                </a>
+                <a href="#coupons" onclick="showSection('coupons');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+                    <i class="fa-solid fa-ticket w-5 text-center"></i> <span data-i18n="nav_coupons">Coupons</span>
+                </a>
+                <a href="#addresses" onclick="showSection('addresses');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+                    <i class="fa-solid fa-location-dot w-5 text-center"></i> <span data-i18n="nav_addresses">Addresses</span>
+                </a>
+                <div class="border-t border-slate-200/50 my-3"></div>
+                <a href="#profile" onclick="showSection('profile');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+                    <i class="fa-solid fa-user w-5 text-center"></i> <span data-i18n="nav_profile">My Profile</span>
+                </a>
+                <a href="#settings" onclick="showSection('settings');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+                    <i class="fa-solid fa-gear w-5 text-center"></i> <span data-i18n="nav_settings">Settings</span>
+                </a>
+                <div class="border-t border-slate-200/50 my-3"></div>
+                <a href="login.html" onclick="logout()" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+                    <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> <span data-i18n="nav_logout">Logout</span>
+                </a>
+            </nav>
+        </aside>
 
-<!-- Mobile Menu Overlay -->
-<div id="mobileOverlay" class="fixed inset-0 bg-black/30 z-40 hidden lg:hidden" onclick="toggleSidebar()"></div>
+        <!-- MAIN -->
+        <main class="flex-1 overflow-y-auto">
+            <header class="sticky top-0 z-30 glass-strong px-6 py-3 flex items-center gap-4">
+                <button onclick="toggleMobileSidebar()" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/50 transition">
+                    <i class="fa-solid fa-bars text-slate-600"></i>
+                </button>
+                <h2 class="font-extrabold text-lg text-slate-800" data-i18n="dash_title">My Dashboard</h2>
+                <div class="flex-1"></div>
+                <div class="flex items-center gap-3">
+                    <a href="index.html" class="w-10 h-10 flex items-center justify-center glass rounded-full hover:bg-white/70 transition text-slate-500" title="Home">
+                        <i class="fa-solid fa-house text-sm"></i>
+                    </a>
+                    <div class="w-10 h-10 flex items-center justify-center glass rounded-full" id="dashAvatar">
+                        <img id="dashAvatarImg" src="" class="w-8 h-8 rounded-full object-cover hidden">
+                        <i class="fa-solid fa-user text-slate-400 text-sm" id="dashAvatarIcon"></i>
+                    </div>
+                </div>
+            </header>
 
-<div class="flex h-screen overflow-hidden relative z-10">
+            <div class="p-6">
+                <!-- Stats -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 slide-up">
+                    <div class="glass-card p-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center"><i class="fa-solid fa-box text-indigo-500 text-sm"></i></div>
+                            <div><p class="text-[10px] text-slate-400 font-semibold" data-i18n="stat_orders">Total Orders</p><p class="text-lg font-extrabold text-slate-800" id="statOrders">0</p></div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center"><i class="fa-solid fa-check-circle text-green-500 text-sm"></i></div>
+                            <div><p class="text-[10px] text-slate-400 font-semibold" data-i18n="stat_delivered">Delivered</p><p class="text-lg font-extrabold text-slate-800" id="statDelivered">0</p></div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-100 to-rose-100 flex items-center justify-center"><i class="fa-solid fa-heart text-pink-500 text-sm"></i></div>
+                            <div><p class="text-[10px] text-slate-400 font-semibold" data-i18n="stat_wishlist">Wishlist</p><p class="text-lg font-extrabold text-slate-800" id="statWishlist">0</p></div>
+                        </div>
+                    </div>
+                    <div class="glass-card p-4">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center"><i class="fa-solid fa-ticket text-amber-500 text-sm"></i></div>
+                            <div><p class="text-[10px] text-slate-400 font-semibold" data-i18n="stat_coupons">Coupons</p><p class="text-lg font-extrabold text-slate-800">3</p></div>
+                        </div>
+                    </div>
+                </div>
 
-<!-- ==================== LEFT SIDEBAR ==================== -->
-<aside id="sidebar" class="w-[240px] glass-strong flex flex-col py-6 px-4 fixed lg:relative h-full z-50 -translate-x-full lg:translate-x-0 transition-transform duration-300">
-    <a href="index.html" class="flex items-center gap-3 px-3 mb-8">
-        <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
-            <i class="fa-solid fa-bag-shopping text-white text-sm"></i>
-        </div>
-        <span class="font-extrabold text-lg text-slate-800">Nova<span class="text-indigo-500">Shop</span></span>
-    </a>
+                <!-- ORDERS SECTION -->
+                <div id="sectionOrders" class="slide-up">
+                    <h3 class="font-extrabold text-slate-800 mb-4" data-i18n="section_orders">My Orders</h3>
+                    <div id="ordersList" class="space-y-3"></div>
+                </div>
 
-    <nav class="flex-1 space-y-1 overflow-y-auto">
-        <a href="index.html" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-house w-5 text-center"></i> Home
-        </a>
-        <a href="#" onclick="setSection('overview');setActive(this)" class="sidebar-item active flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-chart-pie w-5 text-center"></i> Dashboard
-        </a>
-        <a href="#" onclick="setSection('orders');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-box w-5 text-center"></i> My Orders
-            <span class="ml-auto text-white text-[10px] font-bold px-2 py-0.5 rounded-full" style="background:linear-gradient(135deg,#6366f1,#8b5cf6)">5</span>
-        </a>
-        <a href="#" onclick="setSection('wishlist');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-regular fa-heart w-5 text-center"></i> Wishlist
-            <span class="ml-auto text-[10px] font-bold text-pink-500">3</span>
-        </a>
-        <a href="#" onclick="setSection('coupons');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-ticket w-5 text-center"></i> Coupons
-            <span class="ml-auto text-[10px] font-bold text-amber-500">2</span>
-        </a>
-        <a href="#" onclick="setSection('addresses');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-location-dot w-5 text-center"></i> Addresses
-        </a>
-        <a href="#" onclick="setSection('reviews');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-star w-5 text-center"></i> Reviews
-        </a>
-        <div class="border-t border-slate-200/50 my-3"></div>
-        <a href="#" onclick="setSection('settings');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-gear w-5 text-center"></i> Account Settings
-        </a>
-        <a href="#" onclick="handleLogout()" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-400 hover:text-red-500 hover:bg-red-50/50">
-            <i class="fa-solid fa-right-from-bracket w-5 text-center"></i> Logout
-        </a>
-    </nav>
+                <!-- WISHLIST SECTION -->
+                <div id="sectionWishlist" class="hidden slide-up">
+                    <h3 class="font-extrabold text-slate-800 mb-4" data-i18n="section_wishlist">My Wishlist</h3>
+                    <div id="wishlistGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
+                </div>
 
-    <!-- Member Card -->
-    <div class="mt-4 promo-gradient rounded-2xl p-5 text-white relative overflow-hidden">
-        <div class="absolute -top-4 -right-4 w-20 h-20 bg-white/20 rounded-full"></div>
-        <div class="absolute -bottom-6 -left-6 w-16 h-16 bg-white/10 rounded-full"></div>
-        <p class="text-[10px] font-bold uppercase tracking-wider mb-1 opacity-90">Member Tier</p>
-        <h3 class="font-extrabold text-lg leading-tight mb-1">Gold Member</h3>
-        <p class="text-white/80 text-[11px] mb-2">$50 more to next tier</p>
-        <div class="w-full bg-white/20 rounded-full h-2 mb-1">
-            <div class="progress-bar h-2" style="width: 65%"></div>
-        </div>
-        <p class="text-[10px] text-white/70">$135 / $200</p>
+                <!-- COUPONS SECTION -->
+                <div id="sectionCoupons" class="hidden slide-up">
+                    <h3 class="font-extrabold text-slate-800 mb-4" data-i18n="section_coupons">Available Coupons</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="couponsList">
+                        <div class="glass-card p-5 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-indigo-500/10 to-purple-500/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-white font-extrabold text-sm">20%</div>
+                                <div><p class="font-bold text-sm text-slate-800" data-i18n="coupon_1_title">20% Off</p><p class="text-[10px] text-slate-400" data-i18n="coupon_1_desc">Min. order $50</p></div>
+                            </div>
+                            <div class="bg-white/40 rounded-xl px-3 py-2 flex items-center justify-between mb-2">
+                                <code class="text-xs font-bold text-indigo-500 tracking-wider">SUMMER20</code>
+                                <button onclick="copyCoupon('SUMMER20')" class="text-[10px] font-bold text-indigo-500 hover:text-indigo-600" data-i18n="copy">Copy</button>
+                            </div>
+                            <p class="text-[10px] text-slate-400"><span data-i18n="expires">Expires:</span> 30 Dec 2026</p>
+                        </div>
+                        <div class="glass-card p-5 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-green-500/10 to-emerald-500/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white font-extrabold text-sm">$10</div>
+                                <div><p class="font-bold text-sm text-slate-800" data-i18n="coupon_2_title">$10 Off</p><p class="text-[10px] text-slate-400" data-i18n="coupon_2_desc">Min. order $30</p></div>
+                            </div>
+                            <div class="bg-white/40 rounded-xl px-3 py-2 flex items-center justify-between mb-2">
+                                <code class="text-xs font-bold text-green-600 tracking-wider">SAVE10</code>
+                                <button onclick="copyCoupon('SAVE10')" class="text-[10px] font-bold text-green-600 hover:text-green-700" data-i18n="copy">Copy</button>
+                            </div>
+                            <p class="text-[10px] text-slate-400"><span data-i18n="expires">Expires:</span> 15 Jan 2027</p>
+                        </div>
+                        <div class="glass-card p-5 relative overflow-hidden">
+                            <div class="absolute top-0 right-0 w-20 h-20 bg-gradient-to-br from-amber-500/10 to-orange-500/10 rounded-full -translate-y-1/2 translate-x-1/2"></div>
+                            <div class="flex items-center gap-3 mb-3">
+                                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center text-white font-extrabold text-sm">50%</div>
+                                <div><p class="font-bold text-sm text-slate-800" data-i18n="coupon_3_title">50% Off</p><p class="text-[10px] text-slate-400" data-i18n="coupon_3_desc">First order only</p></div>
+                            </div>
+                            <div class="bg-white/40 rounded-xl px-3 py-2 flex items-center justify-between mb-2">
+                                <code class="text-xs font-bold text-amber-600 tracking-wider">NEWUSER50</code>
+                                <button onclick="copyCoupon('NEWUSER50')" class="text-[10px] font-bold text-amber-600 hover:text-amber-700" data-i18n="copy">Copy</button>
+                            </div>
+                            <p class="text-[10px] text-slate-400"><span data-i18n="expires">Expires:</span> 28 Feb 2027</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ADDRESSES SECTION -->
+                <div id="sectionAddresses" class="hidden slide-up">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="font-extrabold text-slate-800" data-i18n="section_addresses">My Addresses</h3>
+                        <button onclick="showAddAddress()" class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xs font-bold px-4 py-2 rounded-xl hover:opacity-90 transition">
+                            <i class="fa-solid fa-plus mr-1"></i> <span data-i18n="add_address">Add New</span>
+                        </button>
+                    </div>
+                    <div id="addressesList" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+                </div>
+
+                <!-- PROFILE SECTION -->
+                <div id="sectionProfile" class="hidden slide-up">
+                    <h3 class="font-extrabold text-slate-800 mb-4" data-i18n="section_profile">My Profile</h3>
+                    <div class="glass-card p-6">
+                        <div class="flex items-center gap-4 mb-6">
+                            <div class="relative">
+                                <img id="profileAvatar" src="" class="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg">
+                                <button class="absolute bottom-0 right-0 w-7 h-7 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white text-[10px] shadow-lg">
+                                    <i class="fa-solid fa-camera"></i>
+                                </button>
+                            </div>
+                            <div>
+                                <h4 class="font-extrabold text-slate-800 text-lg" id="profileName">User</h4>
+                                <p class="text-xs text-slate-400" id="profileEmail">user@email.com</p>
+                                <p class="text-[10px] text-indigo-400 font-semibold mt-1" id="profileProvider">Email Account</p>
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider" data-i18n="label_name">Full Name</label>
+                                <input type="text" id="editName" class="input-field mt-1">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider" data-i18n="label_email">Email</label>
+                                <input type="email" id="editEmail" class="input-field mt-1" readonly>
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider" data-i18n="label_phone">Phone</label>
+                                <input type="tel" id="editPhone" class="input-field mt-1">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-400 uppercase tracking-wider" data-i18n="label_joined">Member Since</label>
+                                <input type="text" id="editJoined" class="input-field mt-1" readonly>
+                            </div>
+                        </div>
+                        <button onclick="saveProfile()" class="mt-5 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-sm px-6 py-3 rounded-xl hover:opacity-90 transition">
+                            <i class="fa-solid fa-check mr-1"></i> <span data-i18n="save_profile">Save Changes</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- SETTINGS SECTION -->
+                <div id="sectionSettings" class="hidden slide-up">
+                    <h3 class="font-extrabold text-slate-800 mb-4" data-i18n="section_settings">Settings</h3>
+                    <div class="space-y-4">
+                        <div class="glass-card p-5">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center"><i class="fa-solid fa-bell text-indigo-500 text-sm"></i></div>
+                                    <div><p class="text-sm font-bold text-slate-800" data-i18n="set_notif">Notifications</p><p class="text-[10px] text-slate-400" data-i18n="set_notif_desc">Order updates and promotions</p></div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" checked class="sr-only peer"><div class="w-10 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-5 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-500"></div></label>
+                            </div>
+                        </div>
+                        <div class="glass-card p-5">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center"><i class="fa-solid fa-envelope text-green-500 text-sm"></i></div>
+                                    <div><p class="text-sm font-bold text-slate-800" data-i18n="set_email_notif">Email Notifications</p><p class="text-[10px] text-slate-400" data-i18n="set_email_notif_desc">Receive emails about deals</p></div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" checked class="sr-only peer"><div class="w-10 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-5 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-500"></div></label>
+                            </div>
+                        </div>
+                        <div class="glass-card p-5">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center"><i class="fa-solid fa-moon text-amber-500 text-sm"></i></div>
+                                    <div><p class="text-sm font-bold text-slate-800" data-i18n="set_dark">Dark Mode</p><p class="text-[10px] text-slate-400" data-i18n="set_dark_desc">Coming soon</p></div>
+                                </div>
+                                <label class="relative inline-flex items-center cursor-pointer opacity-50"><input type="checkbox" disabled class="sr-only peer"><div class="w-10 h-5 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-5 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-500"></div></label>
+                            </div>
+                        </div>
+                        <div class="glass-card p-5 cursor-pointer hover:border-red-300 transition" onclick="logout()">
+                            <div class="flex items-center gap-3">
+                                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-red-100 to-rose-100 flex items-center justify-center"><i class="fa-solid fa-right-from-bracket text-red-500 text-sm"></i></div>
+                                <div><p class="text-sm font-bold text-red-500" data-i18n="nav_logout">Logout</p><p class="text-[10px] text-slate-400" data-i18n="set_logout_desc">Sign out of your account</p></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
     </div>
-</aside>
 
-<!-- ==================== MAIN CONTENT ==================== -->
-<main class="flex-1 overflow-y-auto" id="mainContent">
-    <!-- Top Bar -->
-    <header class="sticky top-0 z-30 glass-strong px-6 py-3 flex items-center gap-4">
-        <button onclick="toggleSidebar()" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/50 transition">
-            <i class="fa-solid fa-bars text-slate-600"></i>
-        </button>
-        <div class="flex-1">
-            <h2 class="text-sm font-extrabold text-slate-800" id="greeting">Hello! 👋</h2>
-            <p class="text-[11px] text-slate-500" id="todayDate"></p>
-        </div>
-        <div class="flex items-center gap-3">
-            <button class="relative w-10 h-10 flex items-center justify-center glass-btn rounded-full hover:bg-white/70 transition">
-                <i class="fa-solid fa-bell text-slate-600 text-sm"></i>
-                <span class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">3</span>
-            </button>
-            <div class="flex items-center gap-2 glass-btn px-3 py-1.5 rounded-full cursor-pointer hover:bg-white/70 transition">
-                <img id="userAvatar" src="https://i.pravatar.cc/150?img=47" class="w-8 h-8 rounded-full object-cover border-2 border-white shadow-sm">
-                <span class="hidden sm:block text-xs font-semibold text-slate-700" id="userName">User</span>
+    <!-- Address Modal -->
+    <div id="addressModal" class="fixed inset-0 z-[70] hidden">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeAddressModal()"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md glass-strong rounded-3xl p-6">
+            <h3 class="font-bold text-slate-800 mb-4" data-i18n="add_address_title">Add New Address</h3>
+            <div class="space-y-3">
+                <input type="text" id="addrName" class="input-field" placeholder="Full name">
+                <input type="text" id="addrPhone" class="input-field" placeholder="Phone number">
+                <input type="text" id="addrStreet" class="input-field" placeholder="Street address">
+                <input type="text" id="addrCity" class="input-field" placeholder="City">
+                <input type="text" id="addrZip" class="input-field" placeholder="ZIP / Postal code">
+            </div>
+            <div class="flex gap-3 mt-5">
+                <button onclick="closeAddressModal()" class="flex-1 py-3 rounded-xl bg-slate-100 text-slate-600 text-sm font-bold hover:bg-slate-200 transition" data-i18n="cancel">Cancel</button>
+                <button onclick="saveAddress()" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-sm font-bold hover:opacity-90 transition" data-i18n="save">Save</button>
             </div>
         </div>
-    </header>
-
-    <div class="p-6" id="mainArea">
-
-        <!-- ==================== OVERVIEW ==================== -->
-        <div id="sectionOverview">
-            <!-- Welcome Banner -->
-            <section class="hero-gradient rounded-3xl p-8 mb-8 relative overflow-hidden slide-up">
-                <div class="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/3"></div>
-                <div class="absolute bottom-0 left-1/3 w-48 h-48 bg-white/10 rounded-full translate-y-1/2"></div>
-                <div class="relative z-10 max-w-lg">
-                    <h1 class="text-2xl md:text-3xl font-extrabold text-white leading-tight mb-2" id="welcomeMsg">Welcome back! 🎉</h1>
-                    <p class="text-white/80 text-sm mb-4">Track your orders, manage your account, and enjoy exclusive member benefits.</p>
-                    <a href="index.html" class="inline-flex bg-white text-indigo-600 font-bold text-sm px-6 py-3 rounded-full hover:bg-white/90 transition shadow-xl items-center gap-2">
-                        Continue Shopping <i class="fa-solid fa-arrow-right text-xs"></i>
-                    </a>
-                </div>
-            </section>
-
-            <!-- Stats -->
-            <section class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8 slide-up" style="animation-delay:0.1s">
-                <div class="glass-card p-5 stat-card">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
-                            <i class="fa-solid fa-box text-indigo-500 text-sm"></i>
-                        </div>
-                        <span class="text-[10px] font-bold text-green-500 bg-green-50 px-2 py-0.5 rounded-full">+2</span>
-                    </div>
-                    <p class="text-xl font-extrabold text-slate-800">5</p>
-                    <p class="text-[11px] text-slate-500">Total Orders</p>
-                </div>
-                <div class="glass-card p-5 stat-card">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center">
-                            <i class="fa-solid fa-truck text-amber-500 text-sm"></i>
-                        </div>
-                        <span class="text-[10px] font-bold text-blue-500 bg-blue-50 px-2 py-0.5 rounded-full">Active</span>
-                    </div>
-                    <p class="text-xl font-extrabold text-slate-800">2</p>
-                    <p class="text-[11px] text-slate-500">In Transit</p>
-                </div>
-                <div class="glass-card p-5 stat-card">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-pink-100 to-rose-100 flex items-center justify-center">
-                            <i class="fa-solid fa-heart text-pink-500 text-sm"></i>
-                        </div>
-                    </div>
-                    <p class="text-xl font-extrabold text-slate-800">3</p>
-                    <p class="text-[11px] text-slate-500">Wishlist Items</p>
-                </div>
-                <div class="glass-card p-5 stat-card">
-                    <div class="flex items-center justify-between mb-3">
-                        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center">
-                            <i class="fa-solid fa-ticket text-green-500 text-sm"></i>
-                        </div>
-                    </div>
-                    <p class="text-xl font-extrabold text-slate-800">$25</p>
-                    <p class="text-[11px] text-slate-500">In Coupons</p>
-                </div>
-            </section>
-
-            <!-- Active Orders -->
-            <section class="mb-8 slide-up" style="animation-delay:0.2s">
-                <div class="flex justify-between items-center mb-5">
-                    <h2 class="text-lg font-extrabold text-slate-800">Active Orders</h2>
-                    <button onclick="setSection('orders')" class="text-xs font-semibold text-indigo-500 hover:text-indigo-600 flex items-center gap-1">View All <i class="fa-solid fa-arrow-right text-[10px]"></i></button>
-                </div>
-                <div class="space-y-3">
-                    <div class="glass-card p-4 flex items-center gap-4">
-                        <img src="https://cdn.dummyjson.com/products/images/mens-shirts/Blue%20Patch%20Polo%20T-Shirt/thumbnail.webp" class="w-16 h-16 rounded-xl object-contain bg-white/50 p-1 flex-shrink-0">
-                        <div class="flex-1 min-w-0">
-                            <h4 class="text-xs font-bold text-slate-700 truncate">Blue Patch Polo T-Shirt</h4>
-                            <p class="text-[10px] text-slate-400">Order #NS-20240801</p>
-                            <div class="flex items-center gap-2 mt-2">
-                                <div class="flex-1 bg-slate-200 rounded-full h-1.5"><div class="progress-bar h-1.5" style="width:60%"></div></div>
-                                <span class="text-[10px] font-bold text-indigo-500">In Transit</span>
-                            </div>
-                        </div>
-                        <div class="text-right flex-shrink-0">
-                            <p class="text-sm font-extrabold text-slate-800">$29.99</p>
-                            <p class="text-[10px] text-slate-400">Est. Aug 5</p>
-                        </div>
-                    </div>
-                    <div class="glass-card p-4 flex items-center gap-4">
-                        <img src="https://cdn.dummyjson.com/products/images/smartphones/iphone-9/thumbnail.webp" class="w-16 h-16 rounded-xl object-contain bg-white/50 p-1 flex-shrink-0">
-                        <div class="flex-1 min-w-0">
-                            <h4 class="text-xs font-bold text-slate-700 truncate">iPhone 9</h4>
-                            <p class="text-[10px] text-slate-400">Order #NS-20240803</p>
-                            <div class="flex items-center gap-2 mt-2">
-                                <div class="flex-1 bg-slate-200 rounded-full h-1.5"><div class="progress-bar h-1.5" style="width:30%"></div></div>
-                                <span class="text-[10px] font-bold text-amber-500">Preparing</span>
-                            </div>
-                        </div>
-                        <div class="text-right flex-shrink-0">
-                            <p class="text-sm font-extrabold text-slate-800">$549.00</p>
-                            <p class="text-[10px] text-slate-400">Est. Aug 8</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Quick Actions & Coupons -->
-            <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8 slide-up" style="animation-delay:0.3s">
-                <div class="glass-card p-6">
-                    <h3 class="font-extrabold text-sm text-slate-800 mb-4">Quick Actions</h3>
-                    <div class="grid grid-cols-3 gap-3">
-                        <a href="index.html" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/50 transition">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center"><i class="fa-solid fa-bag-shopping text-indigo-500 text-sm"></i></div>
-                            <span class="text-[10px] font-semibold text-slate-600">Shop</span>
-                        </a>
-                        <a href="checkout.html" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/50 transition">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center"><i class="fa-solid fa-credit-card text-green-500 text-sm"></i></div>
-                            <span class="text-[10px] font-semibold text-slate-600">Checkout</span>
-                        </a>
-                        <div onclick="setSection('addresses')" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/50 transition cursor-pointer">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-amber-100 to-orange-100 flex items-center justify-center"><i class="fa-solid fa-location-dot text-amber-500 text-sm"></i></div>
-                            <span class="text-[10px] font-semibold text-slate-600">Address</span>
-                        </div>
-                        <div onclick="setSection('reviews')" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/50 transition cursor-pointer">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-pink-100 to-rose-100 flex items-center justify-center"><i class="fa-solid fa-star text-pink-500 text-sm"></i></div>
-                            <span class="text-[10px] font-semibold text-slate-600">Reviews</span>
-                        </div>
-                        <div onclick="setSection('coupons')" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/50 transition cursor-pointer">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-red-100 to-rose-100 flex items-center justify-center"><i class="fa-solid fa-ticket text-red-400 text-sm"></i></div>
-                            <span class="text-[10px] font-semibold text-slate-600">Coupons</span>
-                        </div>
-                        <div onclick="setSection('settings')" class="flex flex-col items-center gap-2 p-3 rounded-xl hover:bg-white/50 transition cursor-pointer">
-                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-slate-100 to-gray-100 flex items-center justify-center"><i class="fa-solid fa-gear text-slate-500 text-sm"></i></div>
-                            <span class="text-[10px] font-semibold text-slate-600">Settings</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="glass-card p-6">
-                    <h3 class="font-extrabold text-sm text-slate-800 mb-4">Your Coupons</h3>
-                    <div class="space-y-3">
-                        <div class="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-100">
-                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center flex-shrink-0"><span class="text-white font-extrabold text-sm">15%</span></div>
-                            <div class="flex-1">
-                                <p class="text-xs font-bold text-slate-700">15% Off Coupon</p>
-                                <p class="text-[10px] text-slate-400">On orders over $50 · Expires Aug 31</p>
-                            </div>
-                            <button class="text-[10px] font-bold text-indigo-500 hover:text-indigo-600">Use</button>
-                        </div>
-                        <div class="flex items-center gap-3 p-3 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-100">
-                            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0"><span class="text-white font-extrabold text-sm">$5</span></div>
-                            <div class="flex-1">
-                                <p class="text-xs font-bold text-slate-700">$5 Off Discount</p>
-                                <p class="text-[10px] text-slate-400">On orders over $30 · Expires Sep 15</p>
-                            </div>
-                            <button class="text-[10px] font-bold text-indigo-500 hover:text-indigo-600">Use</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Recent Activity -->
-            <section class="mb-8 slide-up" style="animation-delay:0.4s">
-                <h2 class="text-lg font-extrabold text-slate-800 mb-5">Recent Activity</h2>
-                <div class="glass-card p-5">
-                    <div class="space-y-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-check text-green-500 text-xs"></i></div>
-                            <div class="flex-1"><p class="text-xs font-semibold text-slate-700">Order #NS-20240728 delivered</p><p class="text-[10px] text-slate-400">July 28, 2024</p></div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-star text-indigo-500 text-xs"></i></div>
-                            <div class="flex-1"><p class="text-xs font-semibold text-slate-700">Left a product review</p><p class="text-[10px] text-slate-400">July 30, 2024</p></div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-pink-50 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-heart text-pink-500 text-xs"></i></div>
-                            <div class="flex-1"><p class="text-xs font-semibold text-slate-700">Added to wishlist: Galaxy S21</p><p class="text-[10px] text-slate-400">August 1, 2024</p></div>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-ticket text-amber-500 text-xs"></i></div>
-                            <div class="flex-1"><p class="text-xs font-semibold text-slate-700">Earned coupon: 15% Off</p><p class="text-[10px] text-slate-400">August 2, 2024</p></div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!-- ==================== ORDERS ==================== -->
-        <div id="sectionOrders" class="hidden">
-            <section class="mb-8 slide-up">
-                <div class="flex justify-between items-center mb-5">
-                    <h2 class="text-lg font-extrabold text-slate-800">Order History</h2>
-                    <div class="flex gap-2">
-                        <button class="glass-btn px-3 py-1.5 rounded-full text-[11px] font-semibold text-indigo-600 bg-indigo-50/50">All</button>
-                        <button class="glass-btn px-3 py-1.5 rounded-full text-[11px] font-semibold text-slate-500">Shipping</button>
-                        <button class="glass-btn px-3 py-1.5 rounded-full text-[11px] font-semibold text-slate-500">Completed</button>
-                    </div>
-                </div>
-                <div class="space-y-3">
-                    <div class="glass-card p-4 hover:bg-white/60 transition cursor-pointer">
-                        <div class="flex items-center gap-4">
-                            <img src="https://cdn.dummyjson.com/products/images/mens-shirts/Blue%20Patch%20Polo%20T-Shirt/thumbnail.webp" class="w-14 h-14 rounded-xl object-contain bg-white/50 p-1 flex-shrink-0">
-                            <div class="flex-1 min-w-0">
-                                <h4 class="text-xs font-bold text-slate-700 truncate">Blue Patch Polo T-Shirt</h4>
-                                <p class="text-[10px] text-slate-400">Order #NS-20240801 · Aug 1, 2024</p>
-                            </div>
-                            <div class="text-right flex-shrink-0">
-                                <p class="text-sm font-extrabold text-slate-800">$29.99</p>
-                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-blue-50 text-blue-500">In Transit</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="glass-card p-4 hover:bg-white/60 transition cursor-pointer">
-                        <div class="flex items-center gap-4">
-                            <img src="https://cdn.dummyjson.com/products/images/smartphones/iphone-9/thumbnail.webp" class="w-14 h-14 rounded-xl object-contain bg-white/50 p-1 flex-shrink-0">
-                            <div class="flex-1 min-w-0">
-                                <h4 class="text-xs font-bold text-slate-700 truncate">iPhone 9</h4>
-                                <p class="text-[10px] text-slate-400">Order #NS-20240803 · Aug 3, 2024</p>
-                            </div>
-                            <div class="text-right flex-shrink-0">
-                                <p class="text-sm font-extrabold text-slate-800">$549.00</p>
-                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-500">Preparing</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="glass-card p-4 hover:bg-white/60 transition cursor-pointer">
-                        <div class="flex items-center gap-4">
-                            <img src="https://cdn.dummyjson.com/products/images/beauty/essence-mascara-moon/thumbnail.webp" class="w-14 h-14 rounded-xl object-contain bg-white/50 p-1 flex-shrink-0">
-                            <div class="flex-1 min-w-0">
-                                <h4 class="text-xs font-bold text-slate-700 truncate">Essence Mascara Moon</h4>
-                                <p class="text-[10px] text-slate-400">Order #NS-20240728 · Jul 28, 2024</p>
-                            </div>
-                            <div class="text-right flex-shrink-0">
-                                <p class="text-sm font-extrabold text-slate-800">$9.99</p>
-                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-50 text-green-500">Delivered</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="glass-card p-4 hover:bg-white/60 transition cursor-pointer">
-                        <div class="flex items-center gap-4">
-                            <img src="https://cdn.dummyjson.com/products/images/sunglasses/Round%20Glasses/thumbnail.webp" class="w-14 h-14 rounded-xl object-contain bg-white/50 p-1 flex-shrink-0">
-                            <div class="flex-1 min-w-0">
-                                <h4 class="text-xs font-bold text-slate-700 truncate">Round Glasses</h4>
-                                <p class="text-[10px] text-slate-400">Order #NS-20240720 · Jul 20, 2024</p>
-                            </div>
-                            <div class="text-right flex-shrink-0">
-                                <p class="text-sm font-extrabold text-slate-800">$49.99</p>
-                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-50 text-green-500">Delivered</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="glass-card p-4 hover:bg-white/60 transition cursor-pointer">
-                        <div class="flex items-center gap-4">
-                            <img src="https://cdn.dummyjson.com/products/images/fragrances/Dior%20Sauvage/thumbnail.webp" class="w-14 h-14 rounded-xl object-contain bg-white/50 p-1 flex-shrink-0">
-                            <div class="flex-1 min-w-0">
-                                <h4 class="text-xs font-bold text-slate-700 truncate">Dior Sauvage</h4>
-                                <p class="text-[10px] text-slate-400">Order #NS-20240715 · Jul 15, 2024</p>
-                            </div>
-                            <div class="text-right flex-shrink-0">
-                                <p class="text-sm font-extrabold text-slate-800">$89.50</p>
-                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-50 text-green-500">Delivered</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!-- ==================== WISHLIST ==================== -->
-        <div id="sectionWishlist" class="hidden">
-            <section class="mb-8 slide-up">
-                <h2 class="text-lg font-extrabold text-slate-800 mb-5">My Wishlist</h2>
-                <div class="grid grid-cols-2 lg:grid-cols-3 gap-4">
-                    <div class="glass-card p-4">
-                        <div class="relative bg-slate-50 h-36 rounded-xl overflow-hidden mb-3">
-                            <img src="https://cdn.dummyjson.com/products/images/smartphones/galaxy-s21/thumbnail.webp" class="w-full h-full object-contain p-3">
-                            <button class="absolute top-2 right-2 w-8 h-8 glass rounded-full flex items-center justify-center text-red-400"><i class="fa-solid fa-heart text-xs"></i></button>
-                        </div>
-                        <h4 class="text-xs font-bold text-slate-700 truncate">Galaxy S21</h4>
-                        <p class="text-sm font-extrabold text-slate-800">$699.99</p>
-                        <button class="mt-2 w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-[11px] font-bold py-2 rounded-xl hover:opacity-90 transition">Add to Cart</button>
-                    </div>
-                    <div class="glass-card p-4">
-                        <div class="relative bg-slate-50 h-36 rounded-xl overflow-hidden mb-3">
-                            <img src="https://cdn.dummyjson.com/products/images/mens-watches/Rolex%20Submariner/thumbnail.webp" class="w-full h-full object-contain p-3">
-                            <button class="absolute top-2 right-2 w-8 h-8 glass rounded-full flex items-center justify-center text-red-400"><i class="fa-solid fa-heart text-xs"></i></button>
-                        </div>
-                        <h4 class="text-xs font-bold text-slate-700 truncate">Rolex Submariner</h4>
-                        <p class="text-sm font-extrabold text-slate-800">$12,999.99</p>
-                        <button class="mt-2 w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-[11px] font-bold py-2 rounded-xl hover:opacity-90 transition">Add to Cart</button>
-                    </div>
-                    <div class="glass-card p-4">
-                        <div class="relative bg-slate-50 h-36 rounded-xl overflow-hidden mb-3">
-                            <img src="https://cdn.dummyjson.com/products/images/beauty/lip-gloss/thumbnail.webp" class="w-full h-full object-contain p-3">
-                            <button class="absolute top-2 right-2 w-8 h-8 glass rounded-full flex items-center justify-center text-red-400"><i class="fa-solid fa-heart text-xs"></i></button>
-                        </div>
-                        <h4 class="text-xs font-bold text-slate-700 truncate">Lip Gloss</h4>
-                        <p class="text-sm font-extrabold text-slate-800">$5.99</p>
-                        <button class="mt-2 w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-[11px] font-bold py-2 rounded-xl hover:opacity-90 transition">Add to Cart</button>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!-- ==================== COUPONS ==================== -->
-        <div id="sectionCoupons" class="hidden">
-            <section class="mb-8 slide-up">
-                <h2 class="text-lg font-extrabold text-slate-800 mb-5">My Coupons</h2>
-                <div class="space-y-3">
-                    <div class="glass-card p-5 flex items-center gap-4">
-                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center flex-shrink-0"><span class="text-white font-extrabold text-lg">15%</span></div>
-                        <div class="flex-1">
-                            <h4 class="text-sm font-bold text-slate-800">15% Off Coupon</h4>
-                            <p class="text-[11px] text-slate-500">On orders over $50</p>
-                            <p class="text-[10px] text-slate-400 mt-1">Expires Aug 31, 2024</p>
-                        </div>
-                        <button class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xs font-bold px-5 py-2.5 rounded-xl hover:opacity-90 transition">Use</button>
-                    </div>
-                    <div class="glass-card p-5 flex items-center gap-4">
-                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center flex-shrink-0"><span class="text-white font-extrabold text-sm">$5</span></div>
-                        <div class="flex-1">
-                            <h4 class="text-sm font-bold text-slate-800">$5 Off Discount</h4>
-                            <p class="text-[11px] text-slate-500">On orders over $30</p>
-                            <p class="text-[10px] text-slate-400 mt-1">Expires Sep 15, 2024</p>
-                        </div>
-                        <button class="bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs font-bold px-5 py-2.5 rounded-xl hover:opacity-90 transition">Use</button>
-                    </div>
-                    <div class="glass-card p-5 flex items-center gap-4 opacity-50">
-                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-slate-400 to-slate-500 flex items-center justify-center flex-shrink-0"><span class="text-white font-extrabold text-sm">$3</span></div>
-                        <div class="flex-1">
-                            <h4 class="text-sm font-bold text-slate-800">$3 Off Discount</h4>
-                            <p class="text-[11px] text-slate-500">On orders over $20</p>
-                            <p class="text-[10px] text-red-400 mt-1 font-bold">Expired</p>
-                        </div>
-                        <span class="text-xs text-slate-400 font-bold">Expired</span>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!-- ==================== ADDRESSES ==================== -->
-        <div id="sectionAddresses" class="hidden">
-            <section class="mb-8 slide-up">
-                <div class="flex justify-between items-center mb-5">
-                    <h2 class="text-lg font-extrabold text-slate-800">My Addresses</h2>
-                    <button class="glass-btn px-4 py-2 rounded-xl text-xs font-bold text-indigo-600 hover:bg-white/70 transition flex items-center gap-1"><i class="fa-solid fa-plus text-[10px]"></i> Add New</button>
-                </div>
-                <div class="space-y-3">
-                    <div class="glass-card p-5 relative">
-                        <div class="absolute top-4 right-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-[9px] font-bold px-2 py-0.5 rounded-full">Default</div>
-                        <div class="flex items-start gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-indigo-50 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-house text-indigo-500 text-sm"></i></div>
-                            <div>
-                                <h4 class="text-sm font-bold text-slate-800">Home</h4>
-                                <p class="text-[11px] text-slate-500 mt-1">123 Main Street, Apt 4B</p>
-                                <p class="text-[11px] text-slate-500">New York, NY 10001</p>
-                                <p class="text-[11px] text-slate-400 mt-1">(555) 123-4567</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="glass-card p-5">
-                        <div class="flex items-start gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center flex-shrink-0"><i class="fa-solid fa-briefcase text-amber-500 text-sm"></i></div>
-                            <div>
-                                <h4 class="text-sm font-bold text-slate-800">Office</h4>
-                                <p class="text-[11px] text-slate-500 mt-1">456 Business Ave, Suite 200</p>
-                                <p class="text-[11px] text-slate-500">San Francisco, CA 94105</p>
-                                <p class="text-[11px] text-slate-400 mt-1">(555) 987-6543</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
-        </div>
-
-        <!-- ==================== REVIEWS ==================== -->
-        <div id="sectionReviews" class="hidden">
-            <section class="mb-8 slide-up">
-                <h2 class="text-lg font-extrabold text-slate-800 mb-5">My Reviews</h2>
-                <div class="glass-card p-5">
-                    <div class="flex items-center gap-3 mb-3">
-                        <img src="https://cdn.dummyjson.com/products/images/beauty/essence-mascara-moon/thumbnail.webp" class="w-12 h-12 rounded-xl object-contain bg-white/50 p-1">
-                        <div>
-                            <h4 class="text-xs font-bold text-slate-700">Essence Mascara Moon</h4>
-                            <div class="flex text-amber-400 text-[11px]">★★★★★</div>
-                        </div>
-                    </div>
-                    <p class="text-xs text-slate-600 leading-relaxed">Amazing mascara! Long-lasting and gives a natural volumizing effect. Highly recommend! 💕</p>
-                    <p class="text-[10px] text-slate-400 mt-2">July 30, 2024</p>
-                </div>
-            </section>
-        </div>
-
-        <!-- ==================== SETTINGS ==================== -->
-        <div id="sectionSettings" class="hidden">
-            <section class="mb-8 slide-up">
-                <h2 class="text-lg font-extrabold text-slate-800 mb-5">Account Settings</h2>
-                <div class="glass-card p-6 mb-4">
-                    <div class="flex items-center gap-4 mb-6">
-                        <div class="relative">
-                            <img id="settingsAvatar" src="https://i.pravatar.cc/150?img=47" class="w-20 h-20 rounded-2xl object-cover border-3 border-white shadow-lg">
-                            <button class="absolute -bottom-2 -right-2 w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center text-white shadow-lg"><i class="fa-solid fa-camera text-[10px]"></i></button>
-                        </div>
-                        <div>
-                            <h3 class="font-extrabold text-slate-800" id="settingsName">User</h3>
-                            <p class="text-xs text-slate-500" id="settingsEmail">user@example.com</p>
-                        </div>
-                    </div>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Username</label>
-                            <input type="text" id="settingUsername" placeholder="Username" class="w-full bg-white/50 border border-white/60 rounded-xl px-4 py-3 text-sm text-slate-700 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition">
-                        </div>
-                        <div>
-                            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Email</label>
-                            <input type="email" id="settingEmailInput" placeholder="Email" class="w-full bg-white/50 border border-white/60 rounded-xl px-4 py-3 text-sm text-slate-700 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition">
-                        </div>
-                        <div>
-                            <label class="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Phone</label>
-                            <input type="tel" id="settingPhone" placeholder="Phone number" class="w-full bg-white/50 border border-white/60 rounded-xl px-4 py-3 text-sm text-slate-700 focus:outline-none focus:border-indigo-400 focus:ring-2 focus:ring-indigo-100 transition">
-                        </div>
-                        <button onclick="showToast('Settings saved!', 'success')" class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-sm px-8 py-3 rounded-xl hover:opacity-90 transition shadow-lg">Save Changes</button>
-                    </div>
-                </div>
-                <div class="glass-card p-6">
-                    <h3 class="font-extrabold text-sm text-slate-800 mb-4">Notifications</h3>
-                    <div class="space-y-3">
-                        <label class="flex items-center justify-between p-3 rounded-xl hover:bg-white/30 transition cursor-pointer">
-                            <div class="flex items-center gap-3"><i class="fa-solid fa-bell text-indigo-500 text-sm w-5"></i><span class="text-xs font-semibold text-slate-700">Order Updates</span></div>
-                            <div class="w-10 h-5 bg-indigo-500 rounded-full relative"><div class="absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow"></div></div>
-                        </label>
-                        <label class="flex items-center justify-between p-3 rounded-xl hover:bg-white/30 transition cursor-pointer">
-                            <div class="flex items-center gap-3"><i class="fa-solid fa-tag text-pink-500 text-sm w-5"></i><span class="text-xs font-semibold text-slate-700">Sale Alerts</span></div>
-                            <div class="w-10 h-5 bg-indigo-500 rounded-full relative"><div class="absolute right-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow"></div></div>
-                        </label>
-                        <label class="flex items-center justify-between p-3 rounded-xl hover:bg-white/30 transition cursor-pointer">
-                            <div class="flex items-center gap-3"><i class="fa-solid fa-envelope text-amber-500 text-sm w-5"></i><span class="text-xs font-semibold text-slate-700">Newsletter</span></div>
-                            <div class="w-10 h-5 bg-slate-300 rounded-full relative"><div class="absolute left-0.5 top-0.5 w-4 h-4 bg-white rounded-full shadow"></div></div>
-                        </label>
-                    </div>
-                </div>
-            </section>
-        </div>
-
     </div>
-</main>
-</div>
 
-<!-- ==================== JAVASCRIPT ==================== -->
-<script>
-const firebaseConfig = {
-    apiKey: "AIzaSyAaLdtzOIZVYB-Bdc42CXm2T8iclWLc4o0",
-    authDomain: "habib-yt.firebaseapp.com",
-    projectId: "habib-yt",
-    storageBucket: "habib-yt.firebasestorage.app",
-    messagingSenderId: "656628491244",
-    appId: "1:656628491244:web:e01ccd42bd8a2b1b4c96c9",
-    measurementId: "G-GNY1T88D34"
-};
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
+    <div id="toast" class="fixed top-5 right-5 z-[200] px-5 py-3 rounded-xl text-white text-xs font-bold shadow-2xl transition-all opacity-0 translate-y-[-10px]" style="transition:all 0.3s;"></div>
 
-function showToast(message, type = 'info') {
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.className = `toast ${type}`;
-    setTimeout(() => toast.classList.add('show'), 10);
-    setTimeout(() => toast.classList.remove('show'), 3500);
-}
-
-function checkAuth() {
-    auth.onAuthStateChanged((user) => {
-        if (user) { populateUserData(user); }
-        else {
-            const stored = JSON.parse(localStorage.getItem('novaShopUser') || 'null');
-            if (stored) populateUserData(stored);
-            else { showToast('Please sign in first', 'info'); setTimeout(() => { window.location.href = 'login.html'; }, 1000); }
+    <script>
+    // ===================== i18n =====================
+    const i18n = {
+        en: {
+            nav_home: 'Home', nav_orders: 'My Orders', nav_wishlist: 'Wishlist', nav_coupons: 'Coupons',
+            nav_addresses: 'Addresses', nav_profile: 'My Profile', nav_settings: 'Settings', nav_logout: 'Logout',
+            dash_title: 'My Dashboard',
+            stat_orders: 'Total Orders', stat_delivered: 'Delivered', stat_wishlist: 'Wishlist', stat_coupons: 'Coupons',
+            section_orders: 'My Orders', section_wishlist: 'My Wishlist', section_coupons: 'Available Coupons', section_addresses: 'My Addresses', section_profile: 'My Profile', section_settings: 'Settings',
+            add_address: 'Add New', add_address_title: 'Add New Address', cancel: 'Cancel', save: 'Save',
+            label_name: 'Full Name', label_email: 'Email', label_phone: 'Phone', label_joined: 'Member Since',
+            save_profile: 'Save Changes', copy: 'Copy', copied: 'Copied!',
+            coupon_1_title: '20% Off', coupon_1_desc: 'Min. order $50', coupon_2_title: '$10 Off', coupon_2_desc: 'Min. order $30',
+            coupon_3_title: '50% Off', coupon_3_desc: 'First order only', expires: 'Expires:',
+            set_notif: 'Notifications', set_notif_desc: 'Order updates and promotions',
+            set_email_notif: 'Email Notifications', set_email_notif_desc: 'Receive emails about deals',
+            set_dark: 'Dark Mode', set_dark_desc: 'Coming soon',
+            set_logout_desc: 'Sign out of your account',
+            no_orders: 'No orders yet. Start shopping!',
+            no_wishlist: 'Wishlist is empty. Browse products and add some!',
+            toast_profile_saved: 'Profile saved!', toast_addr_saved: 'Address saved!', toast_logged_out: 'Logged out!'
+        },
+        bn: {
+            nav_home: 'হোম', nav_orders: 'আমার অর্ডার', nav_wishlist: 'ইচ্ছাতালিকা', nav_coupons: 'কুপন',
+            nav_addresses: 'ঠিকানা', nav_profile: 'আমার প্রোফাইল', nav_settings: 'সেটিংস', nav_logout: 'লগআউট',
+            dash_title: 'আমার ড্যাশবোর্ড',
+            stat_orders: 'মোট অর্ডার', stat_delivered: 'ডেলিভারি', stat_wishlist: 'ইচ্ছাতালিকা', stat_coupons: 'কুপন',
+            section_orders: 'আমার অর্ডার', section_wishlist: 'আমার ইচ্ছাতালিকা', section_coupons: 'পাওয়া যায় এমন কুপন', section_addresses: 'আমার ঠিকানা', section_profile: 'আমার প্রোফাইল', section_settings: 'সেটিংস',
+            add_address: 'নতুন যোগ করুন', add_address_title: 'নতুন ঠিকানা যোগ করুন', cancel: 'বাতিল', save: 'সংরক্ষণ',
+            label_name: 'পুরো নাম', label_email: 'ইমেইল', label_phone: 'ফোন', label_joined: 'সদস্য হওয়ার তারিখ',
+            save_profile: 'পরিবর্তন সংরক্ষণ করুন', copy: 'কপি', copied: 'কপি হয়েছে!',
+            coupon_1_title: '২০% ছাড়', coupon_1_desc: 'ন্যূনতম অর্ডার $50', coupon_2_title: '$10 ছাড়', coupon_2_desc: 'ন্যূনতম অর্ডার $30',
+            coupon_3_title: '৫০% ছাড়', coupon_3_desc: 'শুধুমাত্র প্রথম অর্ডার', expires: 'মেয়াদ:',
+            set_notif: 'নোটিফিকেশন', set_notif_desc: 'অর্ডার আপডেট এবং প্রমোশন',
+            set_email_notif: 'ইমেইল নোটিফিকেশন', set_email_notif_desc: 'ডিল সম্পর্কে ইমেইল পান',
+            set_dark: 'ডার্ক মোড', set_dark_desc: 'শীঘ্রই আসছে',
+            set_logout_desc: 'আপনার অ্যাকাউন্ট থেকে সাইন আউট করুন',
+            no_orders: 'এখনো কোনো অর্ডার নেই। কেনাকাটা শুরু করুন!',
+            no_wishlist: 'ইচ্ছাতালিকা খালি। পণ্য ব্রাউজ করুন এবং কিছু যোগ করুন!',
+            toast_profile_saved: 'প্রোফাইল সংরক্ষিত!', toast_addr_saved: 'ঠিকানা সংরক্ষিত!', toast_logged_out: 'লগআউট হয়েছে!'
         }
-    });
-    const stored = JSON.parse(localStorage.getItem('novaShopUser') || 'null');
-    if (stored) populateUserData(stored);
-}
+    };
+    let currentLang = localStorage.getItem('novaLang') || 'en';
 
-function populateUserData(user) {
-    const name = user.displayName || user.email?.split('@')[0] || 'User';
-    const email = user.email || '';
-    const phone = user.phoneNumber || '';
-    const photo = user.photoURL || 'https://i.pravatar.cc/150?img=47';
-
-    document.getElementById('userName').textContent = name;
-    document.getElementById('userAvatar').src = photo;
-    document.getElementById('settingsAvatar').src = photo;
-    document.getElementById('welcomeMsg').textContent = `Welcome back, ${name}! 🎉`;
-    document.getElementById('greeting').textContent = `Hello, ${name}! 👋`;
-    document.getElementById('settingsName').textContent = name;
-    document.getElementById('settingsEmail').textContent = email;
-    document.getElementById('settingUsername').value = name;
-    document.getElementById('settingEmailInput').value = email;
-    document.getElementById('settingPhone').value = phone;
-
-    const now = new Date();
-    document.getElementById('todayDate').textContent = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' });
-}
-
-function setSection(section) {
-    const sections = ['Overview', 'Orders', 'Wishlist', 'Coupons', 'Addresses', 'Reviews', 'Settings'];
-    sections.forEach(s => { const el = document.getElementById('section' + s); if (el) el.classList.add('hidden'); });
-    const target = document.getElementById('section' + section.charAt(0).toUpperCase() + section.slice(1));
-    if (target) target.classList.remove('hidden');
-    document.getElementById('mainArea').scrollTo({ top: 0, behavior: 'smooth' });
-}
-
-function setActive(el) {
-    document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
-    el.classList.add('active');
-    toggleSidebar(false);
-}
-
-function toggleSidebar(open) {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('mobileOverlay');
-    if (open === false || sidebar.classList.contains('translate-x-0')) {
-        sidebar.classList.remove('translate-x-0'); sidebar.classList.add('-translate-x-full'); overlay.classList.add('hidden');
-    } else {
-        sidebar.classList.remove('-translate-x-full'); sidebar.classList.add('translate-x-0'); overlay.classList.remove('hidden');
+    function setLang(lang) {
+        currentLang = lang;
+        localStorage.setItem('novaLang', lang);
+        document.querySelectorAll('.lang-toggle').forEach(el => {
+            el.classList.remove('active', 'text-slate-500');
+            el.classList.add('text-slate-500');
+        });
+        document.getElementById(lang === 'en' ? 'langEn' : 'langBn').classList.add('active');
+        document.getElementById(lang === 'en' ? 'langEn' : 'langBn').classList.remove('text-slate-500');
+        applyTranslations();
     }
-}
 
-function handleLogout() {
-    auth.signOut().then(() => {
-        localStorage.removeItem('novaShopUser'); localStorage.removeItem('novaShopAuth');
-        showToast('Logged out', 'info'); setTimeout(() => { window.location.href = 'login.html'; }, 1000);
-    }).catch(() => {
-        localStorage.removeItem('novaShopUser'); localStorage.removeItem('novaShopAuth');
-        showToast('Logged out', 'info'); setTimeout(() => { window.location.href = 'login.html'; }, 1000);
+    function applyTranslations() {
+        const t = i18n[currentLang];
+        document.querySelectorAll('[data-i18n]').forEach(el => {
+            const key = el.getAttribute('data-i18n');
+            if (t[key]) el.innerHTML = t[key];
+        });
+    }
+
+    // ===================== STATE =====================
+    let cart = JSON.parse(localStorage.getItem('novaCart') || '[]');
+    let wishlist = JSON.parse(localStorage.getItem('novaWishlist') || '[]');
+    let orders = JSON.parse(localStorage.getItem('novaOrders') || '[]');
+    let addresses = JSON.parse(localStorage.getItem('novaAddresses') || '[]');
+
+    // Generate sample orders if none exist
+    function initSampleOrders() {
+        if (orders.length === 0) {
+            orders = [
+                { id: 'ORD-001', items: [{ title: 'Essence Mascara Lash Princess', price: 9.99, qty: 2, thumbnail: 'https://cdn.dummyjson.com/product-images/beauty/essence-mascara-lash-princess/thumbnail.webp' }], total: 19.98, status: 'delivered', date: '2026-08-15' },
+                { id: 'ORD-002', items: [{ title: 'iPhone 15 Pro Max', price: 1099.99, qty: 1, thumbnail: 'https://cdn.dummyjson.com/product-images/smartphones/iphone-15-pro-max/thumbnail.webp' }], total: 1099.99, status: 'shipped', date: '2026-08-28' },
+                { id: 'ORD-003', items: [{ title: 'Nike Running Shoes', price: 89.99, qty: 1, thumbnail: 'https://cdn.dummyjson.com/product-images/mens-shoes/nike-running-shoes/thumbnail.webp' }], total: 89.99, status: 'processing', date: '2026-09-01' }
+            ];
+            localStorage.setItem('novaOrders', JSON.stringify(orders));
+        }
+    }
+
+    // ===================== SECTIONS =====================
+    function showSection(name) {
+        ['orders','wishlist','coupons','addresses','profile','settings'].forEach(s => {
+            const el = document.getElementById('section' + s.charAt(0).toUpperCase() + s.slice(1));
+            if (el) el.classList.add('hidden');
+        });
+        const target = document.getElementById('section' + name.charAt(0).toUpperCase() + name.slice(1));
+        if (target) target.classList.remove('hidden');
+        // For hash-based nav
+        if (name === 'wishlist') renderWishlist();
+        if (name === 'orders') renderOrders();
+        if (name === 'addresses') renderAddresses();
+        if (name === 'profile') renderProfile();
+    }
+
+    // ===================== ORDERS =====================
+    function renderOrders() {
+        const container = document.getElementById('ordersList');
+        if (orders.length === 0) {
+            container.innerHTML = `<div class="glass-card p-12 text-center"><div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-box text-slate-300 text-xl"></i></div><p class="text-sm text-slate-400">${i18n[currentLang].no_orders}</p><a href="index.html" class="inline-block mt-3 text-xs font-bold text-indigo-500">Start Shopping →</a></div>`;
+            return;
+        }
+        document.getElementById('statOrders').textContent = orders.length;
+        document.getElementById('statDelivered').textContent = orders.filter(o => o.status === 'delivered').length;
+        container.innerHTML = orders.map(order => {
+            const statusClass = { delivered: 'status-delivered', processing: 'status-processing', shipped: 'status-shipped', cancelled: 'status-cancelled' }[order.status] || 'status-processing';
+            const statusText = order.status.charAt(0).toUpperCase() + order.status.slice(1);
+            return `
+            <div class="glass-card p-5 slide-up">
+                <div class="flex items-center justify-between mb-3">
+                    <div>
+                        <p class="text-xs font-bold text-slate-800">${order.id}</p>
+                        <p class="text-[10px] text-slate-400">${order.date}</p>
+                    </div>
+                    <span class="status-badge ${statusClass}">${statusText}</span>
+                </div>
+                <div class="space-y-2 mb-3">
+                    ${order.items.map(item => `
+                        <div class="flex items-center gap-3">
+                            <img src="${item.thumbnail}" class="w-12 h-12 rounded-xl object-contain bg-white/50 p-1">
+                            <div class="flex-1 min-w-0">
+                                <p class="text-xs font-bold text-slate-700 truncate">${item.title}</p>
+                                <p class="text-[10px] text-slate-400">Qty: ${item.qty}</p>
+                            </div>
+                            <p class="text-xs font-extrabold text-slate-800">$${(item.price * item.qty).toFixed(2)}</p>
+                        </div>
+                    `).join('')}
+                </div>
+                <div class="border-t border-slate-200/50 pt-3 flex justify-between items-center">
+                    <p class="text-xs text-slate-400">${order.items.length} item(s)</p>
+                    <p class="text-sm font-extrabold text-slate-800">Total: $${order.total.toFixed(2)}</p>
+                </div>
+            </div>`;
+        }).join('');
+    }
+
+    // ===================== WISHLIST =====================
+    function renderWishlist() {
+        const container = document.getElementById('wishlistGrid');
+        document.getElementById('statWishlist').textContent = wishlist.length;
+        const sbc = document.getElementById('sidebarWishCount');
+        if (wishlist.length > 0) { sbc.textContent = wishlist.length; sbc.classList.remove('hidden'); } else { sbc.classList.add('hidden'); }
+
+        if (wishlist.length === 0) {
+            container.innerHTML = `<div class="col-span-full glass-card p-12 text-center"><div class="w-16 h-16 rounded-full bg-pink-50 flex items-center justify-center mx-auto mb-3"><i class="fa-regular fa-heart text-pink-300 text-xl"></i></div><p class="text-sm text-slate-400">${i18n[currentLang].no_wishlist}</p><a href="index.html" class="inline-block mt-3 text-xs font-bold text-indigo-500">Browse Products →</a></div>`;
+            return;
+        }
+        // Fetch wishlist products
+        container.innerHTML = `<div class="col-span-full text-center py-8"><div class="w-10 h-10 border-3 border-indigo-300 border-t-transparent rounded-full animate-spin mx-auto"></div></div>`;
+
+        const ids = wishlist.join(',');
+        fetch(`https://dummyjson.com/products?limit=50&select=id,title,price,category,thumbnail,discountPercentage,rating`)
+            .then(r => r.json())
+            .then(data => {
+                const products = (data.products || []).filter(p => wishlist.includes(p.id));
+                if (products.length === 0) {
+                    container.innerHTML = `<div class="col-span-full glass-card p-12 text-center"><p class="text-sm text-slate-400">${i18n[currentLang].no_wishlist}</p></div>`;
+                    return;
+                }
+                container.innerHTML = products.map((p, i) => {
+                    const rating = typeof p.rating === 'number' ? p.rating : (p.rating?.rate || 0);
+                    const stars = '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating));
+                    return `
+                    <div class="glass-card slide-up" style="animation-delay:${i*0.05}s">
+                        <div class="relative bg-white/50 h-36 overflow-hidden">
+                            <img src="${p.thumbnail}" alt="${p.title}" class="w-full h-full object-contain p-2" loading="lazy">
+                            <button onclick="removeFromWishlistDash(${p.id})" class="absolute top-2 right-2 w-8 h-8 glass rounded-full flex items-center justify-center text-red-400 hover:text-red-500 transition">
+                                <i class="fa-solid fa-heart text-xs"></i>
+                            </button>
+                        </div>
+                        <div class="p-3">
+                            <p class="text-[9px] font-bold text-indigo-400 uppercase tracking-wider mb-0.5">${p.category}</p>
+                            <h3 class="text-xs font-bold text-slate-700 truncate mb-1">${p.title}</h3>
+                            <div class="flex items-center gap-1 mb-1"><span class="text-amber-400 text-[10px]">${stars}</span></div>
+                            <div class="flex items-center justify-between">
+                                <span class="text-sm font-extrabold text-slate-800">$${p.price.toFixed(2)}</span>
+                                <button onclick="addToCartFromWish(${p.id})" class="text-[10px] font-bold bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-3 py-1.5 rounded-lg hover:opacity-90 transition">Add to Cart</button>
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
+            }).catch(() => {
+                container.innerHTML = `<div class="col-span-full text-center py-8 text-sm text-red-400">Failed to load wishlist items</div>`;
+            });
+    }
+
+    function removeFromWishlistDash(id) {
+        wishlist = wishlist.filter(w => w !== id);
+        localStorage.setItem('novaWishlist', JSON.stringify(wishlist));
+        renderWishlist();
+    }
+
+    function addToCartFromWish(id) {
+        fetch(`https://dummyjson.com/products/${id}`).then(r => r.json()).then(product => {
+            const existing = cart.find(c => c.id === product.id);
+            if (existing) existing.qty += 1;
+            else cart.push({ ...product, qty: 1 });
+            localStorage.setItem('novaCart', JSON.stringify(cart));
+            showToast('Added to cart!', 'success');
+        });
+    }
+
+    // ===================== ADDRESSES =====================
+    function renderAddresses() {
+        const container = document.getElementById('addressesList');
+        if (addresses.length === 0) {
+            container.innerHTML = `<div class="col-span-full glass-card p-8 text-center"><div class="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-location-dot text-slate-300 text-lg"></i></div><p class="text-sm text-slate-400">No addresses saved yet</p></div>`;
+            return;
+        }
+        container.innerHTML = addresses.map((a, i) => `
+            <div class="glass-card p-5">
+                <div class="flex items-start justify-between mb-2">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center"><i class="fa-solid fa-house text-indigo-500 text-xs"></i></div>
+                        <span class="text-xs font-bold text-slate-800">${a.label || 'Address ' + (i + 1)}</span>
+                    </div>
+                    <button onclick="deleteAddress(${i})" class="text-slate-400 hover:text-red-500 transition text-xs"><i class="fa-solid fa-trash"></i></button>
+                </div>
+                <p class="text-xs text-slate-600">${a.name}</p>
+                <p class="text-[11px] text-slate-400">${a.street}, ${a.city} - ${a.zip}</p>
+                <p class="text-[11px] text-slate-400">${a.phone}</p>
+            </div>
+        `).join('');
+    }
+
+    function showAddAddress() { document.getElementById('addressModal').classList.remove('hidden'); }
+    function closeAddressModal() { document.getElementById('addressModal').classList.add('hidden'); }
+
+    function saveAddress() {
+        const name = document.getElementById('addrName').value.trim();
+        const phone = document.getElementById('addrPhone').value.trim();
+        const street = document.getElementById('addrStreet').value.trim();
+        const city = document.getElementById('addrCity').value.trim();
+        const zip = document.getElementById('addrZip').value.trim();
+        if (!name || !street || !city) return;
+        addresses.push({ name, phone, street, city, zip, label: 'Home' });
+        localStorage.setItem('novaAddresses', JSON.stringify(addresses));
+        closeAddressModal();
+        renderAddresses();
+        showToast(i18n[currentLang].toast_addr_saved, 'success');
+    }
+
+    function deleteAddress(idx) {
+        addresses.splice(idx, 1);
+        localStorage.setItem('novaAddresses', JSON.stringify(addresses));
+        renderAddresses();
+    }
+
+    // ===================== PROFILE =====================
+    function renderProfile() {
+        const user = JSON.parse(localStorage.getItem('novaShopUser') || '{}');
+        document.getElementById('profileName').textContent = user.name || 'User';
+        document.getElementById('profileEmail').textContent = user.email || 'user@email.com';
+        document.getElementById('profileProvider').textContent = user.provider === 'google' ? 'Google Account' : user.provider === 'phone' ? 'Phone Account' : 'Email Account';
+        const photo = user.photoURL || 'https://i.pravatar.cc/150?img=47';
+        document.getElementById('profileAvatar').src = photo;
+        document.getElementById('editName').value = user.name || '';
+        document.getElementById('editEmail').value = user.email || '';
+        document.getElementById('editPhone').value = user.phone || '';
+        document.getElementById('editJoined').value = 'September 2026';
+    }
+
+    function saveProfile() {
+        const user = JSON.parse(localStorage.getItem('novaShopUser') || '{}');
+        user.name = document.getElementById('editName').value.trim() || user.name;
+        user.phone = document.getElementById('editPhone').value.trim();
+        localStorage.setItem('novaShopUser', JSON.stringify(user));
+        renderProfile();
+        showToast(i18n[currentLang].toast_profile_saved, 'success');
+    }
+
+    // ===================== COUPONS =====================
+    function copyCoupon(code) {
+        navigator.clipboard.writeText(code).then(() => {
+            showToast(i18n[currentLang].copied, 'info');
+        }).catch(() => {
+            showToast(i18n[currentLang].copied, 'info');
+        });
+    }
+
+    // ===================== AUTH =====================
+    function checkLoginState() {
+        const user = JSON.parse(localStorage.getItem('novaShopUser') || 'null');
+        const auth = localStorage.getItem('novaShopAuth') === 'true';
+        if (!user || !auth) { window.location.href = 'login.html'; return; }
+        const photo = user.photoURL || 'https://i.pravatar.cc/150?img=47';
+        document.getElementById('dashAvatarImg').src = photo;
+        document.getElementById('dashAvatarImg').classList.remove('hidden');
+        document.getElementById('dashAvatarIcon').classList.add('hidden');
+    }
+
+    function logout() {
+        localStorage.removeItem('novaShopAuth');
+        showToast(i18n[currentLang].toast_logged_out, 'success');
+        setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+    }
+
+    // ===================== SIDEBAR =====================
+    function setActive(el) { document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active')); el.classList.add('active'); toggleMobileSidebar(false); }
+    let sidebarOpen = false;
+    function toggleMobileSidebar(forceClose) {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('mobileOverlay');
+        if (forceClose === false || sidebarOpen) {
+            sidebar.classList.remove('translate-x-0'); sidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden'); sidebarOpen = false;
+        } else {
+            sidebar.classList.remove('-translate-x-full'); sidebar.classList.add('translate-x-0');
+            overlay.classList.remove('hidden'); sidebarOpen = true;
+        }
+    }
+
+    // ===================== TOAST =====================
+    function showToast(msg, type) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.className = `fixed top-5 right-5 z-[200] px-5 py-3 rounded-xl text-white text-xs font-bold shadow-2xl show`;
+        toast.style.background = type === 'success' ? 'linear-gradient(135deg, #10b981, #34d399)' : type === 'error' ? 'linear-gradient(135deg, #ef4444, #f97316)' : 'linear-gradient(135deg, #6366f1, #8b5cf6)';
+        toast.style.opacity = '1'; toast.style.transform = 'translateY(0)';
+        setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateY(-10px)'; }, 2500);
+    }
+
+    // ===================== INIT =====================
+    document.addEventListener('DOMContentLoaded', () => {
+        applyTranslations();
+        checkLoginState();
+        initSampleOrders();
+        // Check hash
+        const hash = window.location.hash.replace('#', '') || 'orders';
+        showSection(hash);
+        document.querySelectorAll('.sidebar-item').forEach(s => {
+            if (s.getAttribute('href') === '#' + hash) { s.classList.add('active'); s.classList.remove('text-slate-600'); }
+        });
+        renderOrders();
+        renderWishlist();
+        renderAddresses();
+        renderProfile();
     });
-}
-
-document.addEventListener('DOMContentLoaded', () => { checkAuth(); });
-</script>
-
+    </script>
 </body>
 </html>
