@@ -1,493 +1,199 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>HR ShopBD — Admin API Console</title>
-
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-
-
-  <style>
-    * { font-family: Inter, sans-serif; }
-    html { scroll-behavior: smooth; }
-    body { margin:0; background:#fff; color:#1f2937; }
-    .mono { font-family:"JetBrains Mono", monospace; }
-    .docs-grid { display:grid; grid-template-columns:270px minmax(0,1fr); }
-    .sidebar { position:sticky; top:0; height:100vh; overflow:auto; border-right:1px solid #e5e7eb; }
-    .topbar { position:sticky; top:0; z-index:50; background:rgba(255,255,255,.94); backdrop-filter:blur(14px); border-bottom:1px solid #e5e7eb; }
-    .code { background:#111827; color:#e5e7eb; border-radius:12px; padding:16px; overflow:auto; font-size:13px; line-height:1.65; }
-    .endpoint { border:1px solid #e5e7eb; border-radius:14px; overflow:hidden; background:white; }
-    .method { font-size:11px; font-weight:800; border-radius:7px; padding:5px 8px; }
-    .get { background:#dcfce7;color:#166534; } .post{background:#dbeafe;color:#1d4ed8}
-    .put{background:#fef3c7;color:#92400e} .delete{background:#fee2e2;color:#b91c1c}
-    .nav-active { color:#4f46e5; background:#eef2ff; font-weight:700; }
-    .glass { background:rgba(255,255,255,.78); backdrop-filter:blur(20px); border:1px solid rgba(255,255,255,.9); box-shadow:0 20px 60px rgba(31,41,55,.08); }
-    .modal-bg { background:rgba(15,23,42,.55); backdrop-filter:blur(7px); }
-    @media(max-width:900px){
-      .docs-grid{grid-template-columns:1fr}
-      .sidebar{position:fixed;left:0;top:0;width:290px;background:white;z-index:100;transform:translateX(-105%);transition:.25s}
-      .sidebar.open{transform:translateX(0)}
-    }
-  </style>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HR ShopBD — Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#172033;--muted:#64748b;--line:rgba(148,163,184,.22);--glass:rgba(255,255,255,.70)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;font-family:Inter,sans-serif;color:var(--ink);background:radial-gradient(circle at 10% 0%,#dff7ff 0,transparent 30%),radial-gradient(circle at 90% 10%,#e9ddff 0,transparent 32%),linear-gradient(135deg,#f7fbff,#eef2f8 55%,#f9fbff);min-height:100vh}.mono{font-family:"JetBrains Mono",monospace}
+.glass{background:rgba(255,255,255,.62);backdrop-filter:blur(24px) saturate(150%);-webkit-backdrop-filter:blur(24px) saturate(150%);border:1px solid rgba(255,255,255,.85);box-shadow:0 18px 60px rgba(31,41,55,.10),inset 0 1px 0 rgba(255,255,255,.8)}
+.glass-dark{background:rgba(15,23,42,.88);backdrop-filter:blur(22px);border:1px solid rgba(255,255,255,.1)}.soft{box-shadow:0 12px 40px rgba(15,23,42,.07)}
+.sidebar{position:sticky;top:0;height:100vh;overflow:auto}.navlink{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:14px;color:#475569;font-size:13px;font-weight:600;transition:.2s}.navlink:hover{background:rgba(255,255,255,.75);color:#111827}.navlink.active{background:rgba(79,70,229,.10);color:#4f46e5;box-shadow:inset 0 0 0 1px rgba(99,102,241,.12)}
+.card{background:rgba(255,255,255,.68);border:1px solid rgba(255,255,255,.9);box-shadow:0 14px 45px rgba(15,23,42,.06),inset 0 1px 0 rgba(255,255,255,.8);backdrop-filter:blur(18px)}
+.modal-bg{background:rgba(15,23,42,.55);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}.modal-panel{background:rgba(255,255,255,.90);backdrop-filter:blur(28px);-webkit-backdrop-filter:blur(28px);border:1px solid rgba(255,255,255,.95);box-shadow:0 35px 100px rgba(15,23,42,.25)}
+.input{width:100%;height:46px;border:1px solid rgba(148,163,184,.28);background:rgba(255,255,255,.78);border-radius:14px;padding:0 14px;outline:none;transition:.2s}.input:focus{border-color:#818cf8;box-shadow:0 0 0 4px rgba(99,102,241,.10)}textarea.input{height:auto;padding:12px 14px}.btn{border-radius:13px;padding:10px 15px;font-size:13px;font-weight:800;transition:.2s}.btn:hover{transform:translateY(-1px)}
+.table-wrap{border:1px solid rgba(148,163,184,.20);border-radius:20px;overflow:auto;background:rgba(255,255,255,.58)}table{min-width:780px}.thumb{width:52px;height:52px;border-radius:15px;object-fit:contain;background:white;border:1px solid rgba(148,163,184,.16)}
+.badge{display:inline-flex;align-items:center;border-radius:999px;padding:5px 9px;font-size:11px;font-weight:800}.hide-scroll::-webkit-scrollbar{display:none}.hide-scroll{scrollbar-width:none}
+@media(max-width:980px){.docs-grid{grid-template-columns:1fr!important}.sidebar{position:fixed;left:0;top:0;width:300px;z-index:180;transform:translateX(-105%);transition:.25s}.sidebar.open{transform:translateX(0)}.mobile-shade{display:block!important}.desktop-only{display:none!important}}
+</style>
 </head>
-
 <body>
-  <!-- Login Gate -->
-  <div id="loginScreen" class="fixed inset-0 z-[200] bg-slate-50 flex items-center justify-center p-5">
-    <div class="glass w-full max-w-md rounded-3xl p-8 text-center">
-      <div class="mx-auto mb-5 w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-500 text-white flex items-center justify-center text-2xl">⚡</div>
-      <h1 class="text-2xl font-extrabold text-slate-900">HR ShopBD Admin</h1>
-      <p class="text-sm text-slate-500 mt-2">DummyJSON-style API administration console</p>
-
-      <button onclick="signInWithGoogle()"
-        class="mt-7 w-full h-12 rounded-xl bg-white border border-slate-200 shadow-sm hover:shadow-md transition flex items-center justify-center gap-3 font-bold text-slate-700">
-        <span class="text-lg">G</span> Continue with Google
-      </button>
-
-      <p id="loginStatus" class="text-xs text-slate-400 mt-4">
-        Only the authorized admin Google account can enter.
-      </p>
-      <p class="text-[11px] text-slate-400 mt-6">Authorized account: admin.tec.habiburrahman@gmail.com</p>
+<!-- LOGIN -->
+<div id="loginScreen" class="fixed inset-0 z-[500] flex items-center justify-center p-5 bg-slate-100/70 backdrop-blur-xl">
+  <div class="glass rounded-[32px] w-full max-w-md p-8 text-center">
+    <div class="mx-auto w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-600 to-violet-500 text-white grid place-items-center text-2xl shadow-xl">⚡</div>
+    <h1 class="text-2xl font-extrabold mt-5">HR ShopBD Admin</h1>
+    <p class="text-sm text-slate-500 mt-2">Secure Google login · Product & User management</p>
+    <button onclick="signInWithGoogle()" class="btn mt-7 w-full h-12 bg-slate-950 text-white flex items-center justify-center gap-3">ⓖ Continue with Google</button>
+    <p id="loginStatus" class="text-xs text-slate-400 mt-4">Only authorized admin accounts can enter.</p>
+    <div class="mt-5 p-4 rounded-2xl bg-white/55 border border-white/80 text-left">
+      <div class="text-[10px] uppercase tracking-wider text-slate-400 font-extrabold">Authorized admins</div>
+      <div class="text-xs font-bold mt-2">mshabib471@gmail.com</div>
+      <div class="text-xs font-bold mt-1">tec.habiburrahman@gmail.com</div>
     </div>
   </div>
+</div>
 
-  <!-- Mobile backdrop -->
-  <div id="mobileShade" onclick="closeSidebar()" class="hidden fixed inset-0 bg-slate-900/30 z-[90]"></div>
+<div id="mobileShade" onclick="closeSidebar()" class="hidden fixed inset-0 z-[170] bg-slate-950/30"></div>
 
-  <div id="app" class="hidden">
-    <header class="topbar h-16 flex items-center gap-4 px-4 lg:px-6">
-      <button onclick="toggleSidebar()" class="lg:hidden w-10 h-10 rounded-xl border border-slate-200 bg-white">☰</button>
-      <div class="font-extrabold text-slate-900 whitespace-nowrap">HR ShopBD <span class="text-indigo-600">Admin</span></div>
-      <div class="hidden md:block text-xs text-slate-400 border-l pl-4">DummyJSON API Console</div>
-      <div class="ml-auto flex items-center gap-3">
-        <span id="adminEmail" class="hidden sm:block text-xs text-slate-500"></span>
-        <button onclick="signOutAdmin()" class="text-xs font-bold text-red-600 px-3 py-2 rounded-lg hover:bg-red-50">Sign out</button>
-      </div>
-    </header>
-
-    <div class="docs-grid">
-      <aside id="sidebar" class="sidebar p-4">
-        <div class="flex items-center justify-between lg:hidden mb-4">
-          <b>Admin Menu</b><button onclick="closeSidebar()">✕</button>
-        </div>
-        <div class="text-[11px] uppercase tracking-wider font-extrabold text-slate-400 px-3 mb-2">Resources</div>
-        <nav id="nav" class="space-y-1">
-          <a href="#overview" onclick="closeSidebar()" class="nav-active block rounded-lg px-3 py-2 text-sm">Overview</a>
-          <a href="#products" onclick="closeSidebar()" class="block rounded-lg px-3 py-2 text-sm hover:bg-slate-50">Products</a>
-          <a href="#categories" onclick="closeSidebar()" class="block rounded-lg px-3 py-2 text-sm hover:bg-slate-50">Categories</a>
-          <a href="#search" onclick="closeSidebar()" class="block rounded-lg px-3 py-2 text-sm hover:bg-slate-50">Search</a>
-          <a href="#create" onclick="closeSidebar()" class="block rounded-lg px-3 py-2 text-sm hover:bg-slate-50">Create Product</a>
-          <a href="#update" onclick="closeSidebar()" class="block rounded-lg px-3 py-2 text-sm hover:bg-slate-50">Update Product</a>
-          <a href="#delete" onclick="closeSidebar()" class="block rounded-lg px-3 py-2 text-sm hover:bg-slate-50">Delete Product</a>
-        </nav>
-
-        <div class="border-t mt-6 pt-5">
-          <div class="text-[11px] uppercase tracking-wider font-extrabold text-slate-400 px-3 mb-2">API</div>
-          <a class="block px-3 py-2 text-sm text-slate-600" href="https://dummyjson.com/products" target="_blank">dummyjson.com/products ↗</a>
-          <a class="block px-3 py-2 text-sm text-slate-600" href="https://dummyjson.com/docs/products" target="_blank">Official Docs ↗</a>
-        </div>
-      </aside>
-
-      <main class="min-w-0">
-        <section id="overview" class="max-w-6xl mx-auto px-5 md:px-10 py-10">
-          <div class="border-b pb-8">
-            <div class="text-xs font-bold text-indigo-600 mb-2">ADMIN / API</div>
-            <h2 class="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-950">DummyJSON Admin Console</h2>
-            <p class="mt-4 text-slate-600 max-w-2xl leading-7">
-              Manage and test HR ShopBD's product data using DummyJSON-style REST endpoints.
-              Changes made by DummyJSON create/update/delete routes are simulated and are not permanently stored on the server.
-            </p>
-          </div>
-
-          <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mt-8">
-            <div class="rounded-2xl border p-5"><div class="text-xs text-slate-400">Products loaded</div><div id="statProducts" class="text-3xl font-extrabold mt-2">—</div></div>
-            <div class="rounded-2xl border p-5"><div class="text-xs text-slate-400">Categories</div><div id="statCategories" class="text-3xl font-extrabold mt-2">—</div></div>
-            <div class="rounded-2xl border p-5"><div class="text-xs text-slate-400">API status</div><div id="statApi" class="text-3xl font-extrabold mt-2">—</div></div>
-            <div class="rounded-2xl border p-5"><div class="text-xs text-slate-400">Authorized admin</div><div class="text-sm font-bold mt-3 truncate">admin.tec.habiburrahman@gmail.com</div></div>
-          </div>
-        </section>
-
-        <section id="products" class="max-w-6xl mx-auto px-5 md:px-10 py-10 border-t">
-          <div class="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h3 class="text-2xl font-extrabold">Products</h3>
-              <p class="text-sm text-slate-500 mt-1">Load products and inspect individual records.</p>
-            </div>
-            <button onclick="loadProducts()" class="px-4 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-bold hover:bg-indigo-700">Load Products</button>
-          </div>
-          <div id="productsTable" class="mt-6 border rounded-2xl overflow-hidden">
-            <div class="p-8 text-center text-sm text-slate-400">Click “Load Products”.</div>
-          </div>
-        </section>
-
-        <section id="categories" class="max-w-6xl mx-auto px-5 md:px-10 py-10 border-t">
-          <h3 class="text-2xl font-extrabold">Categories</h3>
-          <p class="text-sm text-slate-500 mt-1">Click a category to fetch its products.</p>
-          <div id="categoryButtons" class="flex flex-wrap gap-2 mt-5"></div>
-          <div id="categoryResult" class="mt-5"></div>
-        </section>
-
-        <section id="search" class="max-w-6xl mx-auto px-5 md:px-10 py-10 border-t">
-          <h3 class="text-2xl font-extrabold">Search products</h3>
-          <p class="text-sm text-slate-500 mt-1">Uses <span class="mono text-xs">/products/search?q=...</span>.</p>
-          <div class="flex gap-2 mt-5">
-            <input id="searchBox" onkeydown="if(event.key==='Enter') searchProducts()" placeholder="phone, laptop, perfume..."
-              class="flex-1 border rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-200">
-            <button onclick="searchProducts()" class="px-5 rounded-xl bg-slate-900 text-white font-bold">Search</button>
-          </div>
-          <div id="searchResult" class="mt-5"></div>
-        </section>
-
-        <section id="create" class="max-w-6xl mx-auto px-5 md:px-10 py-10 border-t">
-          <h3 class="text-2xl font-extrabold">Create Product</h3>
-          <p class="text-sm text-slate-500 mt-1">Simulates a POST request.</p>
-          <div class="grid md:grid-cols-2 gap-3 mt-5">
-            <input id="createTitle" class="border rounded-xl px-4 py-3" placeholder="Product title">
-            <input id="createPrice" type="number" class="border rounded-xl px-4 py-3" placeholder="Price">
-          </div>
-          <button onclick="createProduct()" class="mt-3 px-5 py-3 rounded-xl bg-indigo-600 text-white font-bold">POST /products/add</button>
-          <pre id="createResult" class="code mt-5 hidden"></pre>
-        </section>
-
-        <section id="update" class="max-w-6xl mx-auto px-5 md:px-10 py-10 border-t">
-          <h3 class="text-2xl font-extrabold">Update Product</h3>
-          <p class="text-sm text-slate-500 mt-1">Simulates a PUT request.</p>
-          <div class="grid md:grid-cols-2 gap-3 mt-5">
-            <input id="updateId" type="number" class="border rounded-xl px-4 py-3" placeholder="Product ID e.g. 1">
-            <input id="updateTitle" class="border rounded-xl px-4 py-3" placeholder="New title">
-          </div>
-          <button onclick="updateProduct()" class="mt-3 px-5 py-3 rounded-xl bg-amber-500 text-white font-bold">PUT /products/:id</button>
-          <pre id="updateResult" class="code mt-5 hidden"></pre>
-        </section>
-
-        <section id="delete" class="max-w-6xl mx-auto px-5 md:px-10 py-10 border-t">
-          <h3 class="text-2xl font-extrabold">Delete Product</h3>
-          <p class="text-sm text-slate-500 mt-1">Simulates a DELETE request.</p>
-          <div class="flex gap-2 mt-5">
-            <input id="deleteId" type="number" class="flex-1 border rounded-xl px-4 py-3" placeholder="Product ID">
-            <button onclick="deleteProduct()" class="px-5 rounded-xl bg-red-600 text-white font-bold">DELETE</button>
-          </div>
-          <pre id="deleteResult" class="code mt-5 hidden"></pre>
-        </section>
-
-        <footer class="border-t px-5 md:px-10 py-8 text-xs text-slate-400">
-          HR ShopBD Admin Console · Google authentication required · Google authentication is required; only the authorized admin email is allowed.
-        </footer>
-      </main>
-    </div>
+<div id="app" class="hidden">
+<header class="sticky top-0 z-[120] h-[68px] px-4 lg:px-7 flex items-center gap-3 bg-white/60 backdrop-blur-2xl border-b border-white/80">
+  <button onclick="toggleSidebar()" class="lg:hidden w-10 h-10 rounded-xl bg-white/80 border border-slate-200">☰</button>
+  <div class="font-black whitespace-nowrap">HR ShopBD <span class="text-indigo-600">Admin</span></div>
+  <span class="hidden md:inline text-xs text-slate-400 border-l pl-4">Control Center</span>
+  <div class="ml-auto flex items-center gap-3">
+    <span id="adminEmail" class="hidden sm:block text-xs text-slate-500"></span>
+    <button onclick="signOutAdmin()" class="btn bg-red-50 text-red-600">Sign out</button>
   </div>
+</header>
 
-  <!-- Product details modal -->
-  <div id="detailsModal" class="hidden fixed inset-0 z-[150] modal-bg items-center justify-center p-5">
-    <div class="bg-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-auto">
-      <div class="p-5 border-b flex items-center justify-between sticky top-0 bg-white/95 backdrop-blur">
-        <h3 id="modalTitle" class="font-extrabold">Product</h3>
-        <button onclick="closeModal()" class="w-9 h-9 rounded-full bg-slate-100">✕</button>
-      </div>
-      <div id="modalBody" class="p-6"></div>
-    </div>
+<div class="docs-grid grid grid-cols-[255px_minmax(0,1fr)]">
+<aside id="sidebar" class="sidebar glass p-4 border-r border-white/80">
+  <div class="flex items-center justify-between lg:hidden mb-5"><b>Admin Menu</b><button onclick="closeSidebar()">✕</button></div>
+  <div class="px-3 mb-2 text-[10px] uppercase tracking-widest text-slate-400 font-black">Workspace</div>
+  <nav class="space-y-1">
+    <a href="#overview" class="navlink active" onclick="closeSidebar()">⌂ <span>Dashboard</span></a>
+    <a href="#products" class="navlink" onclick="closeSidebar()">▣ <span>Products</span></a>
+    <a href="#categories" class="navlink" onclick="closeSidebar()">◈ <span>Categories</span></a>
+    <a href="#users" class="navlink" onclick="closeSidebar()">♙ <span>Users</span></a>
+    <a href="#search" class="navlink" onclick="closeSidebar()">⌕ <span>Search</span></a>
+    <a href="#create" class="navlink" onclick="closeSidebar()">＋ <span>New Product</span></a>
+  </nav>
+  <div class="mt-7 px-3 mb-2 text-[10px] uppercase tracking-widest text-slate-400 font-black">API</div>
+  <div class="space-y-1">
+    <a class="navlink" href="https://dummyjson.com/products" target="_blank">↗ <span>Products API</span></a>
+    <a class="navlink" href="https://dummyjson.com/users" target="_blank">↗ <span>Users API</span></a>
+    <a class="navlink" href="https://dummyjson.com/docs" target="_blank">↗ <span>DummyJSON Docs</span></a>
   </div>
+  <div class="mt-8 p-4 rounded-2xl bg-white/60 border border-white/90">
+    <div class="text-xs font-extrabold">Data note</div>
+    <p class="text-[11px] text-slate-500 mt-2 leading-5">DummyJSON POST/PUT/DELETE are simulated. This admin also keeps your edits locally in this browser so the dashboard remains useful after refresh.</p>
+  </div>
+</aside>
+
+<main class="min-w-0">
+<section id="overview" class="px-5 md:px-10 xl:px-14 py-10 max-w-[1400px] mx-auto">
+  <div class="glass rounded-[30px] p-7 md:p-10 overflow-hidden relative">
+    <div class="relative z-10"><div class="badge bg-indigo-50 text-indigo-600">ADMIN CONTROL CENTER</div><h2 class="text-4xl md:text-5xl font-black tracking-tight mt-4">Everything in one place.</h2><p class="text-slate-500 max-w-2xl mt-4 leading-7">Manage products, inspect customers, create new catalog items, edit details and remove products from your admin view.</p></div>
+    <div class="absolute -right-16 -top-20 w-64 h-64 rounded-full bg-indigo-300/25 blur-3xl"></div><div class="absolute right-20 bottom-0 w-48 h-48 rounded-full bg-cyan-300/20 blur-3xl"></div>
+  </div>
+  <div class="grid sm:grid-cols-2 xl:grid-cols-4 gap-4 mt-5">
+    <div class="card rounded-2xl p-5"><div class="text-xs text-slate-400 font-bold">Products</div><div id="statProducts" class="text-3xl font-black mt-2">—</div></div>
+    <div class="card rounded-2xl p-5"><div class="text-xs text-slate-400 font-bold">Categories</div><div id="statCategories" class="text-3xl font-black mt-2">—</div></div>
+    <div class="card rounded-2xl p-5"><div class="text-xs text-slate-400 font-bold">Users</div><div id="statUsers" class="text-3xl font-black mt-2">—</div></div>
+    <div class="card rounded-2xl p-5"><div class="text-xs text-slate-400 font-bold">API status</div><div id="statApi" class="text-3xl font-black mt-2">—</div></div>
+  </div>
+</section>
+
+<section id="products" class="px-5 md:px-10 xl:px-14 py-10 max-w-[1400px] mx-auto border-t border-white/70">
+  <div class="flex flex-wrap items-end justify-between gap-4"><div><div class="badge bg-slate-900 text-white">CATALOG</div><h3 class="text-3xl font-black mt-3">Products</h3><p class="text-sm text-slate-500 mt-1">Every product has a Details, Edit and Delete action.</p></div><button onclick="loadProducts()" class="btn bg-indigo-600 text-white">↻ Refresh products</button></div>
+  <div id="productsTable" class="table-wrap mt-6"><div class="p-10 text-center text-sm text-slate-400">Loading products…</div></div>
+</section>
+
+<section id="categories" class="px-5 md:px-10 xl:px-14 py-10 max-w-[1400px] mx-auto border-t border-white/70">
+  <div><div class="badge bg-violet-50 text-violet-600">CATEGORIES</div><h3 class="text-3xl font-black mt-3">Browse catalog</h3><p class="text-sm text-slate-500 mt-1">Click any category to see its products.</p></div>
+  <div id="categoryButtons" class="flex flex-wrap gap-2 mt-5"></div><div id="categoryResult" class="mt-5"></div>
+</section>
+
+<section id="users" class="px-5 md:px-10 xl:px-14 py-10 max-w-[1400px] mx-auto border-t border-white/70">
+  <div class="flex flex-wrap items-end justify-between gap-4"><div><div class="badge bg-emerald-50 text-emerald-600">CUSTOMERS</div><h3 class="text-3xl font-black mt-3">Users</h3><p class="text-sm text-slate-500 mt-1">View customer profiles, contact info, address and activity.</p></div><button onclick="loadUsers()" class="btn bg-slate-950 text-white">↻ Load users</button></div>
+  <div class="mt-5 flex gap-2"><input id="userSearchBox" class="input" placeholder="Search users by name, email or username…" onkeydown="if(event.key==='Enter') searchUsers()"><button onclick="searchUsers()" class="btn bg-white/80 border border-slate-200">Search</button></div>
+  <div id="usersTable" class="table-wrap mt-5"><div class="p-10 text-center text-sm text-slate-400">Loading users…</div></div>
+</section>
+
+<section id="search" class="px-5 md:px-10 xl:px-14 py-10 max-w-[1400px] mx-auto border-t border-white/70">
+  <div class="badge bg-cyan-50 text-cyan-700">SEARCH</div><h3 class="text-3xl font-black mt-3">Search products</h3><p class="text-sm text-slate-500 mt-1">Search the DummyJSON product catalog.</p>
+  <div class="flex gap-2 mt-5"><input id="searchBox" class="input" placeholder="phone, laptop, perfume…" onkeydown="if(event.key==='Enter') searchProducts()"><button onclick="searchProducts()" class="btn bg-slate-950 text-white">Search</button></div><div id="searchResult" class="mt-5"></div>
+</section>
+
+<section id="create" class="px-5 md:px-10 xl:px-14 py-10 max-w-[1400px] mx-auto border-t border-white/70">
+  <div class="badge bg-indigo-50 text-indigo-600">CREATE</div><h3 class="text-3xl font-black mt-3">New Product</h3><p class="text-sm text-slate-500 mt-1">No Product ID is required. The system creates one automatically.</p>
+  <div class="card rounded-3xl p-5 md:p-7 mt-5">
+    <div class="grid md:grid-cols-2 xl:grid-cols-3 gap-4">
+      <label class="text-xs font-bold text-slate-500">Product name<input id="createTitle" class="input mt-2" placeholder="e.g. Premium Wireless Headphones"></label>
+      <label class="text-xs font-bold text-slate-500">Price ($)<input id="createPrice" type="number" step="0.01" class="input mt-2" placeholder="49.99"></label>
+      <label class="text-xs font-bold text-slate-500">Category<input id="createCategory" class="input mt-2" list="categoryList" placeholder="smartphones"></label>
+      <label class="text-xs font-bold text-slate-500">Stock<input id="createStock" type="number" class="input mt-2" placeholder="100"></label>
+      <label class="text-xs font-bold text-slate-500">Rating<input id="createRating" type="number" step="0.01" min="0" max="5" class="input mt-2" placeholder="4.5"></label>
+      <label class="text-xs font-bold text-slate-500">Brand<input id="createBrand" class="input mt-2" placeholder="HR ShopBD"></label>
+      <label class="text-xs font-bold text-slate-500 md:col-span-2">Image URL<input id="createImage" class="input mt-2" placeholder="https://…"></label>
+      <label class="text-xs font-bold text-slate-500 xl:col-span-1">SKU / Code<input id="createSku" class="input mt-2" placeholder="HR-001"></label>
+      <label class="text-xs font-bold text-slate-500 md:col-span-2 xl:col-span-3">Description<textarea id="createDescription" class="input mt-2" rows="4" placeholder="Write a product description…"></textarea></label>
+    </div>
+    <div class="flex flex-wrap gap-2 mt-5"><button onclick="createProduct()" class="btn bg-indigo-600 text-white">＋ Create Product</button><button onclick="resetCreateForm()" class="btn bg-white border border-slate-200">Reset</button></div>
+    <pre id="createResult" class="code hidden mt-5"></pre>
+  </div>
+</section>
+</main>
+</div></div>
+
+<datalist id="categoryList"></datalist>
+
+<!-- PRODUCT MODAL -->
+<div id="detailsModal" class="hidden fixed inset-0 z-[300] modal-bg items-center justify-center p-4 md:p-6">
+ <div class="modal-panel rounded-[30px] w-full max-w-5xl max-h-[92vh] overflow-auto">
+  <div class="sticky top-0 z-10 px-5 md:px-7 py-4 border-b border-slate-200/70 flex items-center justify-between bg-white/75 backdrop-blur-2xl"><div><div class="text-[10px] uppercase tracking-widest text-indigo-500 font-black">Product details</div><h3 id="modalTitle" class="font-black text-lg mt-1">Product</h3></div><button onclick="closeModal()" class="w-10 h-10 rounded-full bg-slate-100 hover:bg-slate-200">✕</button></div>
+  <div id="modalBody" class="p-5 md:p-7"></div>
+ </div>
+</div>
+
+<!-- USER MODAL -->
+<div id="userModal" class="hidden fixed inset-0 z-[310] modal-bg items-center justify-center p-4 md:p-6"><div class="modal-panel rounded-[30px] w-full max-w-5xl max-h-[92vh] overflow-auto"><div class="sticky top-0 z-10 px-5 md:px-7 py-4 border-b border-slate-200/70 flex justify-between bg-white/75 backdrop-blur-2xl"><div><div class="text-[10px] uppercase tracking-widest text-emerald-600 font-black">User profile</div><h3 id="userModalTitle" class="font-black text-lg mt-1">User</h3></div><button onclick="closeUserModal()" class="w-10 h-10 rounded-full bg-slate-100">✕</button></div><div id="userModalBody" class="p-5 md:p-7"></div></div></div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
-import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signOut,
-  onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
 
-const AUTHORIZED_EMAILS = [
-  "mshabib471@gmail.com",
-  "tec.habiburrahman@gmail.com"
-];
-const API = "https://dummyjson.com";
+const AUTHORIZED_EMAILS=["mshabib471@gmail.com","tec.habiburrahman@gmail.com"];
+const API="https://dummyjson.com";
+const firebaseConfig={apiKey:"AIzaSyAaLdtzOIZVYB-Bdc42CXm2T8iclWLc4o0",authDomain:"habib-yt.firebaseapp.com",projectId:"habib-yt",storageBucket:"habib-yt.firebasestorage.app",messagingSenderId:"656628491244",appId:"1:656628491244:web:e01ccd42bd8a2b1b4c96c9",measurementId:"G-GNY1T88D34"};
+const app=initializeApp(firebaseConfig); try{getAnalytics(app)}catch(e){}
+const auth=getAuth(app),provider=new GoogleAuthProvider(); provider.setCustomParameters({prompt:"select_account"});
+const LS="hrshopbd_admin_products_v2";
+let productsCache=[], usersCache=[], categories=[];
 
-const firebaseConfig = {
-  apiKey: "AIzaSyAaLdtzOIZVYB-Bdc42CXm2T8iclWLc4o0",
-  authDomain: "habib-yt.firebaseapp.com",
-  projectId: "habib-yt",
-  storageBucket: "habib-yt.firebasestorage.app",
-  messagingSenderId: "656628491244",
-  appId: "1:656628491244:web:e01ccd42bd8a2b1b4c96c9",
-  measurementId: "G-GNY1T88D34"
-};
-
-const app = initializeApp(firebaseConfig);
-try { getAnalytics(app); } catch (e) { console.warn("Analytics unavailable:", e); }
-
-const auth = getAuth(app);
-const provider = new GoogleAuthProvider();
-provider.setCustomParameters({ prompt: "select_account" });
-
-function setLoginStatus(msg) {
-  const el = document.getElementById("loginStatus");
-  if (el) el.textContent = msg;
-}
-
-async function signInWithGoogle() {
-  try {
-    setLoginStatus("Opening Google sign-in...");
-    const result = await signInWithPopup(auth, provider);
-    const email = (result.user.email || "").toLowerCase();
-
-    if (!AUTHORIZED_EMAILS.map(e => e.toLowerCase()).includes(email)) {
-      setLoginStatus("Access denied. This Google account is not authorized.");
-      await signOut(auth);
-      alert("Access denied. Only an authorized admin account can use this panel.");
-    }
-  } catch (e) {
-    console.error(e);
-    setLoginStatus(e.code === "auth/popup-closed-by-user"
-      ? "Google sign-in was cancelled."
-      : (e.message || "Google sign-in failed."));
-  }
-}
-
-async function signOutAdmin() {
-  try {
-    await signOut(auth);
-  } catch (e) {
-    console.error(e);
-  }
-}
-
-function handleAuthState(user) {
-  if (!user) {
-    document.getElementById("loginScreen").classList.remove("hidden");
-    document.getElementById("app").classList.add("hidden");
-    return;
-  }
-
-  const email = (user.email || "").toLowerCase();
-
-  if (!AUTHORIZED_EMAILS.map(e => e.toLowerCase()).includes(email)) {
-    setLoginStatus("Access denied. This Google account is not authorized.");
-    signOut(auth);
-    return;
-  }
-
-  document.getElementById("loginScreen").classList.add("hidden");
-  document.getElementById("app").classList.remove("hidden");
-  document.getElementById("adminEmail").textContent = user.email;
-  initAdmin();
-}
-
-async function api(path, options = {}) {
-  const res = await fetch(API + path, options);
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.message || `HTTP ${res.status}`);
-  return data;
-}
-
-async function initAdmin() {
-  try {
-    const [products, cats] = await Promise.all([
-      api("/products?limit=30"),
-      api("/products/category-list")
-    ]);
-    document.getElementById("statProducts").textContent =
-      products.total ?? products.products?.length ?? "—";
-    document.getElementById("statCategories").textContent = cats.length ?? "—";
-    document.getElementById("statApi").textContent = "OK";
-    renderCategories(cats);
-  } catch (e) {
-    document.getElementById("statApi").textContent = "Error";
-    renderCategories([]);
-  }
-}
-
-function renderCategories(categories) {
-  const box = document.getElementById("categoryButtons");
-  box.innerHTML = categories.map(c => `
-    <button onclick="loadCategory('${escapeAttr(c)}')"
-      class="px-3 py-2 rounded-xl border bg-white hover:border-indigo-400 hover:text-indigo-600 text-sm font-semibold">
-      ${escapeHTML(c)}
-    </button>`).join("");
-}
-
-async function loadProducts() {
-  const box = document.getElementById("productsTable");
-  box.innerHTML = '<div class="p-8 text-center text-slate-400">Loading…</div>';
-  try {
-    const data = await api("/products?limit=30");
-    box.innerHTML = `
-      <div class="overflow-auto">
-        <table class="w-full text-sm">
-          <thead class="bg-slate-50 text-left text-xs uppercase text-slate-400">
-            <tr><th class="p-4">ID</th><th class="p-4">Product</th><th class="p-4">Category</th><th class="p-4">Price</th><th class="p-4">Stock</th><th class="p-4"></th></tr>
-          </thead>
-          <tbody>
-            ${data.products.map(p => `
-              <tr class="border-t hover:bg-slate-50">
-                <td class="p-4 font-mono text-xs">${p.id}</td>
-                <td class="p-4 font-bold">${escapeHTML(p.title)}</td>
-                <td class="p-4 text-slate-500">${escapeHTML(p.category)}</td>
-                <td class="p-4">$${Number(p.price).toFixed(2)}</td>
-                <td class="p-4">${p.stock}</td>
-                <td class="p-4 text-right"><button onclick="showProduct(${p.id})" class="text-indigo-600 font-bold">Details</button></td>
-              </tr>`).join("")}
-          </tbody>
-        </table>
-      </div>`;
-  } catch(e) {
-    box.innerHTML = `<div class="p-8 text-red-500">${escapeHTML(e.message)}</div>`;
-  }
-}
-
-async function loadCategory(category) {
-  const box = document.getElementById("categoryResult");
-  box.innerHTML = '<div class="text-sm text-slate-400">Loading category…</div>';
-  try {
-    const data = await api("/products/category/" + encodeURIComponent(category));
-    box.innerHTML = renderMiniProducts(data.products, `${category} · ${data.total} products`);
-  } catch(e) {
-    box.innerHTML = `<div class="text-red-500">${escapeHTML(e.message)}</div>`;
-  }
-}
-
-async function searchProducts() {
-  const q = document.getElementById("searchBox").value.trim();
-  if (!q) return;
-  const box = document.getElementById("searchResult");
-  box.innerHTML = '<div class="text-sm text-slate-400">Searching…</div>';
-  try {
-    const data = await api("/products/search?q=" + encodeURIComponent(q));
-    box.innerHTML = renderMiniProducts(data.products, `Search results · ${data.total}`);
-  } catch(e) {
-    box.innerHTML = `<div class="text-red-500">${escapeHTML(e.message)}</div>`;
-  }
-}
-
-function renderMiniProducts(products = [], title = "") {
-  return `
-    <div class="border rounded-2xl overflow-hidden">
-      <div class="bg-slate-50 p-4 font-bold">${escapeHTML(title)}</div>
-      <div class="divide-y">
-        ${products.map(p => `
-          <button onclick="showProduct(${p.id})" class="w-full p-3 flex items-center gap-3 text-left hover:bg-indigo-50 transition">
-            <img src="${escapeAttr(p.thumbnail)}" class="w-12 h-12 object-contain rounded-xl bg-white border">
-            <span class="flex-1 min-w-0"><b class="block truncate">${escapeHTML(p.title)}</b><small class="text-slate-400">$${Number(p.price).toFixed(2)} · ${escapeHTML(p.category)}</small></span>
-            <span class="text-indigo-600 font-bold text-xs">Details →</span>
-          </button>`).join("")}
-      </div>
-    </div>`;
-}
-
-async function showProduct(id) {
-  const modal = document.getElementById("detailsModal");
-  const body = document.getElementById("modalBody");
-  modal.classList.remove("hidden"); modal.classList.add("flex");
-  body.innerHTML = '<div class="py-10 text-center text-slate-400">Loading product…</div>';
-  try {
-    const p = await api("/products/" + id);
-    document.getElementById("modalTitle").textContent = p.title;
-    body.innerHTML = `
-      <div class="grid md:grid-cols-2 gap-6">
-        <div class="rounded-2xl bg-slate-50 p-5 flex items-center justify-center">
-          <img src="${escapeAttr(p.thumbnail)}" class="max-h-72 object-contain">
-        </div>
-        <div>
-          <div class="text-3xl font-extrabold">$${Number(p.price).toFixed(2)}</div>
-          <div class="text-sm text-slate-500 mt-2">${escapeHTML(p.description)}</div>
-          <div class="grid grid-cols-2 gap-3 mt-5 text-sm">
-            <div class="border rounded-xl p-3"><small class="text-slate-400">Category</small><b class="block">${escapeHTML(p.category)}</b></div>
-            <div class="border rounded-xl p-3"><small class="text-slate-400">Stock</small><b class="block">${p.stock}</b></div>
-            <div class="border rounded-xl p-3"><small class="text-slate-400">Rating</small><b class="block">★ ${p.rating}</b></div>
-            <div class="border rounded-xl p-3"><small class="text-slate-400">Brand</small><b class="block">${escapeHTML(p.brand || "—")}</b></div>
-          </div>
-        </div>
-      </div>`;
-  } catch(e) {
-    body.innerHTML = `<div class="text-red-500">${escapeHTML(e.message)}</div>`;
-  }
-}
-
-function closeModal() {
-  const modal = document.getElementById("detailsModal");
-  modal.classList.add("hidden"); modal.classList.remove("flex");
-}
-
-async function createProduct() {
-  const title = document.getElementById("createTitle").value.trim();
-  const price = Number(document.getElementById("createPrice").value);
-  if (!title) return alert("Enter a product title.");
-  const el = document.getElementById("createResult");
-  el.classList.remove("hidden");
-  try {
-    const data = await api("/products/add", {
-      method:"POST", headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({title, price})
-    });
-    el.textContent = JSON.stringify(data, null, 2);
-  } catch(e) { el.textContent = e.message; }
-}
-
-async function updateProduct() {
-  const id = Number(document.getElementById("updateId").value);
-  const title = document.getElementById("updateTitle").value.trim();
-  if (!id || !title) return alert("Enter product ID and title.");
-  const el = document.getElementById("updateResult");
-  el.classList.remove("hidden");
-  try {
-    const data = await api("/products/" + id, {
-      method:"PUT", headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({title})
-    });
-    el.textContent = JSON.stringify(data, null, 2);
-  } catch(e) { el.textContent = e.message; }
-}
-
-async function deleteProduct() {
-  const id = Number(document.getElementById("deleteId").value);
-  if (!id) return alert("Enter product ID.");
-  const el = document.getElementById("deleteResult");
-  el.classList.remove("hidden");
-  try {
-    const data = await api("/products/" + id, {method:"DELETE"});
-    el.textContent = JSON.stringify(data, null, 2);
-  } catch(e) { el.textContent = e.message; }
-}
-
-function toggleSidebar() {
-  document.getElementById("sidebar").classList.toggle("open");
-  document.getElementById("mobileShade").classList.toggle("hidden");
-}
-function closeSidebar() {
-  document.getElementById("sidebar").classList.remove("open");
-  document.getElementById("mobileShade").classList.add("hidden");
-}
-function escapeHTML(v) {
-  return String(v ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-}
-function escapeAttr(v) { return escapeHTML(v); }
-
-Object.assign(window, {
-  signInWithGoogle,
-  signOutAdmin,
-  loadProducts,
-  loadCategory,
-  searchProducts,
-  showProduct,
-  closeModal,
-  createProduct,
-  updateProduct,
-  deleteProduct,
-  toggleSidebar,
-  closeSidebar
-});
-
-onAuthStateChanged(auth, handleAuthState);
-
-document.addEventListener("keydown", e => {
-  if (e.key === "Escape") { closeSidebar(); closeModal(); }
-});
+const $=id=>document.getElementById(id); const esc=v=>String(v??"").replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+const attr=v=>esc(v);
+function setLoginStatus(t){$("loginStatus").textContent=t}
+async function signInWithGoogle(){try{setLoginStatus("Opening Google sign-in…");const r=await signInWithPopup(auth,provider);const email=(r.user.email||"").toLowerCase();if(!AUTHORIZED_EMAILS.map(x=>x.toLowerCase()).includes(email)){setLoginStatus("Access denied. This Google account is not authorized.");await signOut(auth);alert("Access denied. Use one of the two authorized admin Google accounts.")}}catch(e){setLoginStatus(e.message||"Google sign-in failed.")}}
+async function signOutAdmin(){await signOut(auth)}
+function handleAuthState(user){if(!user){$("loginScreen").classList.remove("hidden");$("app").classList.add("hidden");return}const email=(user.email||"").toLowerCase();if(!AUTHORIZED_EMAILS.map(x=>x.toLowerCase()).includes(email)){setLoginStatus("Access denied. This Google account is not authorized.");signOut(auth);return}$("loginScreen").classList.add("hidden");$("app").classList.remove("hidden");$("adminEmail").textContent=user.email;initAdmin()}
+async function api(path,options={}){const r=await fetch(API+path,options);const d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.message||`HTTP ${r.status}`);return d}
+function localProducts(){try{return JSON.parse(localStorage.getItem(LS)||"[]")}catch{return[]}}
+function saveLocalProducts(v){localStorage.setItem(LS,JSON.stringify(v))}
+function mergedProducts(apiProducts){const local=localProducts();const deleted=new Set(local.filter(x=>x._deleted).map(x=>Number(x.id)));const updates=new Map(local.filter(x=>!x._deleted).map(x=>[Number(x.id),x]));const base=(apiProducts||[]).filter(x=>!deleted.has(Number(x.id))).map(x=>updates.has(Number(x.id))?{...x,...updates.get(Number(x.id))}:x);const apiIds=new Set(base.map(x=>Number(x.id)));const extras=local.filter(x=>x._local&&!x._deleted&&!apiIds.has(Number(x.id)));return [...extras,...base]}
+async function initAdmin(){try{const [p,c,u]=await Promise.all([api("/products?limit=0"),api("/products/category-list"),api("/users?limit=0")]);productsCache=mergedProducts(p.products);categories=c;usersCache=u.users||[];$("statProducts").textContent=productsCache.length;$("statCategories").textContent=c.length;$("statUsers").textContent=u.total??usersCache.length;$("statApi").textContent="OK";renderCategories(c);fillCategoryList(c);renderProducts(productsCache);renderUsers(usersCache.slice(0,30))}catch(e){$("statApi").textContent="Error";$("productsTable").innerHTML=`<div class="p-8 text-red-500">${esc(e.message)}</div>`}}
+function fillCategoryList(c){$("categoryList").innerHTML=c.map(x=>`<option value="${attr(x)}"></option>`).join("")}
+function renderCategories(c){$("categoryButtons").innerHTML=c.map(x=>`<button onclick="loadCategory('${attr(x)}')" class="btn bg-white/75 border border-slate-200">${esc(x)}</button>`).join("")}
+function productActions(p){return `<div class="flex justify-end gap-2"><button onclick="showProduct(${Number(p.id)})" class="btn bg-indigo-50 text-indigo-600">Details</button><button onclick="editProduct(${Number(p.id)})" class="btn bg-amber-50 text-amber-700">Edit</button><button onclick="deleteProductById(${Number(p.id)})" class="btn bg-red-50 text-red-600">Delete</button></div>`}
+function renderProducts(ps){productsCache=ps||[];$("productsTable").innerHTML=`<div class="px-5 py-4 flex items-center justify-between bg-white/45"><b>${ps.length} products</b><span class="text-xs text-slate-400">ID is shown automatically</span></div><table class="w-full text-sm"><thead class="bg-white/65 text-[10px] uppercase tracking-wider text-slate-400"><tr><th class="p-4 text-left">ID</th><th class="p-4 text-left">Product</th><th class="p-4 text-left">Category</th><th class="p-4 text-left">Price</th><th class="p-4 text-left">Stock</th><th class="p-4 text-right">Actions</th></tr></thead><tbody>${ps.map(p=>`<tr class="border-t border-slate-200/60 hover:bg-white/55"><td class="p-4 mono text-xs font-bold">#${p.id}</td><td class="p-4"><div class="flex items-center gap-3"><img src="${attr(p.thumbnail||p.images?.[0]||'')}" class="thumb"><div class="min-w-0"><b class="block truncate max-w-[260px]">${esc(p.title)}</b><span class="text-xs text-slate-400">${esc(p.brand||'No brand')}</span></div></div></td><td class="p-4"><span class="badge bg-slate-100 text-slate-600">${esc(p.category)}</span></td><td class="p-4 font-extrabold">$${Number(p.price||0).toFixed(2)}</td><td class="p-4">${p.stock??0}</td><td class="p-4">${productActions(p)}</td></tr>`).join("")}</tbody></table>`}
+async function loadProducts(){try{const d=await api("/products?limit=0");renderProducts(mergedProducts(d.products));$("statProducts").textContent=productsCache.length}catch(e){alert(e.message)}}
+async function loadCategory(cat){const box=$("categoryResult");box.innerHTML='<div class="text-sm text-slate-400">Loading…</div>';try{const d=await api("/products/category/"+encodeURIComponent(cat));box.innerHTML=renderMiniProducts(mergedProducts(d.products),`${cat} · ${d.total} products`)}catch(e){box.innerHTML=`<div class="text-red-500">${esc(e.message)}</div>`}}
+async function searchProducts(){const q=$("searchBox").value.trim();if(!q)return;const box=$("searchResult");box.innerHTML='<div class="text-sm text-slate-400">Searching…</div>';try{const d=await api("/products/search?q="+encodeURIComponent(q));box.innerHTML=renderMiniProducts(mergedProducts(d.products),`Search results · ${d.total}`)}catch(e){box.innerHTML=`<div class="text-red-500">${esc(e.message)}</div>`}}
+function renderMiniProducts(ps,title){return `<div class="card rounded-2xl overflow-hidden"><div class="p-4 font-bold bg-white/45">${esc(title)}</div><div class="divide-y divide-slate-200/60">${(ps||[]).map(p=>`<div class="p-3 flex items-center gap-3 hover:bg-white/55"><img src="${attr(p.thumbnail||p.images?.[0]||'')}" class="thumb"><div class="flex-1 min-w-0"><b class="block truncate">${esc(p.title)}</b><small class="text-slate-400">$${Number(p.price||0).toFixed(2)} · ${esc(p.category)}</small></div>${productActions(p)}</div>`).join("")}</div></div>`}
+async function showProduct(id){const m=$("detailsModal"),b=$("modalBody");m.classList.remove("hidden");m.classList.add("flex");b.innerHTML='<div class="py-12 text-center text-slate-400">Loading product…</div>';try{let p=productsCache.find(x=>Number(x.id)===Number(id));if(!p||!p.description){p=await api("/products/"+id)}$("modalTitle").textContent=p.title;b.innerHTML=productDetailHTML(p)}catch(e){b.innerHTML=`<div class="text-red-500">${esc(e.message)}</div>`}}
+function productDetailHTML(p){return `<div class="grid lg:grid-cols-[.95fr_1.05fr] gap-7"><div><div class="rounded-[28px] bg-white/65 border border-white p-5 min-h-[360px] grid place-items-center"><img src="${attr(p.thumbnail||p.images?.[0]||'')}" class="max-h-80 max-w-full object-contain"></div><div class="flex gap-2 mt-3 overflow-auto hide-scroll">${(p.images||[]).slice(0,5).map(i=>`<img src="${attr(i)}" class="w-16 h-16 object-contain bg-white rounded-xl border">`).join("")}</div></div><div><div class="flex flex-wrap items-center gap-2"><span class="badge bg-indigo-50 text-indigo-600">#${p.id}</span><span class="badge bg-slate-100 text-slate-600">${esc(p.category)}</span>${p.brand?`<span class="badge bg-slate-100 text-slate-600">${esc(p.brand)}</span>`:''}</div><div class="text-4xl font-black mt-4">$${Number(p.price||0).toFixed(2)}</div><p class="text-slate-500 leading-7 mt-3">${esc(p.description||'No description available.')}</p><div class="grid grid-cols-2 gap-3 mt-5"><div class="card rounded-2xl p-4"><small class="text-slate-400">Category</small><b class="block mt-1">${esc(p.category)}</b></div><div class="card rounded-2xl p-4"><small class="text-slate-400">Stock</small><b class="block mt-1">${p.stock??0}</b></div><div class="card rounded-2xl p-4"><small class="text-slate-400">Rating</small><b class="block mt-1">★ ${p.rating??0}</b></div><div class="card rounded-2xl p-4"><small class="text-slate-400">Brand</small><b class="block mt-1">${esc(p.brand||'—')}</b></div><div class="card rounded-2xl p-4"><small class="text-slate-400">Discount</small><b class="block mt-1">${p.discountPercentage??0}%</b></div><div class="card rounded-2xl p-4"><small class="text-slate-400">SKU</small><b class="block mt-1">${esc(p.sku||'—')}</b></div></div><div class="flex flex-wrap gap-2 mt-6"><button onclick="editProduct(${Number(p.id)})" class="btn bg-amber-500 text-white">✎ Edit / Update</button><button onclick="deleteProductById(${Number(p.id)})" class="btn bg-red-600 text-white">⌫ Delete</button><button onclick="closeModal()" class="btn bg-white border border-slate-200">Close</button></div></div></div>`}
+function closeModal(){$("detailsModal").classList.add("hidden");$("detailsModal").classList.remove("flex")}
+function editProduct(id){const p=productsCache.find(x=>Number(x.id)===Number(id));if(!p)return;closeModal();setTimeout(()=>openEditModal(p),80)}
+function openEditModal(p){const m=$("detailsModal"),b=$("modalBody");m.classList.remove("hidden");m.classList.add("flex");$("modalTitle").textContent="Edit · "+p.title;b.innerHTML=`<div class="grid md:grid-cols-2 gap-4"><label class="text-xs font-bold text-slate-500">Product ID<input class="input mt-2 bg-slate-100" value="${attr(p.id)}" disabled></label><label class="text-xs font-bold text-slate-500">Product name<input id="editTitle" class="input mt-2" value="${attr(p.title)}"></label><label class="text-xs font-bold text-slate-500">Price<input id="editPrice" type="number" step="0.01" class="input mt-2" value="${Number(p.price||0)}"></label><label class="text-xs font-bold text-slate-500">Category<input id="editCategory" class="input mt-2" value="${attr(p.category||'')}"></label><label class="text-xs font-bold text-slate-500">Stock<input id="editStock" type="number" class="input mt-2" value="${p.stock??0}"></label><label class="text-xs font-bold text-slate-500">Rating<input id="editRating" type="number" step="0.01" class="input mt-2" value="${p.rating??0}"></label><label class="text-xs font-bold text-slate-500">Brand<input id="editBrand" class="input mt-2" value="${attr(p.brand||'')}"></label><label class="text-xs font-bold text-slate-500">SKU<input id="editSku" class="input mt-2" value="${attr(p.sku||'')}"></label><label class="text-xs font-bold text-slate-500 md:col-span-2">Image URL<input id="editImage" class="input mt-2" value="${attr(p.thumbnail||p.images?.[0]||'')}"></label><label class="text-xs font-bold text-slate-500 md:col-span-2">Description<textarea id="editDescription" class="input mt-2" rows="5">${esc(p.description||'')}</textarea></label></div><div class="flex flex-wrap gap-2 mt-6"><button onclick="saveProductEdit(${Number(p.id)})" class="btn bg-indigo-600 text-white">✓ Save Update</button><button onclick="deleteProductById(${Number(p.id)})" class="btn bg-red-50 text-red-600">Delete product</button><button onclick="closeModal()" class="btn bg-white border border-slate-200">Cancel</button></div><p class="text-xs text-slate-400 mt-4">DummyJSON PUT is simulated; this dashboard saves the update locally so you can see it after refresh.</p>`}
+async function saveProductEdit(id){const p=productsCache.find(x=>Number(x.id)===Number(id));if(!p)return;const patch={title:$("editTitle").value.trim(),price:Number($("editPrice").value),category:$("editCategory").value.trim(),stock:Number($("editStock").value),rating:Number($("editRating").value),brand:$("editBrand").value.trim(),sku:$("editSku").value.trim(),thumbnail:$("editImage").value.trim(),images:$("editImage").value.trim()?[ $("editImage").value.trim() ]:(p.images||[]),description:$("editDescription").value.trim()};if(!patch.title||!Number.isFinite(patch.price))return alert("Product name and valid price are required.");try{await api("/products/"+id,{method:"PUT",headers:{"Content-Type":"application/json"},body:JSON.stringify(patch)})}catch(e){}persistLocalPatch(id,patch);Object.assign(p,patch);renderProducts(productsCache);closeModal();alert("Product updated successfully in your admin view.")}
+function persistLocalPatch(id,patch){const a=localProducts().filter(x=>Number(x.id)!==Number(id));a.push({id:Number(id),...patch});saveLocalProducts(a)}
+async function deleteProductById(id){const p=productsCache.find(x=>Number(x.id)===Number(id));if(!confirm(`Delete “${p?.title||'this product'}” (#${id})?`))return;try{await api("/products/"+id,{method:"DELETE"})}catch(e){}const a=localProducts().filter(x=>Number(x.id)!==Number(id));a.push({id:Number(id),_deleted:true});saveLocalProducts(a);productsCache=productsCache.filter(x=>Number(x.id)!==Number(id));renderProducts(productsCache);closeModal();alert("Product deleted from your admin view.")}
+function resetCreateForm(){["createTitle","createPrice","createCategory","createStock","createRating","createBrand","createImage","createSku","createDescription"].forEach(id=>$(id).value="");$("createResult").classList.add("hidden")}
+async function createProduct(){const title=$("createTitle").value.trim();const price=Number($("createPrice").value);if(!title||!Number.isFinite(price))return alert("Product name and valid price are required.");const product={title,price,category:$("createCategory").value.trim()||"general",stock:Number($("createStock").value)||0,rating:Number($("createRating").value)||0,brand:$("createBrand").value.trim()||"HR ShopBD",thumbnail:$("createImage").value.trim()||"https://dummyjson.com/image/400x300/eeeeee/111111?text=Product",images:$("createImage").value.trim()?[ $("createImage").value.trim() ]:[],sku:$("createSku").value.trim()||`HR-${Date.now().toString().slice(-6)}`,description:$("createDescription").value.trim()||"New product added from HR ShopBD Admin."};let apiData={};try{apiData=await api("/products/add",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(product)})}catch(e){}const existing=productsCache.map(x=>Number(x.id));const id=Math.max(0,...existing,190)+1;const final={...product,id,_local:true};const a=localProducts().filter(x=>Number(x.id)!==id&&!x._deleted);a.push(final);saveLocalProducts(a);productsCache=[final,...productsCache];renderProducts(productsCache);$("statProducts").textContent=productsCache.length;const el=$("createResult");el.classList.remove("hidden");el.textContent=JSON.stringify({...final,apiResponse:apiData},null,2);alert(`Product created. Automatic Product ID: #${id}`)}
+async function loadUsers(){try{const d=await api("/users?limit=0");usersCache=d.users||[];$("statUsers").textContent=d.total??usersCache.length;renderUsers(usersCache)}catch(e){$("usersTable").innerHTML=`<div class="p-8 text-red-500">${esc(e.message)}</div>`}}
+async function searchUsers(){const q=$("userSearchBox").value.trim();if(!q)return loadUsers();try{const d=await api("/users/search?q="+encodeURIComponent(q));renderUsers(d.users||[])}catch(e){$("usersTable").innerHTML=`<div class="p-8 text-red-500">${esc(e.message)}</div>`}}
+function renderUsers(us){$("usersTable").innerHTML=`<table class="w-full text-sm"><thead class="bg-white/65 text-[10px] uppercase tracking-wider text-slate-400"><tr><th class="p-4 text-left">User</th><th class="p-4 text-left">Email</th><th class="p-4 text-left">Phone</th><th class="p-4 text-left">Location</th><th class="p-4 text-left">Role</th><th class="p-4 text-right">Action</th></tr></thead><tbody>${(us||[]).map(u=>`<tr class="border-t border-slate-200/60 hover:bg-white/55"><td class="p-4"><div class="flex items-center gap-3"><img src="${attr(u.image||'')}" class="w-11 h-11 rounded-full object-cover bg-white"><div><b class="block">${esc(u.firstName+' '+u.lastName)}</b><span class="text-xs text-slate-400">@${esc(u.username)}</span></div></div></td><td class="p-4">${esc(u.email)}</td><td class="p-4">${esc(u.phone)}</td><td class="p-4">${esc(u.address?.city||'—')}, ${esc(u.address?.country||'—')}</td><td class="p-4"><span class="badge ${u.role==='admin'?'bg-indigo-50 text-indigo-600':'bg-slate-100 text-slate-600'}">${esc(u.role||'user')}</span></td><td class="p-4 text-right"><button onclick="showUser(${Number(u.id)})" class="btn bg-emerald-50 text-emerald-700">View profile</button></td></tr>`).join("")}</tbody></table>`}
+async function showUser(id){const m=$("userModal"),b=$("userModalBody");m.classList.remove("hidden");m.classList.add("flex");b.innerHTML='<div class="py-12 text-center text-slate-400">Loading user…</div>';try{const u=usersCache.find(x=>Number(x.id)===Number(id))||await api("/users/"+id);let carts={carts:[]},posts={posts:[]},todos={todos:[]};try{[carts,posts,todos]=await Promise.all([api(`/users/${id}/carts`),api(`/users/${id}/posts`),api(`/users/${id}/todos`)])}catch(e){}$("userModalTitle").textContent=u.firstName+' '+u.lastName;b.innerHTML=`<div class="grid lg:grid-cols-[260px_1fr] gap-7"><div><div class="card rounded-3xl p-6 text-center"><img src="${attr(u.image)}" class="w-28 h-28 rounded-3xl object-cover mx-auto bg-white"><h4 class="font-black text-xl mt-4">${esc(u.firstName+' '+u.lastName)}</h4><p class="text-sm text-slate-400">@${esc(u.username)}</p><span class="badge mt-3 bg-emerald-50 text-emerald-700">${esc(u.role||'user')}</span></div></div><div><div class="grid sm:grid-cols-2 gap-3"><div class="card rounded-2xl p-4"><small class="text-slate-400">Email</small><b class="block mt-1 break-all">${esc(u.email)}</b></div><div class="card rounded-2xl p-4"><small class="text-slate-400">Phone</small><b class="block mt-1">${esc(u.phone)}</b></div><div class="card rounded-2xl p-4"><small class="text-slate-400">Age / Gender</small><b class="block mt-1">${u.age} · ${esc(u.gender)}</b></div><div class="card rounded-2xl p-4"><small class="text-slate-400">Birth date</small><b class="block mt-1">${esc(u.birthDate)}</b></div><div class="card rounded-2xl p-4 sm:col-span-2"><small class="text-slate-400">Address</small><b class="block mt-1">${esc(u.address?.address)}, ${esc(u.address?.city)}, ${esc(u.address?.state)}, ${esc(u.address?.country)}</b></div><div class="card rounded-2xl p-4"><small class="text-slate-400">Company</small><b class="block mt-1">${esc(u.company?.name||'—')}</b></div><div class="card rounded-2xl p-4"><small class="text-slate-400">Job title</small><b class="block mt-1">${esc(u.company?.title||'—')}</b></div></div><div class="grid sm:grid-cols-3 gap-3 mt-4"><div class="card rounded-2xl p-4"><small class="text-slate-400">Carts</small><b class="block text-2xl mt-1">${carts.total??carts.carts?.length??0}</b></div><div class="card rounded-2xl p-4"><small class="text-slate-400">Posts</small><b class="block text-2xl mt-1">${posts.total??posts.posts?.length??0}</b></div><div class="card rounded-2xl p-4"><small class="text-slate-400">Todos</small><b class="block text-2xl mt-1">${todos.total??todos.todos?.length??0}</b></div></div><div class="flex gap-2 mt-5"><button onclick="closeUserModal()" class="btn bg-slate-950 text-white">Close profile</button></div></div></div>`}catch(e){b.innerHTML=`<div class="text-red-500">${esc(e.message)}</div>`}}
+function closeUserModal(){$("userModal").classList.add("hidden");$("userModal").classList.remove("flex")}
+function toggleSidebar(){$("sidebar").classList.toggle("open");$("mobileShade").classList.toggle("hidden")};function closeSidebar(){$("sidebar").classList.remove("open");$("mobileShade").classList.add("hidden")}
+Object.assign(window,{signInWithGoogle,signOutAdmin,toggleSidebar,closeSidebar,loadProducts,loadCategory,searchProducts,showProduct,closeModal,editProduct,saveProductEdit,deleteProductById,createProduct,resetCreateForm,loadUsers,searchUsers,showUser,closeUserModal});
+onAuthStateChanged(auth,handleAuthState);document.addEventListener("keydown",e=>{if(e.key==="Escape"){closeSidebar();closeModal();closeUserModal()}});
 </script>
-</body>
-</html>
+</body></html>
