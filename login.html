@@ -1,522 +1,465 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HR ShopBD — Login / Sign Up</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = { theme: { extend: { fontFamily: { 'inter': ['Inter', 'sans-serif'] } } } }
-    </script>
-    <style>
-        * { font-family: 'Inter', sans-serif; }
-        body { background: linear-gradient(135deg, #f0f0ff 0%, #e8e0f0 30%, #f5f0ff 60%, #eef0ff 100%); overflow-x: hidden; }
-        .blob { position: absolute; border-radius: 50%; filter: blur(80px); z-index: 0; opacity: 0.4; pointer-events: none; }
-        .blob-1 { top: -10%; left: -5%; width: 400px; height: 400px; background: #c7b8f5; }
-        .blob-2 { top: 30%; right: -5%; width: 350px; height: 350px; background: #a5b4fc; }
-        .blob-3 { bottom: 5%; left: 15%; width: 300px; height: 300px; background: #ddd6fe; }
-        .glass { background: rgba(255,255,255,0.45); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.6); }
-        .glass-strong { background: rgba(255,255,255,0.65); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.7); }
-        .glass-card { background: rgba(255,255,255,0.5); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); border-radius: 20px; transition: all 0.3s ease; }
-        .hero-gradient { background: linear-gradient(135deg, #a78bfa 0%, #c084fc 30%, #f0abfc 60%, #fda4af 100%); }
-        .auth-tab { transition: all 0.3s ease; }
-        .auth-tab.active { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; }
-        .input-field { background: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.8); border-radius: 14px; padding: 12px 16px 12px 44px; width: 100%; font-size: 14px; outline: none; transition: all 0.3s ease; }
-        .input-field:focus { box-shadow: 0 0 0 3px rgba(99,102,241,0.15); border-color: #818cf8; }
-        .social-btn { transition: all 0.3s ease; border-radius: 14px; padding: 12px; display: flex; align-items: center; justify-content: center; gap: 10px; font-weight: 600; font-size: 13px; cursor: pointer; }
-        .social-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
-        .gradient-btn { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border-radius: 14px; padding: 14px; width: 100%; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.3s ease; border: none; }
-        .gradient-btn:hover { opacity: 0.9; transform: translateY(-1px); box-shadow: 0 8px 30px rgba(99,102,241,0.3); }
-        .gradient-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
-        .slide-up { animation: slideUp 0.6s ease forwards; opacity: 0; transform: translateY(20px); }
-        @keyframes slideUp { to { opacity: 1; transform: translateY(0); } }
-        .phone-input-group { display: flex; gap: 8px; }
-        .phone-input-group .country-code { width: 100px; flex-shrink: 0; }
-        .divider { display: flex; align-items: center; gap: 12px; }
-        .divider::before, .divider::after { content: ''; flex: 1; height: 1px; background: rgba(0,0,0,0.1); }
-        .otp-input { width: 48px; height: 52px; text-align: center; font-size: 20px; font-weight: 700; background: rgba(255,255,255,0.6); border: 1px solid rgba(255,255,255,0.8); border-radius: 14px; outline: none; transition: all 0.3s; }
-        .otp-input:focus { box-shadow: 0 0 0 3px rgba(99,102,241,0.15); border-color: #818cf8; }
-        .toast { position: fixed; top: 24px; right: 24px; z-index: 200; padding: 14px 24px; border-radius: 14px; color: white; font-weight: 600; font-size: 13px; transition: all 0.3s; opacity: 0; transform: translateY(-10px); }
-        .toast.show { opacity: 1; transform: translateY(0); }
-        .toast.success { background: linear-gradient(135deg, #10b981, #34d399); }
-        .toast.error { background: linear-gradient(135deg, #ef4444, #f97316); }
-        .toast.info { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HR ShopBD — Login</title>
+  <meta name="description" content="Secure login and registration for HR ShopBD." />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: #243047;
+      background:
+        radial-gradient(circle at 12% 18%, rgba(177,151,255,.30), transparent 34%),
+        radial-gradient(circle at 91% 56%, rgba(158,177,255,.34), transparent 37%),
+        linear-gradient(135deg, #f0edff 0%, #fbf8ff 46%, #eef1ff 100%);
+      overflow-x: hidden;
+    }
+    .orb { position: fixed; border-radius: 999px; filter: blur(70px); pointer-events:none; opacity:.45; }
+    .glass {
+      background: rgba(255,255,255,.63);
+      border: 1px solid rgba(255,255,255,.82);
+      box-shadow: 0 24px 70px rgba(76,69,113,.15), inset 0 1px 0 rgba(255,255,255,.8);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+    }
+    .brand-icon {
+      background: linear-gradient(135deg,#6366f1,#9a4ff3);
+      box-shadow: 0 14px 30px rgba(112,78,232,.28), inset 0 1px 0 rgba(255,255,255,.35);
+    }
+    .gradient-text {
+      background: linear-gradient(90deg,#4f46e5,#9b59f6);
+      -webkit-background-clip:text; background-clip:text; color:transparent;
+    }
+    .tab {
+      transition: .2s ease;
+      color:#65738b;
+    }
+    .tab.active {
+      color:#fff;
+      background:linear-gradient(90deg,#5e5bed,#8b50f4);
+      box-shadow:0 8px 18px rgba(108,79,235,.18);
+    }
+    .field {
+      background: rgba(255,255,255,.72);
+      border:1px solid rgba(220,224,235,.9);
+      transition:.18s ease;
+    }
+    .field:focus-within {
+      border-color:#8b6df4;
+      box-shadow:0 0 0 4px rgba(112,91,235,.10);
+      background:rgba(255,255,255,.9);
+    }
+    .field input { background:transparent; outline:none; }
+    .primary-btn {
+      background:linear-gradient(90deg,#6059ee,#9050f2);
+      box-shadow:0 12px 25px rgba(104,79,233,.20);
+      transition:.2s ease;
+    }
+    .primary-btn:hover { transform:translateY(-1px); filter:brightness(1.02); }
+    .primary-btn:disabled { opacity:.6; cursor:not-allowed; transform:none; }
+    .social-btn {
+      background:rgba(255,255,255,.78);
+      border:1px solid rgba(218,223,235,.95);
+      transition:.18s ease;
+    }
+    .social-btn:hover { background:#fff; transform:translateY(-1px); }
+    .divider:before,.divider:after { content:""; height:1px; flex:1; background:#dfe2eb; }
+    .toast {
+      position:fixed; right:20px; bottom:20px; z-index:100;
+      min-width:280px; max-width:420px;
+      padding:14px 16px; border-radius:16px;
+      background:rgba(28,35,52,.94); color:#fff;
+      box-shadow:0 18px 50px rgba(0,0,0,.18);
+      opacity:0; transform:translateY(12px); pointer-events:none;
+      transition:.25s ease;
+    }
+    .toast.show { opacity:1; transform:translateY(0); }
+    .toast.error { background:rgba(185,48,80,.95); }
+    .toast.success { background:rgba(22,132,91,.95); }
+    .spinner { width:18px;height:18px;border:2px solid rgba(255,255,255,.45);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .hidden-panel { display:none !important; }
+    @media (max-width: 640px) {
+      .card { width:calc(100vw - 28px); }
+      .top-brand { margin-top:30px; }
+      .back-btn { left:14px; top:14px; }
+      .lang { right:14px; top:14px; }
+      .toast { left:14px; right:14px; min-width:0; }
+    }
+  </style>
 </head>
-<body class="min-h-screen flex items-center justify-center relative p-4">
-    <div class="blob blob-1"></div>
-    <div class="blob blob-2"></div>
-    <div class="blob blob-3"></div>
+<body>
+  <div class="orb w-72 h-72 bg-violet-300 left-[-80px] top-[80px]"></div>
+  <div class="orb w-80 h-80 bg-indigo-300 right-[-100px] top-[330px]"></div>
 
-    <!-- Back to Home -->
-    <a href="index.html" class="fixed top-5 left-5 z-50 glass-strong px-4 py-2 rounded-full flex items-center gap-2 text-sm font-semibold text-slate-600 hover:bg-white/80 transition">
-        <i class="fa-solid fa-arrow-left text-xs"></i> <span>Back to Shop</span>
-    </a>
+  <a href="index.html" class="back-btn fixed left-5 top-5 z-20 inline-flex items-center gap-2 rounded-full bg-white/75 border border-white/90 px-4 py-2.5 text-sm font-semibold text-slate-600 shadow-sm backdrop-blur-xl hover:bg-white transition">
+    <span>←</span><span data-i18n="back">Back to Shop</span>
+  </a>
 
-    <!-- Language Toggle -->
-    <div class="fixed top-5 right-5 z-50 flex gap-1 p-1 rounded-xl glass-strong">
-        <button onclick="setLang('en')" id="langEn" class="px-3 py-1.5 rounded-lg text-[11px] font-bold transition bg-gradient-to-r from-indigo-500 to-purple-500 text-white">EN</button>
-        <button onclick="setLang('bn')" id="langBn" class="px-3 py-1.5 rounded-lg text-[11px] font-bold text-slate-500 transition">বাং</button>
-    </div>
+  <div class="lang fixed right-5 top-5 z-20 flex items-center gap-1 rounded-2xl bg-white/70 border border-white/90 p-1 shadow-sm backdrop-blur-xl">
+    <button id="enBtn" class="rounded-xl px-3 py-2 text-xs font-bold bg-gradient-to-r from-indigo-500 to-purple-500 text-white">EN</button>
+    <button id="bnBtn" class="rounded-xl px-3 py-2 text-xs font-bold text-slate-600 hover:bg-white">বাংলা</button>
+  </div>
 
-    <div class="w-full max-w-md relative z-10 slide-up">
-        <!-- Logo & Header -->
-        <div class="text-center mb-8">
-            <div class="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-xl mx-auto mb-4">
-                <i class="fa-solid fa-store text-white text-2xl"></i>
-            </div>
-            <h1 class="text-2xl font-extrabold text-slate-800">HR <span class="text-indigo-500">ShopBD</span></h1>
-            <p class="text-sm text-slate-500 mt-1" data-i18n="subtitle">Your Style, Your Way ✨</p>
+  <main class="min-h-screen flex flex-col items-center px-4 pb-6 pt-4">
+    <header class="top-brand text-center mt-0 mb-7">
+      <div class="brand-icon mx-auto w-16 h-16 rounded-2xl flex items-center justify-center text-white text-3xl">
+        🛍️
+      </div>
+      <h1 class="mt-4 text-2xl font-extrabold tracking-tight text-slate-800">HR <span class="gradient-text">ShopBD</span></h1>
+      <p class="mt-1 text-sm text-slate-500">Your Style, Your Way ✨</p>
+    </header>
+
+    <section class="card glass w-full max-w-[450px] rounded-[26px] p-6 sm:p-7">
+      <div class="grid grid-cols-2 rounded-2xl bg-white/45 p-1 mb-6">
+        <button id="loginTab" class="tab active rounded-xl py-3 text-sm font-bold" type="button">Login</button>
+        <button id="signupTab" class="tab rounded-xl py-3 text-sm font-bold" type="button">Sign Up</button>
+      </div>
+
+      <div id="loginPanel">
+        <button id="googleLogin" type="button" class="social-btn w-full h-12 rounded-xl flex items-center justify-center gap-3 text-sm font-semibold">
+          <span class="text-xl font-bold" style="font-family:Arial">G</span>
+          <span data-i18n="google">Continue with Google</span>
+        </button>
+
+        <button id="phoneLogin" type="button" class="social-btn w-full h-12 rounded-xl flex items-center justify-center gap-3 text-sm font-semibold mt-3">
+          <span class="text-lg">📞</span>
+          <span data-i18n="phone">Continue with Phone</span>
+        </button>
+
+        <div class="divider flex items-center gap-3 my-5 text-xs font-semibold text-slate-400">
+          <span data-i18n="orEmail">or continue with email</span>
         </div>
 
-        <!-- Auth Card -->
-        <div class="glass-strong rounded-3xl p-6 shadow-xl">
-            <!-- Tabs -->
-            <div class="flex gap-2 mb-6 p-1 rounded-2xl bg-white/30">
-                <button onclick="showTab('login')" id="tabLogin" class="auth-tab flex-1 py-2.5 rounded-xl text-sm font-bold active" data-i18n="tab_login">Login</button>
-                <button onclick="showTab('register')" id="tabRegister" class="auth-tab flex-1 py-2.5 rounded-xl text-sm font-bold text-slate-500" data-i18n="tab_register">Sign Up</button>
-            </div>
+        <form id="loginForm" class="space-y-3">
+          <label class="field h-12 rounded-xl px-4 flex items-center gap-3">
+            <span class="text-slate-400">✉</span>
+            <input id="loginEmail" type="email" autocomplete="email" required placeholder="Email address" class="w-full text-sm text-slate-700 placeholder:text-slate-400" />
+          </label>
 
-            <!-- LOGIN FORM -->
-            <div id="loginForm">
-                <!-- Google Login -->
-                <button onclick="loginWithGoogle()" class="social-btn w-full bg-white border border-slate-200 text-slate-700 mb-3">
-                    <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                    <span data-i18n="google_login">Continue with Google</span>
-                </button>
+          <label class="field h-12 rounded-xl px-4 flex items-center gap-3">
+            <span class="text-slate-400">🔒</span>
+            <input id="loginPassword" type="password" autocomplete="current-password" required minlength="6" placeholder="Password" class="w-full text-sm text-slate-700 placeholder:text-slate-400" />
+            <button class="toggle-pass text-slate-400" type="button" data-target="loginPassword">◉</button>
+          </label>
 
-                <!-- Phone Login -->
-                <button onclick="showTab('phone')" class="social-btn w-full bg-white border border-slate-200 text-slate-700 mb-4">
-                    <i class="fa-solid fa-phone text-green-500"></i>
-                    <span data-i18n="phone_login">Continue with Phone</span>
-                </button>
+          <div class="flex items-center justify-between text-xs pt-1">
+            <label class="flex items-center gap-2 text-slate-500 cursor-pointer">
+              <input id="rememberMe" type="checkbox" class="accent-indigo-500">
+              <span data-i18n="remember">Remember me</span>
+            </label>
+            <button id="forgotBtn" type="button" class="font-bold text-indigo-500 hover:text-indigo-700" data-i18n="forgot">Forgot Password?</button>
+          </div>
 
-                <div class="divider text-xs text-slate-400 font-semibold mb-4" data-i18n="or">or continue with email</div>
+          <button id="loginBtn" class="primary-btn w-full h-12 rounded-xl text-white font-bold text-sm mt-2" type="submit">Login</button>
+        </form>
 
-                <!-- Email Login -->
-                <div class="space-y-3">
-                    <div class="relative">
-                        <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                        <input type="email" id="loginEmail" placeholder="Email address" class="input-field" data-i18n-placeholder="ph_email">
-                    </div>
-                    <div class="relative">
-                        <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                        <input type="password" id="loginPassword" placeholder="Password" class="input-field" data-i18n-placeholder="ph_password">
-                        <button onclick="togglePassVis('loginPassword', this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm hover:text-slate-600 transition">
-                            <i class="fa-solid fa-eye"></i>
-                        </button>
-                    </div>
-                </div>
+        <p class="text-center text-xs text-slate-400 mt-4">
+          <span data-i18n="noAccount">Don't have an account?</span>
+          <button id="switchSignup" class="font-bold text-indigo-500">Sign Up</button>
+        </p>
+      </div>
 
-                <div class="flex items-center justify-between mt-3 mb-5">
-                    <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" class="w-4 h-4 rounded accent-indigo-500">
-                        <span class="text-xs text-slate-500" data-i18n="remember_me">Remember me</span>
-                    </label>
-                    <a href="#" onclick="showForgotPassword()" class="text-xs font-semibold text-indigo-500 hover:text-indigo-600 transition" data-i18n="forgot_password">Forgot Password?</a>
-                </div>
+      <div id="signupPanel" class="hidden-panel">
+        <button id="googleSignup" type="button" class="social-btn w-full h-12 rounded-xl flex items-center justify-center gap-3 text-sm font-semibold">
+          <span class="text-xl font-bold" style="font-family:Arial">G</span>
+          <span data-i18n="google">Continue with Google</span>
+        </button>
 
-                <button onclick="loginWithEmail()" class="gradient-btn" data-i18n="btn_login">Login</button>
-
-                <p class="text-center text-xs text-slate-400 mt-4">
-                    <span data-i18n="no_account">Don't have an account?</span>
-                    <a href="#" onclick="showTab('register')" class="font-bold text-indigo-500 hover:text-indigo-600" data-i18n="sign_up_link">Sign Up</a>
-                </p>
-            </div>
-
-            <!-- REGISTER FORM -->
-            <div id="registerForm" class="hidden">
-                <!-- Google Register -->
-                <button onclick="loginWithGoogle()" class="social-btn w-full bg-white border border-slate-200 text-slate-700 mb-3">
-                    <svg width="20" height="20" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 01-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                    <span data-i18n="google_login">Continue with Google</span>
-                </button>
-
-                <div class="divider text-xs text-slate-400 font-semibold mb-4" data-i18n="or">or register with email</div>
-
-                <div class="space-y-3">
-                    <div class="relative">
-                        <i class="fa-solid fa-user absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                        <input type="text" id="regName" placeholder="Full name" class="input-field" data-i18n-placeholder="ph_name">
-                    </div>
-                    <div class="relative">
-                        <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                        <input type="email" id="regEmail" placeholder="Email address" class="input-field" data-i18n-placeholder="ph_email">
-                    </div>
-                    <div class="relative">
-                        <i class="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                        <input type="tel" id="regPhone" placeholder="Phone number" class="input-field" data-i18n-placeholder="ph_phone">
-                    </div>
-                    <div class="relative">
-                        <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                        <input type="password" id="regPassword" placeholder="Password" class="input-field" data-i18n-placeholder="ph_password">
-                        <button onclick="togglePassVis('regPassword', this)" class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm hover:text-slate-600 transition">
-                            <i class="fa-solid fa-eye"></i>
-                        </button>
-                    </div>
-                    <div class="relative">
-                        <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                        <input type="password" id="regConfirm" placeholder="Confirm password" class="input-field" data-i18n-placeholder="ph_confirm">
-                    </div>
-                </div>
-
-                <div class="flex items-start gap-2 mt-4 mb-5">
-                    <input type="checkbox" id="agreeTerms" class="w-4 h-4 rounded accent-indigo-500 mt-0.5">
-                    <label for="agreeTerms" class="text-xs text-slate-500">
-                        <span data-i18n="agree_prefix">I agree to the</span>
-                        <a href="#" class="font-semibold text-indigo-500" data-i18n="terms">Terms & Conditions</a>
-                    </label>
-                </div>
-
-                <button onclick="registerWithEmail()" class="gradient-btn" data-i18n="btn_register">Create Account</button>
-
-                <p class="text-center text-xs text-slate-400 mt-4">
-                    <span data-i18n="has_account">Already have an account?</span>
-                    <a href="#" onclick="showTab('login')" class="font-bold text-indigo-500 hover:text-indigo-600" data-i18n="login_link">Login</a>
-                </p>
-            </div>
-
-            <!-- PHONE FORM -->
-            <div id="phoneForm" class="hidden">
-                <div class="text-center mb-5">
-                    <div class="w-14 h-14 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-3">
-                        <i class="fa-solid fa-mobile-screen text-green-500 text-xl"></i>
-                    </div>
-                    <h3 class="font-bold text-slate-800" data-i18n="phone_title">Phone Verification</h3>
-                    <p class="text-xs text-slate-400 mt-1" data-i18n="phone_desc">We'll send you a verification code</p>
-                </div>
-
-                <div id="phoneStep1">
-                    <div class="phone-input-group mb-4">
-                        <div class="relative country-code">
-                            <select id="phoneCode" class="input-field text-center text-sm font-bold" style="padding-left:12px;">
-                                <option value="+880">🇧🇩 +880</option>
-                                <option value="+1">🇺🇸 +1</option>
-                                <option value="+44">🇬🇧 +44</option>
-                                <option value="+91">🇮🇳 +91</option>
-                                <option value="+88">🇭🇰 +88</option>
-                                <option value="+971">🇦🇪 +971</option>
-                                <option value="+966">🇸🇦 +966</option>
-                            </select>
-                        </div>
-                        <div class="relative flex-1">
-                            <i class="fa-solid fa-phone absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                            <input type="tel" id="phoneInput" placeholder="Phone number" class="input-field">
-                        </div>
-                    </div>
-                    <button onclick="sendOTP()" class="gradient-btn" data-i18n="btn_send_otp">Send Verification Code</button>
-                </div>
-
-                <div id="phoneStep2" class="hidden">
-                    <p class="text-xs text-slate-500 text-center mb-4" data-i18n="otp_sent">Code sent to <span id="otpPhoneDisplay" class="font-bold text-indigo-500"></span></p>
-                    <div class="flex justify-center gap-2 mb-4">
-                        <input type="text" maxlength="1" class="otp-input" id="otp1" oninput="otpAutoFocus(this, 'otp2')" onkeydown="otpKeyDown(event, null, 'otp1')">
-                        <input type="text" maxlength="1" class="otp-input" id="otp2" oninput="otpAutoFocus(this, 'otp3')" onkeydown="otpKeyDown(event, 'otp1', 'otp3')">
-                        <input type="text" maxlength="1" class="otp-input" id="otp3" oninput="otpAutoFocus(this, 'otp4')" onkeydown="otpKeyDown(event, 'otp2', 'otp4')">
-                        <input type="text" maxlength="1" class="otp-input" id="otp4" oninput="otpAutoFocus(this, 'otp5')" onkeydown="otpKeyDown(event, 'otp3', 'otp5')">
-                        <input type="text" maxlength="1" class="otp-input" id="otp5" oninput="otpAutoFocus(this, 'otp6')" onkeydown="otpKeyDown(event, 'otp4', 'otp6')">
-                        <input type="text" maxlength="1" class="otp-input" id="otp6" oninput="otpAutoFocus(this, null)" onkeydown="otpKeyDown(event, 'otp5', null)">
-                    </div>
-                    <button onclick="verifyOTP()" class="gradient-btn" data-i18n="btn_verify">Verify & Login</button>
-                    <p class="text-center text-xs text-slate-400 mt-3">
-                        <span data-i18n="no_code">Didn't receive code?</span>
-                        <button onclick="resendOTP()" class="font-bold text-indigo-500 hover:text-indigo-600" data-i18n="resend">Resend</button>
-                    </p>
-                </div>
-
-                <button onclick="showTab('login')" class="w-full text-center text-xs text-slate-400 mt-4 hover:text-slate-600 transition">
-                    <i class="fa-solid fa-arrow-left text-[10px] mr-1"></i> <span data-i18n="back_to_login">Back to Login</span>
-                </button>
-            </div>
-
-            <!-- FORGOT PASSWORD -->
-            <div id="forgotForm" class="hidden">
-                <div class="text-center mb-5">
-                    <div class="w-14 h-14 rounded-full bg-indigo-50 flex items-center justify-center mx-auto mb-3">
-                        <i class="fa-solid fa-key text-indigo-500 text-xl"></i>
-                    </div>
-                    <h3 class="font-bold text-slate-800" data-i18n="forgot_title">Reset Password</h3>
-                    <p class="text-xs text-slate-400 mt-1" data-i18n="forgot_desc">Enter your email to receive a reset link</p>
-                </div>
-                <div class="relative mb-4">
-                    <i class="fa-solid fa-envelope absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                    <input type="email" id="forgotEmail" placeholder="Email address" class="input-field">
-                </div>
-                <button onclick="sendResetEmail()" class="gradient-btn" data-i18n="btn_send_reset">Send Reset Link</button>
-                <button onclick="showTab('login')" class="w-full text-center text-xs text-slate-400 mt-4 hover:text-slate-600 transition">
-                    <i class="fa-solid fa-arrow-left text-[10px] mr-1"></i> <span data-i18n="back_to_login">Back to Login</span>
-                </button>
-            </div>
+        <div class="divider flex items-center gap-3 my-5 text-xs font-semibold text-slate-400">
+          <span data-i18n="orEmail">or continue with email</span>
         </div>
 
-        <p class="text-center text-[10px] text-slate-300 mt-6">© 2026 HR ShopBD. All rights reserved.</p>
-    </div>
+        <form id="signupForm" class="space-y-3">
+          <label class="field h-12 rounded-xl px-4 flex items-center gap-3">
+            <span class="text-slate-400">♙</span>
+            <input id="signupName" type="text" autocomplete="name" required placeholder="Full name" class="w-full text-sm text-slate-700 placeholder:text-slate-400" />
+          </label>
+          <label class="field h-12 rounded-xl px-4 flex items-center gap-3">
+            <span class="text-slate-400">✉</span>
+            <input id="signupEmail" type="email" autocomplete="email" required placeholder="Email address" class="w-full text-sm text-slate-700 placeholder:text-slate-400" />
+          </label>
+          <label class="field h-12 rounded-xl px-4 flex items-center gap-3">
+            <span class="text-slate-400">📞</span>
+            <input id="signupPhone" type="tel" autocomplete="tel" placeholder="Phone number (optional)" class="w-full text-sm text-slate-700 placeholder:text-slate-400" />
+          </label>
+          <label class="field h-12 rounded-xl px-4 flex items-center gap-3">
+            <span class="text-slate-400">🔒</span>
+            <input id="signupPassword" type="password" autocomplete="new-password" required minlength="6" placeholder="Password (6+ characters)" class="w-full text-sm text-slate-700 placeholder:text-slate-400" />
+            <button class="toggle-pass text-slate-400" type="button" data-target="signupPassword">◉</button>
+          </label>
+          <label class="field h-12 rounded-xl px-4 flex items-center gap-3">
+            <span class="text-slate-400">🔒</span>
+            <input id="signupConfirm" type="password" autocomplete="new-password" required minlength="6" placeholder="Confirm password" class="w-full text-sm text-slate-700 placeholder:text-slate-400" />
+          </label>
 
-    <!-- Toast -->
-    <div id="toast" class="toast"></div>
+          <label class="flex items-center gap-2 text-xs text-slate-500 pt-1 cursor-pointer">
+            <input id="terms" type="checkbox" required class="accent-indigo-500">
+            <span data-i18n="terms">I agree to the</span> <a href="#" class="font-bold text-indigo-500">Terms & Conditions</a>
+          </label>
 
-    <script>
-    // ===================== i18n =====================
-    const i18n = {
-        en: {
-            subtitle: 'Your Style, Your Way ✨',
-            tab_login: 'Login', tab_register: 'Sign Up',
-            google_login: 'Continue with Google', phone_login: 'Continue with Phone',
-            or: 'or continue with email',
-            ph_email: 'Email address', ph_password: 'Password', ph_name: 'Full name', ph_phone: 'Phone number', ph_confirm: 'Confirm password',
-            remember_me: 'Remember me', forgot_password: 'Forgot Password?',
-            btn_login: 'Login', btn_register: 'Create Account',
-            no_account: "Don't have an account? ", sign_up_link: 'Sign Up',
-            has_account: 'Already have an account? ', login_link: 'Login',
-            agree_prefix: 'I agree to the ', terms: 'Terms & Conditions',
-            phone_title: 'Phone Verification', phone_desc: "We'll send you a verification code",
-            btn_send_otp: 'Send Verification Code', otp_sent: 'Code sent to ',
-            btn_verify: 'Verify & Login', no_code: "Didn't receive code? ", resend: 'Resend',
-            back_to_login: 'Back to Login',
-            forgot_title: 'Reset Password', forgot_desc: 'Enter your email to receive a reset link',
-            btn_send_reset: 'Send Reset Link',
-            toast_login_success: 'Login successful! Redirecting...',
-            toast_register_success: 'Account created! Redirecting...',
-            toast_google_success: 'Google login successful!',
-            toast_phone_success: 'Phone verified! Login successful!',
-            toast_reset_sent: 'Password reset email sent!',
-            toast_error: 'Something went wrong. Please try again.',
-            toast_fill_fields: 'Please fill all fields.',
-            toast_password_mismatch: 'Passwords do not match.',
-            toast_agree_terms: 'Please agree to the terms.',
-            toast_otp_sent: 'Verification code sent!',
-            toast_otp_invalid: 'Invalid verification code.',
-            toast_invalid_email: 'Please enter a valid email.'
-        },
-        bn: {
-            subtitle: 'আপনার স্টাইল, আপনার পছন্দ ✨',
-            tab_login: 'লগইন', tab_register: 'সাইন আপ',
-            google_login: 'গুগল দিয়ে চালিয়ে যান', phone_login: 'ফোন দিয়ে চালিয়ে যান',
-            or: 'অথবা ইমেইল দিয়ে চালিয়ে যান',
-            ph_email: 'ইমেইল ঠিকানা', ph_password: 'পাসওয়ার্ড', ph_name: 'পুরো নাম', ph_phone: 'ফোন নম্বর', ph_confirm: 'পাসওয়ার্ড নিশ্চিত করুন',
-            remember_me: 'মনে রাখুন', forgot_password: 'পাসওয়ার্ড ভুলে গেছেন?',
-            btn_login: 'লগইন', btn_register: 'অ্যাকাউন্ট তৈরি করুন',
-            no_account: 'অ্যাকাউন্ট নেই? ', sign_up_link: 'সাইন আপ করুন',
-            has_account: 'ইতিমধ্যে অ্যাকাউন্ট আছে? ', login_link: 'লগইন',
-            agree_prefix: 'আমি সম্মত ', terms: 'শর্তাবলী',
-            phone_title: 'ফোন যাচাই', phone_desc: 'আমরা আপনাকে একটি যাচাইকরণ কোড পাঠাব',
-            btn_send_otp: 'যাচাইকরণ কোড পাঠান', otp_sent: 'কোড পাঠানো হয়েছে ',
-            btn_verify: 'যাচাই করুন এবং লগইন করুন', no_code: 'কোড পাননি? ', resend: 'পুনরায় পাঠান',
-            back_to_login: 'লগইনে ফিরে যান',
-            forgot_title: 'পাসওয়ার্ড রিসেট', forgot_desc: 'রিসেট লিঙ্ক পেতে আপনার ইমেইল লিখুন',
-            btn_send_reset: 'রিসেট লিঙ্ক পাঠান',
-            toast_login_success: 'লগইন সফল! রিডাইরেক্ট হচ্ছে...',
-            toast_register_success: 'অ্যাকাউন্ট তৈরি হয়েছে! রিডাইরেক্ট হচ্ছে...',
-            toast_google_success: 'গুগল লগইন সফল!',
-            toast_phone_success: 'ফোন যাচাই সফল! লগইন সফল!',
-            toast_reset_sent: 'পাসওয়ার্ড রিসেট ইমেইল পাঠানো হয়েছে!',
-            toast_error: 'কিছু ভুল হয়েছে। আবার চেষ্টা করুন।',
-            toast_fill_fields: 'সব ক্ষেত্র পূরণ করুন।',
-            toast_password_mismatch: 'পাসওয়ার্ড মেলে না।',
-            toast_agree_terms: 'শর্তাবলী মেনে নিন।',
-            toast_otp_sent: 'যাচাইকরণ কোড পাঠানো হয়েছে!',
-            toast_otp_invalid: 'ভুল যাচাইকরণ কোড।',
-            toast_invalid_email: 'সঠিক ইমেইল লিখুন।'
-        }
+          <button id="signupBtn" class="primary-btn w-full h-12 rounded-xl text-white font-bold text-sm mt-2" type="submit">Create Account</button>
+        </form>
+
+        <p class="text-center text-xs text-slate-400 mt-4">
+          <span data-i18n="haveAccount">Already have an account?</span>
+          <button id="switchLogin" class="font-bold text-indigo-500">Login</button>
+        </p>
+      </div>
+
+      <div id="phonePanel" class="hidden-panel">
+        <div class="rounded-2xl bg-indigo-50/70 border border-indigo-100 p-4 text-sm text-slate-600 mb-4">
+          Enter your phone number with country code, e.g. <b>+8801XXXXXXXXX</b>. Firebase will send a real SMS verification code.
+        </div>
+        <div id="recaptcha-container"></div>
+        <label class="field h-12 rounded-xl px-4 flex items-center gap-3 mb-3">
+          <span class="text-slate-400">📞</span>
+          <input id="phoneNumber" type="tel" autocomplete="tel" placeholder="+8801XXXXXXXXX" class="w-full text-sm text-slate-700 placeholder:text-slate-400" />
+        </label>
+        <button id="sendCodeBtn" type="button" class="primary-btn w-full h-12 rounded-xl text-white font-bold text-sm">Send Verification Code</button>
+        <div id="codeArea" class="hidden mt-3">
+          <label class="field h-12 rounded-xl px-4 flex items-center gap-3">
+            <span class="text-slate-400">#</span>
+            <input id="phoneCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6-digit verification code" class="w-full text-sm text-slate-700 placeholder:text-slate-400" />
+          </label>
+          <button id="verifyCodeBtn" type="button" class="primary-btn w-full h-12 rounded-xl text-white font-bold text-sm mt-3">Verify & Continue</button>
+        </div>
+        <button id="backFromPhone" type="button" class="w-full text-center text-sm font-bold text-indigo-500 mt-4">← Back to Login</button>
+      </div>
+    </section>
+
+    <footer class="mt-6 text-[11px] text-slate-400">© 2026 HR ShopBD. All rights reserved.</footer>
+  </main>
+
+  <div id="toast" class="toast"><div id="toastText"></div></div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+    import {
+      getAuth, GoogleAuthProvider, signInWithPopup, signInWithPhoneNumber,
+      RecaptchaVerifier, createUserWithEmailAndPassword, signInWithEmailAndPassword,
+      sendPasswordResetEmail, updateProfile, setPersistence,
+      browserLocalPersistence, browserSessionPersistence, onAuthStateChanged, signOut
+    } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyAaLdtzOIZVYB-Bdc42CXm2T8iclWLc4o0",
+      authDomain: "habib-yt.firebaseapp.com",
+      projectId: "habib-yt",
+      storageBucket: "habib-yt.firebasestorage.app",
+      messagingSenderId: "656628491244",
+      appId: "1:656628491244:web:e01ccd42bd8a2b1b4c96c9",
+      measurementId: "G-GNY1T88D34"
     };
-    let currentLang = localStorage.getItem('novaLang') || 'en';
 
-    function setLang(lang) {
-        currentLang = lang;
-        localStorage.setItem('novaLang', lang);
-        document.getElementById('langEn').classList.toggle('bg-gradient-to-r', lang === 'en');
-        document.getElementById('langEn').classList.toggle('from-indigo-500', lang === 'en');
-        document.getElementById('langEn').classList.toggle('to-purple-500', lang === 'en');
-        document.getElementById('langEn').classList.toggle('text-white', lang === 'en');
-        document.getElementById('langBn').classList.toggle('text-white', lang === 'bn');
-        document.getElementById('langBn').classList.toggle('bg-gradient-to-r', lang === 'bn');
-        document.getElementById('langBn').classList.toggle('from-indigo-500', lang === 'bn');
-        document.getElementById('langBn').classList.toggle('to-purple-500', lang === 'bn');
-        document.getElementById('langEn').classList.toggle('text-slate-500', lang !== 'en');
-        document.getElementById('langBn').classList.toggle('text-slate-500', lang !== 'bn');
-        applyTranslations();
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const googleProvider = new GoogleAuthProvider();
+    googleProvider.setCustomParameters({ prompt: "select_account" });
+
+    const $ = (id) => document.getElementById(id);
+    const toast = (message, type="") => {
+      $("toastText").textContent = message;
+      $("toast").className = "toast show " + type;
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => $("toast").className = "toast", 4200);
+    };
+
+    const friendlyError = (e) => {
+      const code = e?.code || "";
+      const map = {
+        "auth/invalid-credential": "Email or password is incorrect.",
+        "auth/invalid-login-credentials": "Email or password is incorrect.",
+        "auth/user-not-found": "No account exists with this email.",
+        "auth/wrong-password": "Email or password is incorrect.",
+        "auth/email-already-in-use": "This email is already registered. Please login.",
+        "auth/weak-password": "Password must be at least 6 characters.",
+        "auth/invalid-email": "Please enter a valid email address.",
+        "auth/popup-closed-by-user": "Google sign-in was cancelled.",
+        "auth/popup-blocked": "Your browser blocked the Google popup. Please allow popups for this site.",
+        "auth/account-exists-with-different-credential": "This email is already registered using another sign-in method.",
+        "auth/too-many-requests": "Too many attempts. Please wait and try again.",
+        "auth/operation-not-allowed": "This Firebase sign-in method is not enabled in Firebase Console.",
+        "auth/unauthorized-domain": "This website domain is not authorized in Firebase Authentication.",
+        "auth/invalid-phone-number": "Enter a valid phone number with country code.",
+        "auth/missing-phone-number": "Enter your phone number first.",
+        "auth/quota-exceeded": "Firebase SMS quota has been exceeded. Please try again later.",
+        "auth/code-expired": "The verification code has expired. Request a new code.",
+        "auth/invalid-verification-code": "The verification code is incorrect.",
+        "auth/captcha-check-failed": "reCAPTCHA verification failed. Please try again."
+      };
+      return map[code] || e?.message || "Something went wrong. Please try again.";
+    };
+
+    const setBusy = (button, busy, text) => {
+      if (!button) return;
+      if (busy) {
+        button.dataset.original = button.textContent;
+        button.innerHTML = '<span class="inline-flex items-center justify-center gap-2"><span class="spinner"></span>' + text + '</span>';
+        button.disabled = true;
+      } else {
+        button.textContent = button.dataset.original || text;
+        button.disabled = false;
+      }
+    };
+
+    async function persist() {
+      await setPersistence(auth, $("rememberMe")?.checked ? browserLocalPersistence : browserSessionPersistence);
     }
 
-    function applyTranslations() {
-        const t = i18n[currentLang];
-        document.querySelectorAll('[data-i18n]').forEach(el => {
-            const key = el.getAttribute('data-i18n');
-            if (t[key]) el.innerHTML = t[key];
-        });
-        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-            const key = el.getAttribute('data-i18n-placeholder');
-            if (t[key]) el.placeholder = t[key];
-        });
+    async function loginEmail(e) {
+      e.preventDefault();
+      const btn = $("loginBtn");
+      setBusy(btn, true, "Signing in...");
+      try {
+        await persist();
+        await signInWithEmailAndPassword(auth, $("loginEmail").value.trim(), $("loginPassword").value);
+        toast("Login successful. Welcome back!", "success");
+      } catch (err) { toast(friendlyError(err), "error"); }
+      finally { setBusy(btn, false, "Login"); }
     }
 
-    // ===================== TABS =====================
-    function showTab(tab) {
-        document.getElementById('loginForm').classList.add('hidden');
-        document.getElementById('registerForm').classList.add('hidden');
-        document.getElementById('phoneForm').classList.add('hidden');
-        document.getElementById('forgotForm').classList.add('hidden');
-        document.getElementById('tabLogin').classList.remove('active');
-        document.getElementById('tabRegister').classList.remove('active');
-        document.getElementById('tabLogin').classList.add('text-slate-500');
-        document.getElementById('tabRegister').classList.add('text-slate-500');
-
-        if (tab === 'login') {
-            document.getElementById('loginForm').classList.remove('hidden');
-            document.getElementById('tabLogin').classList.add('active');
-            document.getElementById('tabLogin').classList.remove('text-slate-500');
-        } else if (tab === 'register') {
-            document.getElementById('registerForm').classList.remove('hidden');
-            document.getElementById('tabRegister').classList.add('active');
-            document.getElementById('tabRegister').classList.remove('text-slate-500');
-        } else if (tab === 'phone') {
-            document.getElementById('phoneForm').classList.remove('hidden');
-        }
+    async function signupEmail(e) {
+      e.preventDefault();
+      if ($("signupPassword").value !== $("signupConfirm").value) {
+        toast("Passwords do not match.", "error"); return;
+      }
+      const btn = $("signupBtn");
+      setBusy(btn, true, "Creating account...");
+      try {
+        await setPersistence(auth, browserLocalPersistence);
+        const cred = await createUserWithEmailAndPassword(auth, $("signupEmail").value.trim(), $("signupPassword").value);
+        await updateProfile(cred.user, { displayName: $("signupName").value.trim() });
+        toast("Account created successfully!", "success");
+      } catch (err) { toast(friendlyError(err), "error"); }
+      finally { setBusy(btn, false, "Create Account"); }
     }
 
-    function showForgotPassword() {
-        document.getElementById('loginForm').classList.add('hidden');
-        document.getElementById('forgotForm').classList.remove('hidden');
+    async function googleLogin() {
+      try {
+        await setPersistence(auth, browserLocalPersistence);
+        await signInWithPopup(auth, googleProvider);
+        toast("Google login successful!", "success");
+      } catch (err) { toast(friendlyError(err), "error"); }
     }
 
-    function togglePassVis(id, btn) {
-        const input = document.getElementById(id);
-        if (input.type === 'password') { input.type = 'text'; btn.innerHTML = '<i class="fa-solid fa-eye-slash"></i>'; }
-        else { input.type = 'password'; btn.innerHTML = '<i class="fa-solid fa-eye"></i>'; }
+    async function forgotPassword() {
+      const email = $("loginEmail").value.trim();
+      if (!email) { toast("Enter your email address first.", "error"); $("loginEmail").focus(); return; }
+      try {
+        await sendPasswordResetEmail(auth, email);
+        toast("Password reset email sent. Check your inbox.", "success");
+      } catch (err) { toast(friendlyError(err), "error"); }
     }
 
-    // ===================== AUTH (localStorage mock) =====================
-    function getStoredUsers() { return JSON.parse(localStorage.getItem('novaShopUsers') || '[]'); }
-    function saveStoredUsers(users) { localStorage.setItem('novaShopUsers', JSON.stringify(users)); }
+    let recaptchaVerifier = null;
+    let confirmationResult = null;
 
-    function saveAuthUser(user) {
-        localStorage.setItem('novaShopUser', JSON.stringify(user));
-        localStorage.setItem('novaShopAuth', 'true');
+    function setupRecaptcha() {
+      if (recaptchaVerifier) return recaptchaVerifier;
+      recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", { size: "normal" });
+      return recaptchaVerifier;
     }
 
-    function loginWithGoogle() {
-        const user = {
-            name: 'Google User',
-            email: 'user@gmail.com',
-            photoURL: 'https://i.pravatar.cc/150?img=47',
-            provider: 'google',
-            phone: ''
-        };
-        saveAuthUser(user);
-        showToast(i18n[currentLang].toast_google_success, 'success');
-        setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+    async function sendPhoneCode() {
+      const phone = $("phoneNumber").value.trim();
+      const btn = $("sendCodeBtn");
+      if (!phone) { toast("Enter your phone number.", "error"); return; }
+      setBusy(btn, true, "Sending...");
+      try {
+        const verifier = setupRecaptcha();
+        confirmationResult = await signInWithPhoneNumber(auth, phone, verifier);
+        $("codeArea").classList.remove("hidden");
+        toast("Verification code sent by SMS.", "success");
+      } catch (err) {
+        if (recaptchaVerifier) { try { recaptchaVerifier.clear(); } catch {} recaptchaVerifier = null; }
+        toast(friendlyError(err), "error");
+      } finally { setBusy(btn, false, "Send Verification Code"); }
     }
 
-    function loginWithEmail() {
-        const email = document.getElementById('loginEmail').value.trim();
-        const password = document.getElementById('loginPassword').value;
-        const t = i18n[currentLang];
-
-        if (!email || !password) { showToast(t.toast_fill_fields, 'error'); return; }
-        if (!email.includes('@')) { showToast(t.toast_invalid_email, 'error'); return; }
-
-        const users = getStoredUsers();
-        const found = users.find(u => u.email === email && u.password === password);
-        if (found) {
-            saveAuthUser({ name: found.name, email: found.email, photoURL: found.photoURL || '', provider: 'email', phone: found.phone || '' });
-            showToast(t.toast_login_success, 'success');
-            setTimeout(() => { window.location.href = 'index.html'; }, 1000);
-        } else {
-            // Auto-create account for demo
-            const newUser = { name: email.split('@')[0], email, password, photoURL: `https://i.pravatar.cc/150?u=${email}`, phone: '', provider: 'email' };
-            users.push(newUser);
-            saveStoredUsers(users);
-            saveAuthUser({ name: newUser.name, email: newUser.email, photoURL: newUser.photoURL, provider: 'email', phone: '' });
-            showToast(t.toast_register_success, 'success');
-            setTimeout(() => { window.location.href = 'index.html'; }, 1000);
-        }
+    async function verifyPhoneCode() {
+      if (!confirmationResult) { toast("Send the verification code first.", "error"); return; }
+      const code = $("phoneCode").value.trim();
+      if (code.length !== 6) { toast("Enter the 6-digit verification code.", "error"); return; }
+      const btn = $("verifyCodeBtn");
+      setBusy(btn, true, "Verifying...");
+      try {
+        await confirmationResult.confirm(code);
+        toast("Phone login successful!", "success");
+      } catch (err) { toast(friendlyError(err), "error"); }
+      finally { setBusy(btn, false, "Verify & Continue"); }
     }
 
-    function registerWithEmail() {
-        const name = document.getElementById('regName').value.trim();
-        const email = document.getElementById('regEmail').value.trim();
-        const phone = document.getElementById('regPhone').value.trim();
-        const password = document.getElementById('regPassword').value;
-        const confirm = document.getElementById('regConfirm').value;
-        const agreed = document.getElementById('agreeTerms').checked;
-        const t = i18n[currentLang];
-
-        if (!name || !email || !password || !confirm) { showToast(t.toast_fill_fields, 'error'); return; }
-        if (!email.includes('@')) { showToast(t.toast_invalid_email, 'error'); return; }
-        if (password !== confirm) { showToast(t.toast_password_mismatch, 'error'); return; }
-        if (!agreed) { showToast(t.toast_agree_terms, 'error'); return; }
-
-        const users = getStoredUsers();
-        if (users.find(u => u.email === email)) { showToast('Email already registered', 'error'); return; }
-
-        const newUser = { name, email, password, phone, photoURL: `https://i.pravatar.cc/150?u=${email}`, provider: 'email' };
-        users.push(newUser);
-        saveStoredUsers(users);
-        saveAuthUser({ name, email, photoURL: newUser.photoURL, provider: 'email', phone });
-        showToast(t.toast_register_success, 'success');
-        setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+    function showMode(mode) {
+      const login = mode === "login";
+      $("loginTab").classList.toggle("active", login);
+      $("signupTab").classList.toggle("active", !login);
+      $("loginPanel").classList.toggle("hidden-panel", !login);
+      $("signupPanel").classList.toggle("hidden-panel", login);
+      $("phonePanel").classList.add("hidden-panel");
     }
 
-    // ===================== PHONE OTP =====================
-    function sendOTP() {
-        const phone = document.getElementById('phoneInput').value.trim();
-        const code = document.getElementById('phoneCode').value;
-        if (!phone) { showToast(i18n[currentLang].toast_fill_fields, 'error'); return; }
-        document.getElementById('otpPhoneDisplay').textContent = code + ' ' + phone;
-        document.getElementById('phoneStep1').classList.add('hidden');
-        document.getElementById('phoneStep2').classList.remove('hidden');
-        showToast(i18n[currentLang].toast_otp_sent, 'info');
-        document.getElementById('otp1').focus();
+    function showPhone() {
+      $("loginPanel").classList.add("hidden-panel");
+      $("signupPanel").classList.add("hidden-panel");
+      $("phonePanel").classList.remove("hidden-panel");
+      setTimeout(() => { try { setupRecaptcha(); } catch {} }, 100);
     }
 
-    function otpAutoFocus(current, nextId) {
-        if (current.value.length === 1 && nextId) document.getElementById(nextId).focus();
-    }
-    function otpKeyDown(e, prevId, nextId) {
-        if (e.key === 'Backspace' && !e.target.value && prevId) document.getElementById(prevId).focus();
-    }
+    $("loginTab").onclick = () => showMode("login");
+    $("signupTab").onclick = () => showMode("signup");
+    $("switchSignup").onclick = () => showMode("signup");
+    $("switchLogin").onclick = () => showMode("login");
+    $("backFromPhone").onclick = () => showMode("login");
+    $("loginForm").addEventListener("submit", loginEmail);
+    $("signupForm").addEventListener("submit", signupEmail);
+    $("googleLogin").onclick = googleLogin;
+    $("googleSignup").onclick = googleLogin;
+    $("phoneLogin").onclick = showPhone;
+    $("forgotBtn").onclick = forgotPassword;
+    $("sendCodeBtn").onclick = sendPhoneCode;
+    $("verifyCodeBtn").onclick = verifyPhoneCode;
 
-    function verifyOTP() {
-        const code = ['otp1','otp2','otp3','otp4','otp5','otp6'].map(id => document.getElementById(id).value).join('');
-        if (code.length < 6) { showToast(i18n[currentLang].toast_otp_invalid, 'error'); return; }
-        // Any 6-digit code works for demo
-        const phone = document.getElementById('phoneInput').value.trim();
-        const fullPhone = document.getElementById('phoneCode').value + phone;
-        const user = { name: 'Phone User', email: fullPhone + '@phone.hrshopbd', photoURL: 'https://i.pravatar.cc/150?img=12', provider: 'phone', phone: fullPhone };
-        saveAuthUser(user);
-        showToast(i18n[currentLang].toast_phone_success, 'success');
-        setTimeout(() => { window.location.href = 'index.html'; }, 1000);
-    }
-
-    function resendOTP() {
-        showToast(i18n[currentLang].toast_otp_sent, 'info');
-    }
-
-    // ===================== FORGOT PASSWORD =====================
-    function sendResetEmail() {
-        const email = document.getElementById('forgotEmail').value.trim();
-        if (!email) { showToast(i18n[currentLang].toast_fill_fields, 'error'); return; }
-        showToast(i18n[currentLang].toast_reset_sent, 'success');
-        setTimeout(() => showTab('login'), 1500);
-    }
-
-    // ===================== TOAST =====================
-    function showToast(msg, type) {
-        const toast = document.getElementById('toast');
-        toast.textContent = msg;
-        toast.className = `toast ${type} show`;
-        setTimeout(() => { toast.classList.remove('show'); }, 3000);
-    }
-
-    // ===================== INIT =====================
-    document.addEventListener('DOMContentLoaded', () => {
-        applyTranslations();
-        // Check if already logged in
-        if (localStorage.getItem('novaShopAuth') === 'true') {
-            window.location.href = 'index.html';
-        }
+    document.querySelectorAll(".toggle-pass").forEach(btn => {
+      btn.onclick = () => {
+        const input = $(btn.dataset.target);
+        input.type = input.type === "password" ? "text" : "password";
+      };
     });
-    </script>
+
+    // If the user is already authenticated, continue to the shop.
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // Change this destination if your shop file has another name.
+        setTimeout(() => { window.location.href = "index.html"; }, 350);
+      }
+    });
+
+    // Lightweight EN/BN UI toggle.
+    const translations = {
+      en: { back:"Back to Shop", google:"Continue with Google", phone:"Continue with Phone", orEmail:"or continue with email", remember:"Remember me", forgot:"Forgot Password?", noAccount:"Don't have an account?", haveAccount:"Already have an account?", terms:"I agree to the" },
+      bn: { back:"শপে ফিরে যান", google:"Google দিয়ে চালিয়ে যান", phone:"ফোন দিয়ে চালিয়ে যান", orEmail:"অথবা ইমেইল দিয়ে চালিয়ে যান", remember:"আমাকে মনে রাখুন", forgot:"পাসওয়ার্ড ভুলে গেছেন?", noAccount:"অ্যাকাউন্ট নেই?", haveAccount:"ইতিমধ্যে অ্যাকাউন্ট আছে?", terms:"আমি সম্মত" }
+    };
+    function setLang(lang) {
+      document.querySelectorAll("[data-i18n]").forEach(el => {
+        const key = el.dataset.i18n;
+        if (translations[lang][key]) el.textContent = translations[lang][key];
+      });
+      $("enBtn").className = lang === "en" ? "rounded-xl px-3 py-2 text-xs font-bold bg-gradient-to-r from-indigo-500 to-purple-500 text-white" : "rounded-xl px-3 py-2 text-xs font-bold text-slate-600 hover:bg-white";
+      $("bnBtn").className = lang === "bn" ? "rounded-xl px-3 py-2 text-xs font-bold bg-gradient-to-r from-indigo-500 to-purple-500 text-white" : "rounded-xl px-3 py-2 text-xs font-bold text-slate-600 hover:bg-white";
+      localStorage.setItem("hrshop_lang", lang);
+    }
+    $("enBtn").onclick = () => setLang("en");
+    $("bnBtn").onclick = () => setLang("bn");
+    setLang(localStorage.getItem("hrshop_lang") || "en");
+  </script>
 </body>
 </html>
