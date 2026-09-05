@@ -10,9 +10,6 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
-  <!-- Firebase compat CDN. Add your Firebase project config below. -->
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 
   <style>
     * { font-family: Inter, sans-serif; }
@@ -178,7 +175,7 @@
         </section>
 
         <footer class="border-t px-5 md:px-10 py-8 text-xs text-slate-400">
-          HR ShopBD Admin Console · Google authentication required · Authorized email is enforced client-side and should also be enforced by Firebase Security Rules / backend for real security.
+          HR ShopBD Admin Console · Google authentication required · Google authentication is required; only the authorized admin email is allowed.
         </footer>
       </main>
     </div>
@@ -195,38 +192,36 @@
     </div>
   </div>
 
-<script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-analytics.js";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+  onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+
 const AUTHORIZED_EMAIL = "admin.tec.habiburrahman@gmail.com";
 const API = "https://dummyjson.com";
 
-/*
-  IMPORTANT:
-  Replace these Firebase values with your own Firebase Web App config.
-  Enable Authentication -> Google provider in Firebase Console.
-*/
 const firebaseConfig = {
-  apiKey: "YOUR_FIREBASE_API_KEY",
-  authDomain: "YOUR_PROJECT.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT.appspot.com",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_FIREBASE_APP_ID"
+  apiKey: "AIzaSyAaLdtzOIZVYB-Bdc42CXm2T8iclWLc4o0",
+  authDomain: "habib-yt.firebaseapp.com",
+  projectId: "habib-yt",
+  storageBucket: "habib-yt.firebasestorage.app",
+  messagingSenderId: "656628491244",
+  appId: "1:656628491244:web:e01ccd42bd8a2b1b4c96c9",
+  measurementId: "G-GNY1T88D34"
 };
 
-let firebaseReady = false;
+const app = initializeApp(firebaseConfig);
+try { getAnalytics(app); } catch (e) { console.warn("Analytics unavailable:", e); }
 
-try {
-  if (firebaseConfig.apiKey !== "YOUR_FIREBASE_API_KEY") {
-    firebase.initializeApp(firebaseConfig);
-    firebaseReady = true;
-    firebase.auth().onAuthStateChanged(handleAuthState);
-  } else {
-    setLoginStatus("Add your Firebase Web App config to enable Google login.");
-  }
-} catch (e) {
-  console.error(e);
-  setLoginStatus("Firebase configuration error.");
-}
+const auth = getAuth(app);
+const provider = new GoogleAuthProvider();
+provider.setCustomParameters({ prompt: "select_account" });
 
 function setLoginStatus(msg) {
   const el = document.getElementById("loginStatus");
@@ -234,22 +229,30 @@ function setLoginStatus(msg) {
 }
 
 async function signInWithGoogle() {
-  if (!firebaseReady) {
-    setLoginStatus("Firebase config is not added yet. Open this file and add your Firebase Web App config.");
-    return;
-  }
   try {
-    const provider = new firebase.auth.GoogleAuthProvider();
-    provider.setCustomParameters({ prompt: "select_account" });
-    await firebase.auth().signInWithPopup(provider);
+    setLoginStatus("Opening Google sign-in...");
+    const result = await signInWithPopup(auth, provider);
+    const email = (result.user.email || "").toLowerCase();
+
+    if (email !== AUTHORIZED_EMAIL.toLowerCase()) {
+      setLoginStatus("Access denied. This Google account is not authorized.");
+      await signOut(auth);
+      alert("Access denied. Only the authorized admin account can use this panel.");
+    }
   } catch (e) {
     console.error(e);
-    setLoginStatus(e.message || "Google sign-in failed.");
+    setLoginStatus(e.code === "auth/popup-closed-by-user"
+      ? "Google sign-in was cancelled."
+      : (e.message || "Google sign-in failed."));
   }
 }
 
 async function signOutAdmin() {
-  if (firebaseReady) await firebase.auth().signOut();
+  try {
+    await signOut(auth);
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 function handleAuthState(user) {
@@ -259,10 +262,11 @@ function handleAuthState(user) {
     return;
   }
 
-  if ((user.email || "").toLowerCase() !== AUTHORIZED_EMAIL.toLowerCase()) {
+  const email = (user.email || "").toLowerCase();
+
+  if (email !== AUTHORIZED_EMAIL.toLowerCase()) {
     setLoginStatus("Access denied. This Google account is not authorized.");
-    firebase.auth().signOut();
-    alert("Access denied. Only the authorized admin account can use this panel.");
+    signOut(auth);
     return;
   }
 
@@ -285,7 +289,8 @@ async function initAdmin() {
       api("/products?limit=30"),
       api("/products/category-list")
     ]);
-    document.getElementById("statProducts").textContent = products.total ?? products.products?.length ?? "—";
+    document.getElementById("statProducts").textContent =
+      products.total ?? products.products?.length ?? "—";
     document.getElementById("statCategories").textContent = cats.length ?? "—";
     document.getElementById("statApi").textContent = "OK";
     renderCategories(cats);
@@ -459,6 +464,23 @@ function escapeHTML(v) {
   return String(v ?? "").replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
 }
 function escapeAttr(v) { return escapeHTML(v); }
+
+Object.assign(window, {
+  signInWithGoogle,
+  signOutAdmin,
+  loadProducts,
+  loadCategory,
+  searchProducts,
+  showProduct,
+  closeModal,
+  createProduct,
+  updateProduct,
+  deleteProduct,
+  toggleSidebar,
+  closeSidebar
+});
+
+onAuthStateChanged(auth, handleAuthState);
 
 document.addEventListener("keydown", e => {
   if (e.key === "Escape") { closeSidebar(); closeModal(); }
