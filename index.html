@@ -78,9 +78,12 @@
 
         .shopping-hero {
             min-height: 430px;
-            background:
-                linear-gradient(90deg, rgba(33,22,67,.82) 0%, rgba(70,45,120,.56) 42%, rgba(20,30,55,.18) 100%),
-                url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1800&q=88') center/cover no-repeat;
+            background-image:
+                linear-gradient(90deg, rgba(25,18,55,.86) 0%, rgba(72,48,120,.62) 45%, rgba(20,30,55,.22) 100%),
+                url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1800&q=90');
+            background-position:center;
+            background-size:cover;
+            background-repeat:no-repeat;
             box-shadow: inset 0 0 0 1px rgba(255,255,255,.25), 0 25px 70px rgba(76,29,149,.16);
         }
 
@@ -157,14 +160,94 @@
             .category-icon { width: 52px; height: 52px; }
         }
 
-        @media (max-width: 1023px) {
+        /* ===== HIDDEN GLASS POPUP MENU ===== */
+        #sidebar {
+            position: fixed !important;
+            top: 78px !important;
+            left: 24px !important;
+            width: min(390px, calc(100vw - 48px)) !important;
+            height: min(760px, calc(100vh - 102px)) !important;
+            max-height: calc(100vh - 102px);
+            z-index: 120 !important;
+            display: none !important;
+            margin: 0 !important;
+            transform: none !important;
+            overflow: hidden !important;
+            border: 1px solid rgba(255,255,255,.58) !important;
+            border-radius: 30px !important;
+            background:
+                linear-gradient(145deg, rgba(255,255,255,.48), rgba(255,255,255,.20)) !important;
+            backdrop-filter: blur(34px) saturate(160%) !important;
+            -webkit-backdrop-filter: blur(34px) saturate(160%) !important;
+            box-shadow:
+                0 35px 100px rgba(25,18,60,.28),
+                inset 0 1px 0 rgba(255,255,255,.72),
+                inset 0 0 0 1px rgba(255,255,255,.12) !important;
+        }
+
+        #sidebar.menu-open { display: flex !important; pointer-events: auto !important; }
+
+        #sidebar::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(circle at 10% 5%, rgba(129,140,248,.34), transparent 34%),
+                radial-gradient(circle at 90% 85%, rgba(236,72,153,.20), transparent 32%);
+        }
+
+        #sidebar > * { position: relative; z-index: 1; }
+
+        #menuCloseBtn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: #334155;
+            background: rgba(255,255,255,.42);
+            border: 1px solid rgba(255,255,255,.62);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
+            transition: .2s ease;
+        }
+        #menuCloseBtn:hover { transform: rotate(8deg) scale(1.05); background: rgba(255,255,255,.68); }
+
+        .popup-menu-item {
+            color: #26364f !important;
+            background: rgba(255,255,255,.28) !important;
+            border: 1px solid rgba(255,255,255,.28) !important;
+            text-shadow: 0 1px 2px rgba(255,255,255,.65);
+        }
+        .popup-menu-item:hover {
+            color: #312e81 !important;
+            background: rgba(255,255,255,.58) !important;
+            border-color: rgba(255,255,255,.62) !important;
+        }
+        .popup-menu-item.active {
+            color: #fff !important;
+            background: linear-gradient(135deg, rgba(79,70,229,.92), rgba(139,92,246,.90)) !important;
+            border-color: rgba(255,255,255,.42) !important;
+            text-shadow: none !important;
+            box-shadow: 0 12px 30px rgba(79,70,229,.24);
+        }
+
+        #mobileOverlay {
+            z-index: 5 !important;
+            background: rgba(15,23,42,.28) !important;
+            backdrop-filter: blur(7px) saturate(115%) !important;
+            -webkit-backdrop-filter: blur(7px) saturate(115%) !important;
+        }
+
+        @media (max-width: 640px) {
             #sidebar {
-                position: fixed !important;
-                top: 0;
-                left: 0;
-                height: 100vh;
-                z-index: 100;
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+                top: 12px !important;
+                left: 12px !important;
+                width: calc(100vw - 24px) !important;
+                height: calc(100vh - 24px) !important;
+                max-height: calc(100vh - 24px);
+                border-radius: 28px !important;
             }
         }
     </style>
@@ -175,16 +258,19 @@
 <div class="blob blob-2"></div>
 <div class="blob blob-3"></div>
 
-<div id="mobileOverlay" class="fixed inset-0 z-[90] hidden lg:hidden" onclick="toggleMobileSidebar(false)" style="background:rgba(0,0,0,0.5);backdrop-filter:blur(2px);"></div>
+<div id="mobileOverlay" class="fixed inset-0 z-[90] hidden lg:hidden" onclick="toggleMobileSidebar(false)" style="background:rgba(15,23,42,.28);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);pointer-events:auto;"></div>
 
-<div class="app-layout relative z-10">
+<div class="app-layout relative z-10" style="position:relative;z-index:10;">
 
-<aside id="sidebar" class="w-[280px] flex-shrink-0 flex flex-col py-6 px-4 fixed lg:relative inset-y-0 left-0 h-full z-[95] -translate-x-full lg:translate-x-0 transition-transform duration-300 shadow-2xl lg:shadow-none" style="background:rgba(255,255,255,0.72);backdrop-filter:blur(28px) saturate(145%);-webkit-backdrop-filter:blur(28px) saturate(145%);border-right:1px solid rgba(255,255,255,0.72);box-shadow:0 24px 80px rgba(45,35,90,.14);">
+<aside id="sidebar" class="w-[280px] flex-shrink-0 flex flex-col py-6 px-4 fixed z-[120] hidden" style="background:rgba(255,255,255,0.72);backdrop-filter:blur(28px) saturate(145%);-webkit-backdrop-filter:blur(28px) saturate(145%);border-right:1px solid rgba(255,255,255,0.72);box-shadow:0 24px 80px rgba(45,35,90,.14);">
     <div class="flex items-center gap-3 px-3 mb-6">
         <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
             <i class="fa-solid fa-store text-white text-sm"></i>
         </div>
         <span class="font-extrabold text-lg text-slate-800">HR <span class="text-indigo-500">ShopBD</span></span>
+        <button id="menuCloseBtn" type="button" onclick="toggleMobileSidebar(false)" aria-label="Close menu" class="ml-auto">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
     </div>
 
     <div class="flex gap-1 p-1 rounded-xl bg-white/30 mb-5 mx-3">
@@ -193,44 +279,44 @@
     </div>
 
     <nav class="flex-1 space-y-1 overflow-y-auto">
-        <a href="index.html" onclick="setActive(this)" class="sidebar-item active flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+        <a href="index.html" onclick="setActive(this)" class="popup-menu-item sidebar-item active flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
             <i class="fa-solid fa-house w-5 text-center"></i> <span data-i18n="nav_home">Home</span>
         </a>
-        <a href="#" onclick="loadCategory('all');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+        <a href="#" onclick="loadCategory('all');setActive(this);return false;" class="popup-menu-item sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
             <i class="fa-solid fa-bolt w-5 text-center"></i> <span data-i18n="nav_deals">Deals</span>
             <span class="ml-auto badge-hot text-white text-[10px] font-bold px-2 py-0.5 rounded-full">Hot</span>
         </a>
-        <a href="#" onclick="loadCategory('beauty');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+        <a href="#" onclick="loadCategory('beauty');setActive(this);return false;" class="popup-menu-item sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
             <i class="fa-solid fa-sparkles w-5 text-center"></i> <span data-i18n="nav_new">New Arrivals</span>
         </a>
-        <a href="#" onclick="loadCategory('laptops');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+        <a href="#" onclick="loadCategory('laptops');setActive(this);return false;" class="popup-menu-item sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
             <i class="fa-solid fa-fire w-5 text-center"></i> <span data-i18n="nav_best">Best Sellers</span>
         </a>
-        <a href="#" onclick="loadCategory('fragrances');setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+        <a href="#" onclick="loadCategory('fragrances');setActive(this);return false;" class="popup-menu-item sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
             <i class="fa-solid fa-tags w-5 text-center"></i> <span data-i18n="nav_brands">Brands</span>
         </a>
         <div class="border-t border-slate-200/50 my-3"></div>
-        <a href="dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+        <a href="dashboard.html" class="popup-menu-item sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
             <i class="fa-solid fa-box w-5 text-center"></i> <span data-i18n="nav_orders">My Orders</span>
         </a>
-        <a href="#" onclick="showWishlist();setActive(this)" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+        <a href="#" onclick="showWishlist();setActive(this);return false;" class="popup-menu-item sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
             <i class="fa-regular fa-heart w-5 text-center"></i> <span data-i18n="nav_wishlist">Wishlist</span>
             <span id="wishlistCount" class="ml-auto text-[10px] font-bold text-pink-500 hidden">0</span>
         </a>
-        <a href="dashboard.html#coupons" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+        <a href="dashboard.html#coupons" class="popup-menu-item sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
             <i class="fa-solid fa-ticket w-5 text-center"></i> <span data-i18n="nav_coupons">Coupons</span>
         </a>
-        <a href="dashboard.html#addresses" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+        <a href="dashboard.html#addresses" class="popup-menu-item sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
             <i class="fa-solid fa-location-dot w-5 text-center"></i> <span data-i18n="nav_addresses">Addresses</span>
         </a>
         <div class="border-t border-slate-200/50 my-3"></div>
-        <a href="login.html" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+        <a href="login.html" class="popup-menu-item sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
             <i class="fa-solid fa-right-to-bracket w-5 text-center"></i> <span data-i18n="nav_login">Login / Sign Up</span>
         </a>
-        <a href="dashboard.html" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+        <a href="dashboard.html" class="popup-menu-item sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
             <i class="fa-solid fa-chart-line w-5 text-center"></i> <span data-i18n="nav_dashboard">Dashboard</span>
         </a>
-        <a href="admin.html" class="sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
+        <a href="admin.html" class="popup-menu-item sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
             <i class="fa-solid fa-gear w-5 text-center"></i> <span data-i18n="nav_admin">Admin Panel</span>
         </a>
     </nav>
@@ -246,8 +332,9 @@
 
 <main class="flex-1 overflow-y-auto" id="mainContent">
     <header class="sticky top-0 z-30 glass-shopping px-4 md:px-6 py-3 flex items-center gap-3 md:gap-4">
-        <button onclick="toggleMobileSidebar()" class="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl hover:bg-white/50 transition">
-            <i class="fa-solid fa-bars text-slate-600"></i>
+        <button id="menuToggleBtn" type="button" onclick="toggleMobileSidebar()" aria-label="Open menu"
+            class="w-11 h-11 shrink-0 flex items-center justify-center rounded-2xl glass-btn hover:bg-white/75 transition shadow-sm">
+            <i class="fa-solid fa-bars text-slate-700 text-base"></i>
         </button>
         <div class="flex-1 relative">
             <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm z-10"></i>
@@ -742,24 +829,33 @@ let modalProduct = null;
 const API_BASE = 'https://dummyjson.com';
 
 async function fetchProducts() {
-    const batch1 = await fetch(`${API_BASE}/products?limit=100&skip=0`);
-    const d1 = await batch1.json();
-    const batch2 = await fetch(`${API_BASE}/products?limit=100&skip=100`);
-    const d2 = await batch2.json();
-    return [...(d1.products || []), ...(d2.products || [])];
+    const res = await fetch(`${API_BASE}/products?limit=0`);
+    if (!res.ok) throw new Error(`Products API ${res.status}`);
+    const data = await res.json();
+    return data.products || [];
 }
 
 async function fetchByCategory(cat) {
-    if (cat === 'all') return fetchProducts();
+    if (!cat || cat === 'all') return fetchProducts();
     const res = await fetch(`${API_BASE}/products/category/${encodeURIComponent(cat)}`);
+    if (!res.ok) throw new Error(`Category API ${res.status}`);
     const data = await res.json();
     return data.products || [];
 }
 
 async function searchProducts(query) {
-    const res = await fetch(`${API_BASE}/products/search?q=${encodeURIComponent(query)}`);
+    const q = String(query || '').trim();
+    if (!q) return [];
+    const res = await fetch(`${API_BASE}/products/search?q=${encodeURIComponent(q)}`);
+    if (!res.ok) throw new Error(`Search API ${res.status}`);
     const data = await res.json();
     return data.products || [];
+}
+
+async function fetchProductById(id) {
+    const res = await fetch(`${API_BASE}/products/${encodeURIComponent(id)}`);
+    if (!res.ok) throw new Error(`Product API ${res.status}`);
+    return await res.json();
 }
 
 // ===================== INIT =====================
@@ -784,7 +880,10 @@ async function loadProducts(cat) {
         renderProductGrid('recommendedGrid', allProducts.slice(0, 8), false);
     } catch (err) {
         console.error('Failed to load products:', err);
-        document.getElementById('dealsGrid').innerHTML = '<div class="col-span-full text-center py-8 text-sm text-red-400">Failed to load products</div>';
+        const grid = document.getElementById('dealsGrid');
+        if (grid) grid.innerHTML = `<div class="col-span-full text-center py-10 glass-card"><div class="text-red-400 font-bold mb-1">Products could not be loaded</div><div class="text-xs text-slate-400 mb-3">Check your internet connection and try again.</div><button onclick="loadCategory('${cat}')" class="px-4 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xs font-bold">Retry</button></div>`;
+        const rec = document.getElementById('recommendedGrid');
+        if (rec) rec.innerHTML = '';
     }
 }
 
@@ -831,7 +930,7 @@ function renderProductGrid(containerId, products, showBadge) {
         const safeJson = JSON.stringify(p).replace(/\\/g, '\\\\').replace(/'/g,"&#39;").replace(/"/g,"&quot;");
         return `
         <div class="product-card glass-card fade-in" style="animation-delay:${i * 0.05}s">
-            <div class="relative bg-white/50 h-40 overflow-hidden cursor-pointer" onclick='openModal(this.dataset.product)' data-product='${safeJson}'>
+            <div class="relative bg-white/50 h-40 overflow-hidden cursor-pointer" onclick='openProductById(${p.id})' data-product='${safeJson}'>
                 ${badge}
                 <img src="${img}" alt="${p.title}" class="product-img w-full h-full object-contain p-3" loading="lazy">
                 <button onclick="event.stopPropagation();toggleWishlist(${p.id})" class="wishlist-btn absolute top-3 right-3 w-8 h-8 glass rounded-full flex items-center justify-center text-slate-400 hover:text-red-400 transition z-10">
@@ -840,7 +939,7 @@ function renderProductGrid(containerId, products, showBadge) {
             </div>
             <div class="p-3">
                 <p class="text-[9px] font-bold text-indigo-400 uppercase tracking-wider mb-0.5 truncate">${p.category}</p>
-                <h3 class="text-xs font-bold text-slate-700 truncate mb-1 cursor-pointer hover:text-indigo-500 transition" onclick='openModal(this.closest(".product-card").querySelector(".relative").dataset.product)'>${p.title}</h3>
+                <h3 class="text-xs font-bold text-slate-700 truncate mb-1 cursor-pointer hover:text-indigo-500 transition" onclick='openProductById(${p.id})'>${p.title}</h3>
                 <div class="flex items-center gap-1 mb-1.5">
                     <span class="text-amber-400 text-[10px]">${stars}</span>
                     <span class="text-[10px] text-slate-400">(${count})</span>
@@ -952,10 +1051,18 @@ function openModal(productOrStr) {
     document.body.style.overflow = 'hidden';
 }
 function closeModal() { document.getElementById('productModal').classList.add('hidden'); document.body.style.overflow = ''; }
+async function openProductById(productId) {
+    try {
+        const product = await fetchProductById(productId);
+        openModal(product);
+    } catch (e) {
+        console.error(e);
+        showToast('Could not open product');
+    }
+}
 function addToCartFromModal() { if (modalProduct) { addToCart(modalProduct.id); const btn = document.getElementById('modalAddBtn'); btn.innerHTML = `<i class="fa-solid fa-check text-xs"></i> ${i18n[currentLang].added}`; } }
 
 // ===================== SEARCH =====================
-let searchTimeout;
 let searchTimeout;
 let suggestionTimeout;
 
@@ -1133,26 +1240,39 @@ function checkLoginState() {
     }
 }
 
-// ===================== SIDEBAR =====================
-function setActive(el) { document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active')); el.classList.add('active'); toggleMobileSidebar(false); }
+// ===================== GLASS POPUP MENU =====================
 let sidebarOpen = false;
+
+function setActive(el) {
+    document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
+    if (el) el.classList.add('active');
+    toggleMobileSidebar(false);
+}
+
 function toggleMobileSidebar(forceClose) {
     const sidebar = document.getElementById('sidebar');
     const overlay = document.getElementById('mobileOverlay');
-    if (forceClose === false || sidebarOpen) {
-        sidebar.classList.remove('translate-x-0');
-        sidebar.classList.add('-translate-x-full');
+    if (!sidebar || !overlay) return;
+
+    const shouldClose = forceClose === false || sidebarOpen;
+
+    if (shouldClose) {
+        sidebar.classList.remove('menu-open');
         overlay.classList.add('hidden');
         document.body.style.overflow = '';
         sidebarOpen = false;
-    } else {
-        sidebar.classList.remove('-translate-x-full');
-        sidebar.classList.add('translate-x-0');
-        overlay.classList.remove('hidden');
-        document.body.style.overflow = ''; 
-        sidebarOpen = true;
+        return;
     }
+
+    sidebar.classList.add('menu-open');
+    overlay.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    sidebarOpen = true;
 }
+
+document.addEventListener('keydown', e => {
+    if (e.key === 'Escape' && sidebarOpen) toggleMobileSidebar(false);
+});
 
 // ===================== CART POPUP (PC & Mobile) =====================
 function openCartMobile() { document.getElementById('mobileCart').classList.remove('hidden'); }
