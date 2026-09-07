@@ -1,1298 +1,1143 @@
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HR ShopBD — Glass Shopping Experience</title>
+    <title>HR ShopBD — Mobile &amp; Accessories</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <script>
-        tailwind.config = {
-            theme: { extend: { fontFamily: { 'inter': ['Inter', 'sans-serif'] } } }
-        }
-    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Sora:wght@600;700;800&display=swap" rel="stylesheet">
     <style>
-        * { font-family: 'Inter', sans-serif; }
-        body { background: linear-gradient(135deg, #f0f0ff 0%, #e8e0f0 30%, #f5f0ff 60%, #eef0ff 100%); min-height: 100vh; overflow-x: hidden; }
-
-        .app-layout { display: flex; width: 100%; min-height: 100vh; overflow-x: hidden; }
-        @media (max-width: 1023px) { .app-layout { display: block; } }
-
-        .glass { background: rgba(255,255,255,0.45); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.6); }
-        .glass-strong { background: rgba(255,255,255,0.85); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.7); }
-        .glass-card { background: rgba(255,255,255,0.5); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.7); border-radius: 20px; transition: all 0.3s ease; }
-        .glass-card:hover { transform: translateY(-4px); background: rgba(255,255,255,0.7); box-shadow: 0 12px 40px rgba(0,0,0,0.06); }
-        .glass-btn { background: rgba(255,255,255,0.5); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.6); }
-
-        .blob { position: absolute; border-radius: 50%; filter: blur(80px); z-index: 0; opacity: 0.4; pointer-events: none; }
-        .blob-1 { top: -10%; left: -5%; width: 400px; height: 400px; background: #c7b8f5; }
-        .blob-2 { top: 30%; right: -5%; width: 350px; height: 350px; background: #a5b4fc; }
-        .blob-3 { bottom: 5%; left: 15%; width: 300px; height: 300px; background: #ddd6fe; }
-
-        .hero-gradient { background: linear-gradient(135deg, #a78bfa 0%, #c084fc 30%, #f0abfc 60%, #fda4af 100%); }
-        .sidebar-item { transition: all 0.2s ease; border-radius: 14px; background:rgba(255,255,255,.24); border:1px solid rgba(255,255,255,.22); text-shadow:0 1px 2px rgba(255,255,255,.35); }
-        .sidebar-item:hover, .sidebar-item.active { background: rgba(99,102,241,0.1); color: #6366f1; }
-        .sidebar-item.active { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; }
-
-        .category-pill { transition: all 0.25s ease; cursor: pointer; }
-        .category-pill:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
-        .category-pill.active { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; border-color: transparent; }
-
-        .product-card { transition: all 0.3s ease; border-radius: 20px; overflow: hidden; }
-        .product-card:hover { transform: translateY(-6px); box-shadow: 0 16px 48px rgba(0,0,0,0.08); }
-        .product-card:hover .product-img { transform: scale(1.05); }
-        .product-img { transition: transform 0.5s ease; }
-
-        .badge-discount { background: linear-gradient(135deg, #ef4444, #f97316); }
-        .badge-new { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
-        .badge-hot { background: linear-gradient(135deg, #f43f5e, #ec4899); }
-
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #c4b5fd; border-radius: 10px; }
-
-        .search-glow:focus { box-shadow: 0 0 0 3px rgba(99,102,241,0.15); }
-        .fade-in { animation: fadeIn 0.5s ease forwards; opacity: 0; }
-        @keyframes fadeIn { to { opacity:1; } }
-        .slide-up { animation: slideUp 0.6s ease forwards; opacity:0; transform: translateY(20px); }
-        @keyframes slideUp { to { opacity:1; transform: translateY(0); } }
-
-        .countdown-box { background: rgba(255,255,255,0.6); backdrop-filter: blur(8px); border-radius: 10px; }
-        .promo-gradient { background: linear-gradient(135deg, #c084fc 0%, #f472b6 50%, #fb923c 100%); }
-        .trust-badge { background: rgba(255,255,255,0.5); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.6); }
-
-        .wishlist-btn:hover { color: #ef4444; }
-        .wishlist-btn.active { color: #ef4444; }
-
-        .lang-toggle { transition: all 0.3s ease; }
-        .lang-toggle.active { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; }
-
-        /* ===== 2026 GLASS SHOPPING SYSTEM ===== */
-        body {
-            background:
-                radial-gradient(circle at 10% 10%, rgba(124,58,237,.16), transparent 28%),
-                radial-gradient(circle at 90% 25%, rgba(236,72,153,.13), transparent 30%),
-                linear-gradient(135deg,#eef2ff 0%,#f8f5ff 48%,#edf6ff 100%);
-        }
-
-        .shopping-hero {
-            min-height: 430px;
-            background-image:
-                linear-gradient(90deg, rgba(25,18,55,.86) 0%, rgba(72,48,120,.62) 45%, rgba(20,30,55,.22) 100%),
-                url('https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?auto=format&fit=crop&w=1800&q=90');
-            background-position:center;
-            background-size:cover;
-            background-repeat:no-repeat;
-            box-shadow: inset 0 0 0 1px rgba(255,255,255,.25), 0 25px 70px rgba(76,29,149,.16);
-        }
-
-        .glass-shopping {
-            background: rgba(255,255,255,.18);
-            backdrop-filter: blur(24px) saturate(140%);
-            -webkit-backdrop-filter: blur(24px) saturate(140%);
-            border: 1px solid rgba(255,255,255,.34);
-            box-shadow: 0 20px 70px rgba(31,20,65,.16), inset 0 1px 0 rgba(255,255,255,.42);
-        }
-
-        .glass-text {
-            background: rgba(20,16,45,.34);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,.18);
-            box-shadow: 0 10px 30px rgba(0,0,0,.12);
-        }
-
-        .category-pill {
-            min-width: 112px;
-            border-radius: 22px;
-            background: rgba(255,255,255,.52);
-            backdrop-filter: blur(18px);
-            -webkit-backdrop-filter: blur(18px);
-            border: 1px solid rgba(255,255,255,.72);
-            box-shadow: 0 12px 35px rgba(60,40,100,.07), inset 0 1px 0 rgba(255,255,255,.8);
-        }
-
-        .category-pill:hover {
-            transform: translateY(-5px);
-            background: rgba(255,255,255,.72);
-            box-shadow: 0 18px 45px rgba(79,70,229,.14);
-        }
-
-        .category-pill.active {
-            color: white;
-            background: linear-gradient(135deg,#6366f1,#8b5cf6);
-            border-color: rgba(255,255,255,.55);
-        }
-
-        .category-icon {
-            width: 58px;
-            height: 58px;
-            border-radius: 18px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-size: 25px;
-            background: linear-gradient(145deg,rgba(255,255,255,.78),rgba(255,255,255,.28));
-            border:1px solid rgba(255,255,255,.7);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,.9), 0 10px 24px rgba(50,40,100,.08);
-        }
-
-        .search-suggestions {
-            background: rgba(255,255,255,.82);
-            backdrop-filter: blur(26px) saturate(150%);
-            -webkit-backdrop-filter: blur(26px) saturate(150%);
-            border: 1px solid rgba(255,255,255,.85);
-            box-shadow: 0 25px 70px rgba(30,20,70,.18);
-        }
-
-        .search-suggestion-item {
-            transition: .2s ease;
-        }
-        .search-suggestion-item:hover {
-            background: rgba(99,102,241,.10);
-            transform: translateX(3px);
-        }
-
-        @media (max-width: 640px) {
-            .shopping-hero { min-height: 390px; }
-            .category-pill { min-width: 96px; }
-            .category-icon { width: 52px; height: 52px; }
-        }
-
-        /* ===== HIDDEN GLASS POPUP MENU ===== */
-        #sidebar {
-            position: fixed !important;
-            top: 78px !important;
-            left: 24px !important;
-            width: min(390px, calc(100vw - 48px)) !important;
-            height: min(760px, calc(100vh - 102px)) !important;
-            max-height: calc(100vh - 102px);
-            z-index: 120 !important;
-            display: none !important;
-            margin: 0 !important;
-            transform: none !important;
-            overflow: hidden !important;
-            border: 1px solid rgba(255,255,255,.58) !important;
-            border-radius: 30px !important;
-            background:
-                linear-gradient(145deg, rgba(255,255,255,.48), rgba(255,255,255,.20)) !important;
-            backdrop-filter: blur(34px) saturate(160%) !important;
-            -webkit-backdrop-filter: blur(34px) saturate(160%) !important;
-            box-shadow:
-                0 35px 100px rgba(25,18,60,.28),
-                inset 0 1px 0 rgba(255,255,255,.72),
-                inset 0 0 0 1px rgba(255,255,255,.12) !important;
-        }
-
-        #sidebar.menu-open { display: flex !important; pointer-events: auto !important; }
-
-        #sidebar::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            pointer-events: none;
-            background:
-                radial-gradient(circle at 10% 5%, rgba(129,140,248,.34), transparent 34%),
-                radial-gradient(circle at 90% 85%, rgba(236,72,153,.20), transparent 32%);
-        }
-
-        #sidebar > * { position: relative; z-index: 1; }
-
-        #menuCloseBtn {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            color: #334155;
-            background: rgba(255,255,255,.42);
-            border: 1px solid rgba(255,255,255,.62);
-            box-shadow: inset 0 1px 0 rgba(255,255,255,.8);
-            transition: .2s ease;
-        }
-        #menuCloseBtn:hover { transform: rotate(8deg) scale(1.05); background: rgba(255,255,255,.68); }
-
-        .popup-menu-item {
-            color: #26364f !important;
-            background: rgba(255,255,255,.28) !important;
-            border: 1px solid rgba(255,255,255,.28) !important;
-            text-shadow: 0 1px 2px rgba(255,255,255,.65);
-        }
-        .popup-menu-item:hover {
-            color: #312e81 !important;
-            background: rgba(255,255,255,.58) !important;
-            border-color: rgba(255,255,255,.62) !important;
-        }
-        .popup-menu-item.active {
-            color: #fff !important;
-            background: linear-gradient(135deg, rgba(79,70,229,.92), rgba(139,92,246,.90)) !important;
-            border-color: rgba(255,255,255,.42) !important;
-            text-shadow: none !important;
-            box-shadow: 0 12px 30px rgba(79,70,229,.24);
-        }
-
-        #mobileOverlay {
-            z-index: 5 !important;
-            background: rgba(15,23,42,.28) !important;
-            backdrop-filter: blur(7px) saturate(115%) !important;
-            -webkit-backdrop-filter: blur(7px) saturate(115%) !important;
-        }
-
-        @media (max-width: 640px) {
-            #sidebar {
-                top: 12px !important;
-                left: 12px !important;
-                width: calc(100vw - 24px) !important;
-                height: calc(100vh - 24px) !important;
-                max-height: calc(100vh - 24px);
-                border-radius: 28px !important;
-            }
-        }
+        * { -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Inter', sans-serif; background: #f6f7fb; }
+        .font-display { font-family: 'Sora', sans-serif; }
+        .glass { background: rgba(255,255,255,0.72); backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); border: 1px solid rgba(255,255,255,0.75); box-shadow: 0 10px 34px rgba(15,23,42,0.08); }
+        .glass-soft { background: rgba(255,255,255,0.55); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.6); }
+        .btn-primary { background: linear-gradient(135deg,#2563eb,#4f46e5 55%,#7c3aed); box-shadow: 0 8px 20px -6px rgba(79,70,229,0.5); }
+        .btn-primary:hover { filter: brightness(1.08); box-shadow: 0 10px 26px -6px rgba(79,70,229,0.65); }
+        .grad-text { background: linear-gradient(100deg,#2563eb,#7c3aed); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .navlink { position: relative; color:#334155; font-weight:700; font-size:13px; letter-spacing:.08em; }
+        .navlink::after { content:''; position:absolute; left:0; right:0; bottom:-12px; height:3px; border-radius:99px; background:linear-gradient(90deg,#2563eb,#7c3aed); transform:scaleX(0); transition:.25s; }
+        .navlink:hover::after, .navlink.active::after { transform:scaleX(1); }
+        .navlink.active { color:#1e3a8a; }
+        .product-card { background:#fff; border:1px solid rgba(15,23,42,0.06); box-shadow:0 4px 18px rgba(15,23,42,0.05); transition:transform .25s, box-shadow .25s; }
+        .product-card:hover { transform:translateY(-6px); box-shadow:0 18px 40px -12px rgba(37,99,235,0.25); border-color:rgba(37,99,235,0.25); }
+        .icon-btn { width:42px; height:42px; border-radius:14px; display:flex; align-items:center; justify-content:center; background:#fff; border:1px solid #e2e8f0; color:#475569; transition:.2s; position:relative; }
+        .icon-btn:hover { border-color:#2563eb; color:#2563eb; transform:translateY(-2px); box-shadow:0 8px 18px -6px rgba(37,99,235,0.35); }
+        .count-badge { position:absolute; top:-6px; right:-6px; min-width:18px; height:18px; border-radius:99px; background:linear-gradient(135deg,#ef4444,#ec4899); color:#fff; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; padding:0 4px; border:2px solid #fff; }
+        .chip { display:flex; flex-direction:column; align-items:center; gap:10px; cursor:pointer; transition:.25s; }
+        .chip .ring { width:88px; height:88px; border-radius:50%; background:#fff; border:1px solid #e2e8f0; display:flex; align-items:center; justify-content:center; padding:10px; box-shadow:0 6px 18px rgba(15,23,42,0.06); transition:.25s; }
+        .chip:hover .ring, .chip.active .ring { border-color:#2563eb; box-shadow:0 12px 26px -8px rgba(37,99,235,0.4); transform:translateY(-4px); }
+        .chip span { font-size:12px; font-weight:700; color:#334155; }
+        .cat-pill { cursor:pointer; white-space:nowrap; font-size:13px; font-weight:700; padding:9px 20px; border-radius:99px; background:#fff; border:1px solid #e2e8f0; color:#475569; transition:.2s; }
+        .cat-pill:hover { border-color:#2563eb; color:#2563eb; }
+        .cat-pill.active { background:linear-gradient(135deg,#2563eb,#4f46e5); border-color:transparent; color:#fff; box-shadow:0 8px 18px -6px rgba(37,99,235,0.5); }
+        .no-scrollbar::-webkit-scrollbar { display:none; }
+        .no-scrollbar { scrollbar-width:none; -ms-overflow-style:none; }
+        .toast { animation: toastIn .3s ease, toastOut .3s ease 2.4s forwards; }
+        @keyframes toastIn { from { opacity:0; transform:translateY(18px) scale(.96);} to { opacity:1; transform:none; } }
+        @keyframes toastOut { to { opacity:0; transform:translateY(12px) scale(.96); } }
+        .float-slow { animation: floaty 6s ease-in-out infinite; }
+        .float-mid { animation: floaty 7.5s ease-in-out 1.2s infinite; }
+        .float-fast { animation: floaty 5s ease-in-out .6s infinite; }
+        @keyframes floaty { 0%,100% { transform:translateY(0) rotate(0deg); } 50% { transform:translateY(-14px) rotate(1.2deg); } }
+        .slide-in { animation: slideIn .35s cubic-bezier(.2,.8,.3,1); }
+        @keyframes slideIn { from { transform:translateX(60px); opacity:0; } to { transform:none; opacity:1; } }
+        .fade-up { animation: fadeUp .5s ease both; }
+        @keyframes fadeUp { from { opacity:0; transform:translateY(24px); } to { opacity:1; transform:none; } }
+        .skeleton { position:relative; overflow:hidden; background:#eef1f7; border-radius:20px; }
+        .skeleton::after { content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent,rgba(255,255,255,.85),transparent); animation:shimmer 1.4s infinite; }
+        @keyframes shimmer { from { transform:translateX(-100%);} to { transform:translateX(100%);} }
+        .pulse-dot { animation:pulseDot 1.6s infinite; }
+        @keyframes pulseDot { 0%{ box-shadow:0 0 0 0 rgba(34,197,94,.5);} 70%{ box-shadow:0 0 0 8px rgba(34,197,94,0);} 100%{ box-shadow:0 0 0 0 rgba(34,197,94,0);} }
+        .tick-marquee { animation: marquee 26s linear infinite; }
+        @keyframes marquee { from{ transform:translateX(0);} to{ transform:translateX(-50%);} }
+        .zoom-img { transition:transform .5s ease; }
+        .group:hover .zoom-img { transform:scale(1.08); }
+        input:focus, select:focus, textarea:focus { outline:none; }
+        ::-webkit-scrollbar { width:8px; height:8px; }
+        ::-webkit-scrollbar-thumb { background:#c7d2fe; border-radius:99px; }
     </style>
 </head>
-<body class="min-h-screen relative">
+<body class="text-slate-800 antialiased">
 
-<div class="blob blob-1"></div>
-<div class="blob blob-2"></div>
-<div class="blob blob-3"></div>
-
-<div id="mobileOverlay" class="fixed inset-0 z-[90] hidden lg:hidden" onclick="toggleMobileSidebar(false)" style="background:rgba(15,23,42,.28);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px);pointer-events:auto;"></div>
-
-<div class="app-layout relative z-10" style="position:relative;z-index:10;">
-
-<aside id="sidebar" class="w-[280px] flex-shrink-0 flex flex-col py-6 px-4 fixed z-[120] hidden" style="background:rgba(255,255,255,0.72);backdrop-filter:blur(28px) saturate(145%);-webkit-backdrop-filter:blur(28px) saturate(145%);border-right:1px solid rgba(255,255,255,0.72);box-shadow:0 24px 80px rgba(45,35,90,.14);">
-    <div class="flex items-center gap-3 px-3 mb-6">
-        <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
-            <i class="fa-solid fa-store text-white text-sm"></i>
+    <!-- ============ TOP STRIP ============ -->
+    <div class="bg-[#0b1220] text-white text-[11px] sm:text-xs">
+        <div class="max-w-7xl mx-auto px-4 py-2 flex items-center justify-between gap-3">
+            <p class="flex items-center gap-1.5 text-slate-300"><i class="fa-solid fa-truck-fast text-sky-400"></i><span data-i18n="top_free">Free delivery on orders over $50</span></p>
+            <p class="hidden md:block text-slate-300"><span data-i18n="top_code">Get 5% OFF on first order | Code: HRBD5</span> <span class="text-sky-400 font-bold ml-1">HRBD5</span></p>
+            <div class="flex items-center gap-4">
+                <button onclick="location.href='dashboard.html#orders'" class="hover:text-sky-300 flex items-center gap-1.5"><i class="fa-solid fa-location-arrow text-[9px]"></i><span data-i18n="top_track">Track Order</span></button>
+                <span class="text-slate-600">|</span>
+                <button onclick="showToast(lang==='bn'?'সাহায্য: +880 1712-345678':'Help: +880 1712-345678','info')" class="hover:text-sky-300 flex items-center gap-1.5"><i class="fa-solid fa-headset"></i><span data-i18n="top_help">Help &amp; Support</span></button>
+                <button onclick="toggleLang()" class="flex items-center gap-1 font-bold text-sky-300 hover:text-white px-2 py-0.5 rounded-md border border-sky-800/80"><i class="fa-solid fa-language text-[10px]"></i><span id="langLabel">EN</span></button>
+            </div>
         </div>
-        <span class="font-extrabold text-lg text-slate-800">HR <span class="text-indigo-500">ShopBD</span></span>
-        <button id="menuCloseBtn" type="button" onclick="toggleMobileSidebar(false)" aria-label="Close menu" class="ml-auto">
-            <i class="fa-solid fa-xmark"></i>
-        </button>
     </div>
 
-    <div class="flex gap-1 p-1 rounded-xl bg-white/30 mb-5 mx-3">
-        <button onclick="setLang('en')" id="langEn" class="flex-1 py-1.5 rounded-lg text-[11px] font-bold transition lang-toggle active">EN</button>
-        <button onclick="setLang('bn')" id="langBn" class="flex-1 py-1.5 rounded-lg text-[11px] font-bold text-slate-500 transition lang-toggle">বাং</button>
-    </div>
-
-    <nav class="flex-1 space-y-1 overflow-y-auto">
-        <a href="index.html" onclick="setActive(this)" class="popup-menu-item sidebar-item active flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-house w-5 text-center"></i> <span data-i18n="nav_home">Home</span>
-        </a>
-        <a href="#" onclick="loadCategory('all');setActive(this);return false;" class="popup-menu-item sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-bolt w-5 text-center"></i> <span data-i18n="nav_deals">Deals</span>
-            <span class="ml-auto badge-hot text-white text-[10px] font-bold px-2 py-0.5 rounded-full">Hot</span>
-        </a>
-        <a href="#" onclick="loadCategory('beauty');setActive(this);return false;" class="popup-menu-item sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-sparkles w-5 text-center"></i> <span data-i18n="nav_new">New Arrivals</span>
-        </a>
-        <a href="#" onclick="loadCategory('laptops');setActive(this);return false;" class="popup-menu-item sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-fire w-5 text-center"></i> <span data-i18n="nav_best">Best Sellers</span>
-        </a>
-        <a href="#" onclick="loadCategory('fragrances');setActive(this);return false;" class="popup-menu-item sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-tags w-5 text-center"></i> <span data-i18n="nav_brands">Brands</span>
-        </a>
-        <div class="border-t border-slate-200/50 my-3"></div>
-        <a href="dashboard.html" class="popup-menu-item sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-box w-5 text-center"></i> <span data-i18n="nav_orders">My Orders</span>
-        </a>
-        <a href="#" onclick="showWishlist();setActive(this);return false;" class="popup-menu-item sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-regular fa-heart w-5 text-center"></i> <span data-i18n="nav_wishlist">Wishlist</span>
-            <span id="wishlistCount" class="ml-auto text-[10px] font-bold text-pink-500 hidden">0</span>
-        </a>
-        <a href="dashboard.html#coupons" class="popup-menu-item sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-ticket w-5 text-center"></i> <span data-i18n="nav_coupons">Coupons</span>
-        </a>
-        <a href="dashboard.html#addresses" class="popup-menu-item sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-location-dot w-5 text-center"></i> <span data-i18n="nav_addresses">Addresses</span>
-        </a>
-        <div class="border-t border-slate-200/50 my-3"></div>
-        <a href="login.html" class="popup-menu-item sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-right-to-bracket w-5 text-center"></i> <span data-i18n="nav_login">Login / Sign Up</span>
-        </a>
-        <a href="dashboard.html" class="popup-menu-item sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-chart-line w-5 text-center"></i> <span data-i18n="nav_dashboard">Dashboard</span>
-        </a>
-        <a href="admin.html" class="popup-menu-item sidebar-item flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-600">
-            <i class="fa-solid fa-gear w-5 text-center"></i> <span data-i18n="nav_admin">Admin Panel</span>
-        </a>
-    </nav>
-
-    <div class="mt-4 promo-gradient rounded-2xl p-5 text-white relative overflow-hidden">
-        <div class="absolute -top-4 -right-4 w-20 h-20 bg-white/20 rounded-full"></div>
-        <div class="absolute -bottom-6 -left-6 w-16 h-16 bg-white/10 rounded-full"></div>
-        <p class="text-[10px] font-bold uppercase tracking-wider mb-1 opacity-90" data-i18n="promo_label">Special Offer</p>
-        <h3 class="font-extrabold text-lg leading-tight mb-2" data-i18n="promo_title">Summer Sale<br>Up to 50% Off</h3>
-        <button onclick="loadCategory('all')" class="bg-white text-purple-600 text-xs font-bold px-4 py-2 rounded-full hover:bg-white/90 transition" data-i18n="promo_btn">Shop Now</button>
-    </div>
-</aside>
-
-<main class="flex-1 overflow-y-auto" id="mainContent">
-    <header class="sticky top-0 z-30 glass-shopping px-4 md:px-6 py-3 flex items-center gap-3 md:gap-4">
-        <button id="menuToggleBtn" type="button" onclick="toggleMobileSidebar()" aria-label="Open menu"
-            class="w-11 h-11 shrink-0 flex items-center justify-center rounded-2xl glass-btn hover:bg-white/75 transition shadow-sm">
-            <i class="fa-solid fa-bars text-slate-700 text-base"></i>
-        </button>
-        <div class="flex-1 relative">
-            <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm z-10"></i>
-            <input type="text" id="searchInput" autocomplete="off" data-i18n-placeholder="search_placeholder"
-                placeholder="Search for products, brands and more..."
-                class="w-full glass-shopping bg-white/35 border border-white/50 rounded-full px-12 py-3 text-sm text-slate-700 placeholder-slate-400 focus:outline-none search-glow transition"
-                oninput="handleSearch(this.value)" onfocus="handleSearch(this.value)">
-            <div id="searchSuggestions" class="search-suggestions absolute left-0 right-0 top-[calc(100%+10px)] rounded-2xl p-2 hidden z-[120] max-h-80 overflow-y-auto"></div>
+    <!-- ============ MAIN HEADER (glass sticky) ============ -->
+    <header class="sticky top-0 z-40 glass border-b border-white/70">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex items-center gap-3 sm:gap-6 h-[70px]">
+                <!-- hamburger (mobile) -->
+                <button onclick="openMobileMenu()" class="lg:hidden icon-btn !w-11 !h-11"><i class="fa-solid fa-bars"></i></button>
+                <!-- logo -->
+                <a href="#home" class="flex items-center gap-2.5 shrink-0 group">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center text-white text-xl shadow-lg shadow-indigo-500/30 group-hover:scale-105 transition"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                    <div class="leading-none">
+                        <p class="font-display font-extrabold text-xl tracking-tight text-slate-900">HR <span class="grad-text">ShopBD</span></p>
+                        <p class="text-[9px] font-bold tracking-[.28em] text-slate-400 uppercase mt-1">Mobile &amp; Gadgets</p>
+                    </div>
+                </a>
+                <!-- search -->
+                <div class="hidden md:flex flex-1 max-w-xl mx-auto">
+                    <div class="relative w-full group">
+                        <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm group-focus-within:text-blue-600 transition"></i>
+                        <input id="searchInput" oninput="onSearch(this.value)" placeholder="Search for phones, chargers, cases, earbuds..." class="w-full h-12 pl-11 pr-4 rounded-2xl border border-slate-200 bg-white/80 text-sm font-medium shadow-inner placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition" >
+                        <button onclick="document.getElementById('searchInput').value='';onSearch('');document.getElementById('searchInput').focus()" class="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 hidden items-center justify-center text-slate-400 hover:text-red-500 rounded-lg" id="clearSearch"><i class="fa-solid fa-xmark text-xs"></i></button>
+                    </div>
+                </div>
+                <!-- right icons -->
+                <div class="flex items-center gap-2 sm:gap-3 ml-auto">
+                    <button onclick="toggleNotifPanel()" class="icon-btn relative" title="Notifications">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="count-badge hidden" id="notifCount">0</span>
+                    </button>
+                    <button onclick="openWishlistPanel()" class="icon-btn relative" title="Wishlist">
+                        <i class="fa-regular fa-heart"></i>
+                        <span class="count-badge hidden" id="wishlistCount">0</span>
+                    </button>
+                    <button onclick="openCart()" class="icon-btn relative" title="Cart">
+                        <i class="fa-solid fa-bag-shopping"></i>
+                        <span class="count-badge hidden" id="cartCount">0</span>
+                    </button>
+                    <!-- auth -->
+                    <div id="authArea" class="flex items-center gap-2">
+                        <a href="login.html" id="authGuest" class="hidden items-center gap-2 pl-1.5 pr-4 py-1.5 rounded-full bg-gradient-to-r from-blue-600 to-violet-600 text-white text-xs font-bold hover:shadow-lg hover:shadow-indigo-500/30 transition">
+                            <span class="w-7 h-7 rounded-full bg-white/20 flex items-center justify-center text-[13px]"><i class="fa-solid fa-user"></i></span>
+                            <span data-i18n="signin">Sign In</span>
+                        </a>
+                        <a href="dashboard.html" id="authUser" class="hidden items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-slate-200 bg-white hover:border-blue-500 hover:shadow-md transition">
+                            <span class="relative"><img id="avatarImg" class="w-8 h-8 rounded-full object-cover" src="" alt="avatar"><span class="pulse-dot absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-green-500 border-2 border-white"></span></span>
+                            <span class="text-left leading-tight"><span id="userName" class="block text-[11px] font-extrabold text-slate-800 max-w-[90px] truncate">User</span><span class="block text-[9px] font-bold text-slate-400" data-i18n="account">Account</span></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <!-- mobile search -->
+            <div class="md:hidden pb-3">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                    <input id="mSearchInput" oninput="onSearch(this.value)" placeholder="Search products..." class="w-full h-11 pl-10 pr-10 rounded-xl border border-slate-200 bg-white text-sm font-medium placeholder:text-slate-400 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10" >
+                    <button onclick="document.getElementById('mSearchInput').value='';onSearch('')" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+            </div>
         </div>
-        <div class="flex items-center gap-2">
-            <button onclick="openCartMobile()" class="relative w-10 h-10 flex items-center justify-center glass-btn rounded-full hover:bg-white/70 transition" title="Cart">
-                <i class="fa-solid fa-bag-shopping text-slate-600 text-sm"></i>
-                <span id="desktopCartBadge" class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center hidden">0</span>
-            </button>
-
-            <button class="relative w-10 h-10 flex items-center justify-center glass-btn rounded-full hover:bg-white/70 transition" onclick="toggleNotifications()">
-                <i class="fa-solid fa-bell text-slate-600 text-sm"></i>
-                <span id="notifBadge" class="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center">3</span>
-            </button>
-            <button onclick="showWishlist()" class="relative w-10 h-10 flex items-center justify-center glass-btn rounded-full hover:bg-white/70 transition" data-i18n-title="nav_wishlist" title="Wishlist">
-                <i class="fa-regular fa-heart text-slate-600 text-sm"></i>
-                <span id="headerWishlistCount" class="absolute -top-1 -right-1 w-4 h-4 bg-pink-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center hidden">0</span>
-            </button>
-            <a href="login.html" id="avatarLoggedOut" class="w-10 h-10 flex items-center justify-center glass-btn rounded-full hover:bg-white/70 transition" title="Login">
-                <i class="fa-solid fa-user text-slate-500 text-sm"></i>
-            </a>
-            <a href="dashboard.html" id="avatarLoggedIn" class="w-10 h-10 flex items-center justify-center glass-btn rounded-full hover:bg-white/70 transition hidden" title="Dashboard">
-                <img id="headerAvatar" src="" class="w-8 h-8 rounded-full object-cover border-2 border-white shadow-sm">
-            </a>
-        </div>
+        <!-- nav bar -->
+        <nav class="hidden lg:block border-t border-slate-100 bg-white/60 backdrop-blur">
+            <div class="max-w-7xl mx-auto px-4 flex items-center gap-8 h-[52px]">
+                <button class="navlink active" data-i18n="nav_home" onclick="goSection('#home',this)">Home</button>
+                <button class="navlink" data-i18n="nav_shop" onclick="goSection('#shop',this)">Shop</button>
+                <button class="navlink" data-i18n="nav_smartphones" onclick="filterCat('smartphones')">Smartphones</button>
+                <button class="navlink" data-i18n="nav_accessories" onclick="filterCat('mobile-accessories')">Accessories</button>
+                <button class="navlink" data-i18n="nav_tablets" onclick="filterCat('tablets')">Tablets</button>
+                <button class="navlink" data-i18n="nav_deals" onclick="goSection('#deals',this)">Deals</button>
+                <button class="navlink" data-i18n="nav_brands" onclick="goSection('#brands',this)">Brands</button>
+                <button class="navlink" data-i18n="nav_contact" onclick="goSection('#contact',this)">Contact</button>
+            </div>
+        </nav>
     </header>
 
-    <div id="notifPanel" class="fixed top-14 right-20 z-[40] w-72 glass-strong rounded-2xl p-4 hidden shadow-2xl">
-        <h4 class="font-bold text-xs text-slate-800 mb-3" data-i18n="notif_title">Notifications</h4>
-        <div class="space-y-2">
-            <div class="flex items-center gap-2 p-2 rounded-xl hover:bg-white/40 transition cursor-pointer">
-                <div class="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center"><i class="fa-solid fa-check text-green-500 text-[10px]"></i></div>
-                <div><p class="text-[11px] font-semibold text-slate-700" data-i18n="notif_1">Your order has been delivered!</p><p class="text-[9px] text-slate-400">2 min ago</p></div>
+    <!-- ============ HERO ============ -->
+    <section id="home" class="relative overflow-hidden">
+        <div class="absolute inset-0 bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1441986300917-64674bd600d8?q=80&w=1800&auto=format&fit=crop')"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-white via-white/92 to-white/40"></div>
+        <div class="absolute -top-24 -right-24 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl"></div>
+        <div class="absolute bottom-0 -left-24 w-80 h-80 bg-violet-400/20 rounded-full blur-3xl"></div>
+
+        <div class="relative max-w-7xl mx-auto px-4 py-12 md:py-20 grid lg:grid-cols-2 gap-12 items-center">
+            <!-- left text -->
+            <div class="fade-up">
+                <p class="inline-flex items-center gap-2 glass rounded-full px-4 py-1.5 text-[11px] font-extrabold tracking-[.22em] text-blue-700 uppercase mb-5">
+                    <i class="fa-solid fa-bolt text-amber-500"></i><span data-i18n="hero_badge">New Arrivals</span>
+                </p>
+                <h1 class="font-display font-extrabold text-4xl sm:text-5xl lg:text-[56px] leading-[1.05] tracking-tight text-slate-900">
+                    <span data-i18n="hero_l1">UPGRADE YOUR</span><br>
+                    <span class="grad-text" data-i18n="hero_l2">MOBILE LIFESTYLE</span>
+                </h1>
+                <p class="mt-5 text-slate-500 text-[15px] max-w-md leading-relaxed" data-i18n="hero_sub">Premium smartphones, tablets &amp; accessories. 100% original with the best prices in town.</p>
+                <div class="mt-8 flex flex-wrap items-center gap-4">
+                    <button onclick="goSection('#shop')" class="btn-primary text-white text-sm font-extrabold px-8 py-4 rounded-2xl flex items-center gap-2.5 transition">
+                        <i class="fa-solid fa-bag-shopping"></i><span data-i18n="cta_shop">Shop Now</span>
+                    </button>
+                    <button onclick="goSection('#deals')" class="glass rounded-2xl px-8 py-4 text-sm font-extrabold text-slate-700 hover:text-blue-700 hover:scale-[1.02] transition flex items-center gap-2.5">
+                        <i class="fa-solid fa-fire text-orange-500"></i><span data-i18n="cta_deals">Hot Deals</span>
+                    </button>
+                </div>
+                <!-- mini stats -->
+                <div class="mt-10 flex flex-wrap gap-8">
+                    <div><p class="font-display font-extrabold text-2xl text-slate-900"><span id="statProducts">0</span>+</p><p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider" data-i18n="stat_gadgets">Mobile Gadgets</p></div>
+                    <div class="w-px bg-slate-200 hidden sm:block"></div>
+                    <div><p class="font-display font-extrabold text-2xl text-slate-900">100%</p><p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider" data-i18n="stat_original">Original Products</p></div>
+                    <div class="w-px bg-slate-200 hidden sm:block"></div>
+                    <div><p class="font-display font-extrabold text-2xl text-slate-900">7-day</p><p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider" data-i18n="stat_returns">Easy Returns</p></div>
+                </div>
             </div>
-            <div class="flex items-center gap-2 p-2 rounded-xl hover:bg-white/40 transition cursor-pointer">
-                <div class="w-8 h-8 rounded-full bg-indigo-50 flex items-center justify-center"><i class="fa-solid fa-tag text-indigo-500 text-[10px]"></i></div>
-                <div><p class="text-[11px] font-semibold text-slate-700" data-i18n="notif_2">Flash sale starts in 1 hour!</p><p class="text-[9px] text-slate-400">15 min ago</p></div>
-            </div>
-            <div class="flex items-center gap-2 p-2 rounded-xl hover:bg-white/40 transition cursor-pointer">
-                <div class="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center"><i class="fa-solid fa-ticket text-amber-500 text-[10px]"></i></div>
-                <div><p class="text-[11px] font-semibold text-slate-700" data-i18n="notif_3">New coupon available!</p><p class="text-[9px] text-slate-400">1 hour ago</p></div>
+            <!-- right floating glass product showcase -->
+            <div class="relative h-[420px] sm:h-[460px] hidden md:block">
+                <div class="glass rounded-[36px] p-6 w-[270px] float-slow absolute top-2 left-0 z-10">
+                    <div class="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center mb-3"><img id="heroP1" class="w-12 h-12 object-contain" src="" alt=""></div>
+                    <p class="text-[10px] font-extrabold text-blue-600 uppercase tracking-widest mb-1" id="heroC1">Smartphone</p>
+                    <p class="font-display font-bold text-sm text-slate-800 truncate" id="heroT1">iPhone</p>
+                    <div class="flex items-center justify-between mt-3">
+                        <p class="text-lg font-extrabold text-slate-900" id="heroPr1">$0</p>
+                        <span class="text-[9px] font-black bg-green-100 text-green-700 px-2 py-1 rounded-lg" data-i18n="tag_instock">In Stock</span>
+                    </div>
+                </div>
+                <div class="glass rounded-[36px] p-6 w-[250px] float-mid absolute top-40 right-0 z-20">
+                    <div class="w-16 h-16 rounded-2xl bg-violet-50 flex items-center justify-center mb-3"><img id="heroP2" class="w-12 h-12 object-contain" src="" alt=""></div>
+                    <p class="text-[10px] font-extrabold text-violet-600 uppercase tracking-widest mb-1" id="heroC2">Audio</p>
+                    <p class="font-display font-bold text-sm text-slate-800 truncate" id="heroT2">AirPods Max</p>
+                    <div class="flex items-center justify-between mt-3">
+                        <p class="text-lg font-extrabold text-slate-900" id="heroPr2">$0</p>
+                        <span class="text-[9px] font-black bg-green-100 text-green-700 px-2 py-1 rounded-lg">-9%</span>
+                    </div>
+                </div>
+                <div class="glass rounded-[36px] p-5 w-[200px] float-fast absolute bottom-4 left-16 z-30">
+                    <div class="w-14 h-14 rounded-2xl bg-sky-50 flex items-center justify-center mb-2"><img id="heroP3" class="w-10 h-10 object-contain" src="" alt=""></div>
+                    <p class="text-[10px] font-extrabold text-sky-600 uppercase tracking-widest mb-1" id="heroC3">Tablet</p>
+                    <p class="font-display font-bold text-[13px] text-slate-800 truncate" id="heroT3">iPad</p>
+                    <div class="flex items-center justify-between mt-2">
+                        <p class="text-base font-extrabold text-slate-900" id="heroPr3">$0</p>
+                        <span class="w-7 h-7 rounded-full bg-gradient-to-r from-blue-600 to-violet-600 text-white flex items-center justify-center text-[10px]"><i class="fa-solid fa-plus"></i></span>
+                    </div>
+                </div>
+                <div class="absolute top-0 right-24 w-20 h-20 rounded-3xl bg-amber-300/70 backdrop-blur flex items-center justify-center rotate-12 float-slow"><i class="fa-solid fa-gift text-white text-2xl drop-shadow"></i></div>
             </div>
         </div>
-    </div>
 
-    <div class="p-6" id="mainArea">
-        <section class="shopping-hero glass-shopping rounded-[30px] p-7 md:p-12 mb-8 relative overflow-hidden slide-up">
-            <div class="absolute top-0 right-0 w-72 h-72 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/3"></div>
-            <div class="absolute bottom-0 left-1/3 w-48 h-48 bg-white/10 rounded-full translate-y-1/2"></div>
-            <div class="relative z-10 max-w-2xl glass-text rounded-[28px] p-6 md:p-8">
-                <span class="inline-block bg-white/30 backdrop-blur-sm text-white text-[10px] font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4" data-i18n="hero_badge">New Collection</span>
-                <h1 class="text-3xl md:text-5xl font-extrabold text-white leading-tight mb-3" data-i18n="hero_title">Find Your Style,<br>Love Your Look ✨</h1>
-                <p class="text-white/80 text-sm mb-6" data-i18n="hero_desc">Discover the latest trends in fashion, beauty, and lifestyle.</p>
-                <button onclick="loadCategory('all')" class="bg-white text-indigo-600 font-bold text-sm px-8 py-3 rounded-full hover:bg-white/90 transition shadow-xl flex items-center gap-2">
-                    <span data-i18n="hero_btn">Shop Now</span> <i class="fa-solid fa-arrow-right text-xs"></i>
+        <!-- perk chips -->
+        <div class="relative max-w-7xl mx-auto px-4 pb-10 -mt-2">
+            <div class="glass rounded-3xl grid grid-cols-2 md:grid-cols-4 divide-x divide-y md:divide-y-0 divide-slate-100">
+                <div class="flex items-center gap-3 p-4 sm:p-5"><div class="w-11 h-11 shrink-0 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center"><i class="fa-solid fa-shield-halved"></i></div><div><p class="text-xs font-extrabold text-slate-800" data-i18n="perk1t">100% Original</p><p class="text-[10px] text-slate-400 font-medium" data-i18n="perk1s">Genuine products</p></div></div>
+                <div class="flex items-center gap-3 p-4 sm:p-5"><div class="w-11 h-11 shrink-0 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center"><i class="fa-solid fa-tag"></i></div><div><p class="text-xs font-extrabold text-slate-800" data-i18n="perk2t">Best Prices</p><p class="text-[10px] text-slate-400 font-medium" data-i18n="perk2s">Compare &amp; save</p></div></div>
+                <div class="flex items-center gap-3 p-4 sm:p-5"><div class="w-11 h-11 shrink-0 rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center"><i class="fa-solid fa-truck-fast"></i></div><div><p class="text-xs font-extrabold text-slate-800" data-i18n="perk3t">Fast Delivery</p><p class="text-[10px] text-slate-400 font-medium" data-i18n="perk3s">Nationwide shipping</p></div></div>
+                <div class="flex items-center gap-3 p-4 sm:p-5"><div class="w-11 h-11 shrink-0 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center"><i class="fa-solid fa-rotate-left"></i></div><div><p class="text-xs font-extrabold text-slate-800" data-i18n="perk4t">Easy Returns</p><p class="text-[10px] text-slate-400 font-medium" data-i18n="perk4s">7-day return policy</p></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ SHOP BY CATEGORY ============ -->
+    <section class="max-w-7xl mx-auto px-4 py-14" id="categories">
+        <div class="flex items-end justify-between mb-8">
+            <div>
+                <p class="text-[11px] font-extrabold tracking-[.25em] text-blue-600 uppercase mb-1" data-i18n="cat_label">Explore</p>
+                <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900" data-i18n="cat_title">Shop by Category</h2>
+            </div>
+            <button onclick="goSection('#shop')" class="hidden sm:flex items-center gap-1.5 text-xs font-extrabold text-blue-600 hover:gap-3 transition-all" data-i18n="view_all">View All Products <i class="fa-solid fa-arrow-right"></i></button>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-6">
+            <div class="chip active" data-cat="all" onclick="filterCat('all',this)">
+                <div class="ring bg-gradient-to-br from-blue-600 to-violet-600 !border-0"><i class="fa-solid fa-layer-group text-white text-2xl"></i></div>
+                <span data-i18n="cat_all">All Gadgets</span><span class="!text-[10px] !text-slate-400 !font-semibold" id="countAll">0 items</span>
+            </div>
+            <div class="chip" data-cat="smartphones" onclick="filterCat('smartphones',this)">
+                <div class="ring"><img src="https://cdn.dummyjson.com/product-images/smartphones/iphone-13-pro/thumbnail.webp" class="w-full h-full object-contain" alt="Smartphones"></div>
+                <span data-i18n="nav_smartphones">Smartphones</span><span class="!text-[10px] !text-slate-400 !font-semibold" id="countSmartphones">0 items</span>
+            </div>
+            <div class="chip" data-cat="mobile-accessories" onclick="filterCat('mobile-accessories',this)">
+                <div class="ring"><img src="https://cdn.dummyjson.com/product-images/mobile-accessories/apple-airpods-max-silver/thumbnail.webp" class="w-full h-full object-contain" alt="Accessories"></div>
+                <span data-i18n="nav_accessories">Accessories</span><span class="!text-[10px] !text-slate-400 !font-semibold" id="countMobile-accessories">0 items</span>
+            </div>
+            <div class="chip" data-cat="tablets" onclick="filterCat('tablets',this)">
+                <div class="ring"><img src="https://cdn.dummyjson.com/product-images/tablets/samsung-galaxy-tab-s8-plus-grey/thumbnail.webp" class="w-full h-full object-contain" alt="Tablets"></div>
+                <span data-i18n="nav_tablets">Tablets</span><span class="!text-[10px] !text-slate-400 !font-semibold" id="countTablets">0 items</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- ============ PRODUCTS / SHOP ============ -->
+    <section id="shop" class="max-w-7xl mx-auto px-4 pb-16 scroll-mt-32">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <div>
+                <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900" id="sectionTitle">All Products</h2>
+                <p class="text-xs font-semibold text-slate-400 mt-1"><span id="shownCount">0</span> / <span id="totalCount">0</span> items</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <select id="sortSelect" onchange="applySort()" class="h-11 px-4 rounded-xl border border-slate-200 bg-white text-xs font-bold text-slate-600 cursor-pointer focus:border-blue-500">
+                    <option value="az" data-i18n="sort_az">Name (A-Z)</option>
+                    <option value="za">Name (Z-A)</option>
+                    <option value="pl" data-i18n="sort_pl">Price: Low to High</option>
+                    <option value="ph">Price: High to Low</option>
+                    <option value="rating" data-i18n="sort_rating">Top Rated</option>
+                    <option value="discount">Biggest Discount</option>
+                </select>
+            </div>
+        </div>
+        <!-- category pills -->
+        <div class="flex gap-2.5 overflow-x-auto no-scrollbar pb-1 mb-6">
+            <button class="cat-pill active" data-pill="all" onclick="filterCat('all',this)">✨ <span data-i18n="cat_all">All</span></button>
+            <button class="cat-pill" data-pill="smartphones" onclick="filterCat('smartphones',this)">📱 <span data-i18n="nav_smartphones">Smartphones</span></button>
+            <button class="cat-pill" data-pill="mobile-accessories" onclick="filterCat('mobile-accessories',this)">🎧 <span data-i18n="nav_accessories">Accessories</span></button>
+            <button class="cat-pill" data-pill="tablets" onclick="filterCat('tablets',this)">💻 <span data-i18n="nav_tablets">Tablets</span></button>
+        </div>
+        <!-- grid -->
+        <div id="productGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6"></div>
+    </section>
+
+    <!-- ============ DEALS + COUNTDOWN ============ -->
+    <section id="deals" class="py-14 scroll-mt-32 bg-gradient-to-r from-blue-700 via-indigo-700 to-violet-700 relative overflow-hidden">
+        <div class="absolute inset-0 opacity-15 bg-cover bg-center" style="background-image:url('https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=1400&auto=format&fit=crop')"></div>
+        <div class="absolute -top-20 left-1/4 w-72 h-72 bg-white/10 rounded-full blur-3xl"></div>
+        <div class="relative max-w-7xl mx-auto px-4 grid lg:grid-cols-2 gap-10 items-center">
+            <div class="text-white">
+                <p class="text-[11px] font-extrabold tracking-[.3em] text-amber-300 uppercase flex items-center gap-2"><i class="fa-solid fa-fire"></i><span data-i18n="deal_label">Limited Time</span></p>
+                <h2 class="font-display font-extrabold text-3xl sm:text-4xl mt-2 leading-tight" data-i18n="deal_title">MEGA DEALS ON <br>MOBILE GEAR</h2>
+                <p class="text-blue-100 text-sm mt-3 max-w-sm" data-i18n="deal_sub">Up to 40% off on smartphones, earbuds, chargers and more. Grab them before they are gone!</p>
+                <button onclick="goSection('#shop')" class="mt-7 bg-white text-indigo-700 text-sm font-extrabold px-8 py-4 rounded-2xl hover:scale-105 hover:shadow-2xl transition flex items-center gap-2 w-fit">
+                    <i class="fa-solid fa-bolt"></i><span data-i18n="deal_cta">Shop Hot Deals</span>
                 </button>
             </div>
-        </section>
+            <div class="glass !bg-white/10 !border-white/15 rounded-[28px] p-7 text-center text-white">
+                <p class="text-xs font-extrabold tracking-[.25em] text-blue-100 uppercase mb-5" data-i18n="deal_ends">Deal Ends In</p>
+                <div class="grid grid-cols-4 gap-3">
+                    <div class="bg-white/10 backdrop-blur border border-white/15 rounded-2xl py-4"><p class="font-display font-extrabold text-3xl sm:text-4xl" id="cdDays">00</p><p class="text-[10px] font-bold text-blue-100 mt-1 uppercase" data-i18n="unit_days">Days</p></div>
+                    <div class="bg-white/10 backdrop-blur border border-white/15 rounded-2xl py-4"><p class="font-display font-extrabold text-3xl sm:text-4xl" id="cdHours">00</p><p class="text-[10px] font-bold text-blue-100 mt-1 uppercase" data-i18n="unit_hours">Hours</p></div>
+                    <div class="bg-white/10 backdrop-blur border border-white/15 rounded-2xl py-4"><p class="font-display font-extrabold text-3xl sm:text-4xl" id="cdMins">00</p><p class="text-[10px] font-bold text-blue-100 mt-1 uppercase" data-i18n="unit_mins">Mins</p></div>
+                    <div class="bg-white/10 backdrop-blur border border-white/15 rounded-2xl py-4"><p class="font-display font-extrabold text-3xl sm:text-4xl" id="cdSecs">00</p><p class="text-[10px] font-bold text-blue-100 mt-1 uppercase" data-i18n="unit_secs">Secs</p></div>
+                </div>
+                <div class="mt-5 h-2.5 rounded-full bg-white/15 overflow-hidden"><div class="h-full w-3/4 rounded-full bg-gradient-to-r from-amber-300 to-orange-400"></div></div>
+                <p class="text-[11px] font-bold text-blue-100 mt-3" data-i18n="deal_stock">Hurry! 75% of sale items already claimed</p>
+            </div>
+        </div>
+    </section>
 
-        
-        <section class="mb-8 slide-up" style="animation-delay:0.1s">
-            <div class="flex items-center justify-between mb-4">
+    <!-- ============ BEST SELLERS ============ -->
+    <section id="best" class="max-w-7xl mx-auto px-4 py-14 scroll-mt-32">
+        <div class="flex items-center justify-between mb-7">
+            <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 flex items-center gap-3"><i class="fa-solid fa-crown text-amber-400"></i><span data-i18n="best_title">Best Sellers</span></h2>
+            <div class="flex gap-2">
+                <button onclick="scrollSlider(-1)" class="icon-btn !w-10 !h-10"><i class="fa-solid fa-chevron-left text-xs"></i></button>
+                <button onclick="scrollSlider(1)" class="icon-btn !w-10 !h-10"><i class="fa-solid fa-chevron-right text-xs"></i></button>
+            </div>
+        </div>
+        <div id="bestSlider" class="flex gap-5 overflow-x-auto no-scrollbar pb-3 snap-x snap-mandatory"></div>
+    </section>
+
+    <!-- ============ BRANDS MARQUEE ============ -->
+    <section id="brands" class="max-w-7xl mx-auto px-4 pb-14 scroll-mt-32">
+        <div class="glass rounded-3xl py-6 overflow-hidden">
+            <div class="flex whitespace-nowrap tick-marquee w-max" id="brandRow"></div>
+        </div>
+    </section>
+
+    <!-- ============ WHY US ============ -->
+    <section class="py-10">
+        <h2 class="text-center font-display font-extrabold text-2xl sm:text-3xl text-slate-900 mb-10" data-i18n="why_title">Why Shop With HR ShopBD?</h2>
+        <div class="max-w-6xl mx-auto px-4 grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div class="glass rounded-3xl p-5 text-center hover:-translate-y-1.5 transition"><div class="w-12 h-12 mx-auto rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center mb-3"><i class="fa-solid fa-shield-halved"></i></div><p class="text-xs font-extrabold text-slate-800" data-i18n="why1t">Original Products</p><p class="text-[10px] text-slate-400 mt-1" data-i18n="why1s">100% authentic</p></div>
+            <div class="glass rounded-3xl p-5 text-center hover:-translate-y-1.5 transition"><div class="w-12 h-12 mx-auto rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center mb-3"><i class="fa-solid fa-tags"></i></div><p class="text-xs font-extrabold text-slate-800" data-i18n="why2t">Best Prices</p><p class="text-[10px] text-slate-400 mt-1" data-i18n="why2s">Guaranteed cheap</p></div>
+            <div class="glass rounded-3xl p-5 text-center hover:-translate-y-1.5 transition"><div class="w-12 h-12 mx-auto rounded-2xl bg-sky-50 text-sky-600 flex items-center justify-center mb-3"><i class="fa-solid fa-truck"></i></div><p class="text-xs font-extrabold text-slate-800" data-i18n="why3t">Fast Delivery</p><p class="text-[10px] text-slate-400 mt-1" data-i18n="why3s">Quick &amp; reliable</p></div>
+            <div class="glass rounded-3xl p-5 text-center hover:-translate-y-1.5 transition"><div class="w-12 h-12 mx-auto rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mb-3"><i class="fa-solid fa-arrows-rotate"></i></div><p class="text-xs font-extrabold text-slate-800" data-i18n="why4t">Easy Returns</p><p class="text-[10px] text-slate-400 mt-1" data-i18n="why4s">7 days return</p></div>
+            <div class="glass rounded-3xl p-5 text-center hover:-translate-y-1.5 transition"><div class="w-12 h-12 mx-auto rounded-2xl bg-orange-50 text-orange-500 flex items-center justify-center mb-3"><i class="fa-solid fa-headset"></i></div><p class="text-xs font-extrabold text-slate-800" data-i18n="why5t">24/7 Support</p><p class="text-[10px] text-slate-400 mt-1" data-i18n="why5s">We're here to help</p></div>
+        </div>
+    </section>
+
+    <!-- ============ TESTIMONIALS ============ -->
+    <section class="max-w-7xl mx-auto px-4 py-12">
+        <h2 class="font-display font-extrabold text-2xl sm:text-3xl text-slate-900 mb-8 flex items-center gap-3"><i class="fa-solid fa-comment-dots text-blue-500"></i><span data-i18n="testi_title">What Our Customers Say</span></h2>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="glass rounded-3xl p-6 hover:-translate-y-1.5 transition"><div class="text-amber-400 text-sm mb-3">★★★★★</div><p class="text-sm text-slate-600 leading-relaxed">"Amazing service and fast delivery. My iPhone cover is exactly like the photos — 100% original!"</p><div class="flex items-center gap-3 mt-5"><img src="https://i.pravatar.cc/60?img=12" class="w-10 h-10 rounded-full object-cover" alt=""><div><p class="text-xs font-extrabold text-slate-800">James Carter</p><p class="text-[10px] text-emerald-600 font-bold flex items-center gap-1"><i class="fa-solid fa-circle-check"></i><span data-i18n="verified">Verified Buyer</span></p></div></div></div>
+            <div class="glass rounded-3xl p-6 hover:-translate-y-1.5 transition"><div class="text-amber-400 text-sm mb-3">★★★★★</div><p class="text-sm text-slate-600 leading-relaxed">"Best gadget store online! Great prices, genuine AirPods and the support team replies instantly."</p><div class="flex items-center gap-3 mt-5"><img src="https://i.pravatar.cc/60?img=32" class="w-10 h-10 rounded-full object-cover" alt=""><div><p class="text-xs font-extrabold text-slate-800">Sophia Lee</p><p class="text-[10px] text-emerald-600 font-bold flex items-center gap-1"><i class="fa-solid fa-circle-check"></i><span data-i18n="verified">Verified Buyer</span></p></div></div></div>
+            <div class="glass rounded-3xl p-6 hover:-translate-y-1.5 transition"><div class="text-amber-400 text-sm mb-3">★★★★★</div><p class="text-sm text-slate-600 leading-relaxed">"Superb quality and packaging. Bought a Samsung Tab — delivered in 2 days with full warranty."</p><div class="flex items-center gap-3 mt-5"><img src="https://i.pravatar.cc/60?img=53" class="w-10 h-10 rounded-full object-cover" alt=""><div><p class="text-xs font-extrabold text-slate-800">Michael Brown</p><p class="text-[10px] text-emerald-600 font-bold flex items-center gap-1"><i class="fa-solid fa-circle-check"></i><span data-i18n="verified">Verified Buyer</span></p></div></div></div>
+        </div>
+    </section>
+
+    <!-- ============ NEWSLETTER ============ -->
+    <section class="max-w-7xl mx-auto px-4 pb-16">
+        <div class="relative overflow-hidden rounded-[32px] bg-[#0b1220] px-6 sm:px-12 py-12 text-white">
+            <div class="absolute -top-16 -right-16 w-72 h-72 bg-blue-600/30 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-20 -left-10 w-72 h-72 bg-violet-600/25 rounded-full blur-3xl"></div>
+            <div class="relative grid lg:grid-cols-2 gap-8 items-center">
                 <div>
-                    <h2 class="text-xl font-extrabold text-slate-800">Categories</h2>
-                    <p class="text-[11px] text-slate-400 mt-1">Shop by category</p>
+                    <p class="text-[10px] font-extrabold tracking-[.3em] text-sky-400 uppercase mb-2" data-i18n="news_label">Stay Updated</p>
+                    <h3 class="font-display font-extrabold text-2xl sm:text-3xl" data-i18n="news_title">LATEST TECH DEALS</h3>
+                    <p class="text-slate-400 text-sm mt-2" data-i18n="news_sub">Subscribe for new arrivals, exclusive offers and secret discounts — straight to your inbox.</p>
                 </div>
-                <button type="button" onclick="loadCategory('all')" class="glass-btn px-4 py-2 rounded-full text-[10px] font-bold text-indigo-600">
-                    View All
-                </button>
-            </div>
-            <div class="flex gap-4 overflow-x-auto pb-3 scrollbar-hide" id="categoriesRow">
-                <button type="button" data-category="all" onclick="loadCategory('all')"
-                    class="category-pill active flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">🛍️</div>
-                    <span class="text-[11px] font-extrabold text-white text-center">All Products</span>
-                    <span class="text-[9px] text-white/75">Browse all</span>
-                </button>
-                
-                <button type="button" data-category="beauty" onclick="loadCategory('beauty')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">💄</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Beauty</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-                <button type="button" data-category="fragrances" onclick="loadCategory('fragrances')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">🌸</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Fragrances</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-                <button type="button" data-category="furniture" onclick="loadCategory('furniture')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">🏠</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Furniture</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-                <button type="button" data-category="groceries" onclick="loadCategory('groceries')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">🍎</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Groceries</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-                <button type="button" data-category="home-decoration" onclick="loadCategory('home-decoration')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">📦</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Home Decoration</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-                <button type="button" data-category="kitchen-accessories" onclick="loadCategory('kitchen-accessories')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">📦</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Kitchen Accessories</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-                <button type="button" data-category="laptops" onclick="loadCategory('laptops')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">💻</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Laptops</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-                <button type="button" data-category="mens-shirts" onclick="loadCategory('mens-shirts')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">👕</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Mens Shirts</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-                <button type="button" data-category="mens-shoes" onclick="loadCategory('mens-shoes')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">👟</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Mens Shoes</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-                <button type="button" data-category="mens-watches" onclick="loadCategory('mens-watches')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">⌚</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Mens Watches</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-                <button type="button" data-category="mobile-accessories" onclick="loadCategory('mobile-accessories')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">📦</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Mobile Accessories</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-                <button type="button" data-category="motorcycle" onclick="loadCategory('motorcycle')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">🏍️</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Motorcycle</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-                <button type="button" data-category="skin-care" onclick="loadCategory('skin-care')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">🧴</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Skin Care</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-                <button type="button" data-category="smartphones" onclick="loadCategory('smartphones')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">📱</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Smartphones</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-                <button type="button" data-category="sports-accessories" onclick="loadCategory('sports-accessories')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">⚽</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Sports Accessories</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-                <button type="button" data-category="sunglasses" onclick="loadCategory('sunglasses')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">🕶️</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Sunglasses</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-                <button type="button" data-category="tablets" onclick="loadCategory('tablets')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">📱</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Tablets</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-                <button type="button" data-category="tops" onclick="loadCategory('tops')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">👚</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Tops</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-                <button type="button" data-category="vehicle" onclick="loadCategory('vehicle')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">🚗</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Vehicle</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-                <button type="button" data-category="womens-bags" onclick="loadCategory('womens-bags')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">👜</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Womens Bags</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-                <button type="button" data-category="womens-dresses" onclick="loadCategory('womens-dresses')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">👗</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Womens Dresses</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-                <button type="button" data-category="womens-jewellery" onclick="loadCategory('womens-jewellery')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">💍</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Womens Jewellery</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-                <button type="button" data-category="womens-shoes" onclick="loadCategory('womens-shoes')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">👠</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Womens Shoes</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-                <button type="button" data-category="womens-watches" onclick="loadCategory('womens-watches')"
-                    class="category-pill flex flex-col items-center justify-center gap-2 p-4 glass-card cursor-pointer shrink-0">
-                    <div class="category-icon">⌚</div>
-                    <span class="text-[11px] font-extrabold text-slate-700 text-center leading-tight">Womens Watches</span>
-                    <span class="text-[9px] text-slate-400">View products</span>
-                </button>
-            </div>
-        </section>
-
-<section class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8 slide-up" style="animation-delay:0.2s">
-            <div class="glass-card p-5 flex items-center gap-4 cursor-pointer" onclick="loadCategory('all')">
-                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-rose-100 to-orange-100 flex items-center justify-center flex-shrink-0"><span class="text-2xl">🔥</span></div>
-                <div class="flex-1">
-                    <h3 class="font-bold text-sm text-slate-800" data-i18n="flash_title">Flash Sale</h3>
-                    <p class="text-[11px] text-slate-500 mb-2" data-i18n="flash_desc">Limited time deals</p>
-                    <div class="flex gap-1.5" id="countdown">
-                        <span class="countdown-box px-2 py-1 text-xs font-bold text-slate-700" id="cdHours">02</span>
-                        <span class="text-slate-400 font-bold">:</span>
-                        <span class="countdown-box px-2 py-1 text-xs font-bold text-slate-700" id="cdMins">45</span>
-                        <span class="text-slate-400 font-bold">:</span>
-                        <span class="countdown-box px-2 py-1 text-xs font-bold text-slate-700" id="cdSecs">18</span>
-                    </div>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <input id="newsEmail" type="email" placeholder="Enter your email address" class="flex-1 h-14 px-5 rounded-2xl bg-white/10 border border-white/15 text-sm font-medium placeholder:text-slate-400 focus:border-sky-400 focus:bg-white/15 transition" >
+                    <button onclick="subscribeNews()" class="btn-primary h-14 px-8 rounded-2xl text-sm font-extrabold flex items-center justify-center gap-2"><i class="fa-solid fa-paper-plane"></i><span data-i18n="subscribe">Subscribe</span></button>
                 </div>
             </div>
-            <div class="glass-card p-5 flex items-center gap-4 cursor-pointer">
-                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center flex-shrink-0"><span class="text-2xl">🚚</span></div>
-                <div class="flex-1">
-                    <h3 class="font-bold text-sm text-slate-800" data-i18n="ship_title">Free Shipping</h3>
-                    <p class="text-[11px] text-slate-500 mb-2" data-i18n="ship_desc">On orders over $50</p>
-                    <a href="#" onclick="loadCategory('all')" class="text-[11px] font-bold text-indigo-500 hover:text-indigo-600" data-i18n="shop_now">Shop now →</a>
+        </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer id="contact" class="bg-[#0b1220] text-slate-400 mt-4 scroll-mt-40">
+        <div class="max-w-7xl mx-auto px-4 py-14 grid sm:grid-cols-2 lg:grid-cols-4 gap-10">
+            <div>
+                <a href="#home" class="flex items-center gap-2.5 mb-4">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-violet-600 flex items-center justify-center text-white"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                    <div class="leading-none"><p class="font-display font-extrabold text-lg text-white">HR <span class="text-sky-400">ShopBD</span></p><p class="text-[8px] font-bold tracking-[.25em] text-slate-500 mt-0.5">MOBILE &amp; GADGETS</p></div>
+                </a>
+                <p class="text-xs leading-relaxed text-slate-500" data-i18n="footer_desc">Your one-stop destination for genuine smartphones, tablets &amp; accessories. Upgrade your mobile lifestyle with us.</p>
+                <div class="flex gap-2.5 mt-5">
+                    <a href="#" class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-blue-600 hover:text-white hover:border-blue-600 transition"><i class="fa-brands fa-facebook-f text-xs"></i></a>
+                    <a href="#" class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-pink-600 hover:text-white hover:border-pink-600 transition"><i class="fa-brands fa-instagram text-xs"></i></a>
+                    <a href="#" class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-red-600 hover:text-white hover:border-red-600 transition"><i class="fa-brands fa-youtube text-xs"></i></a>
+                    <a href="#" class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-sky-500 hover:text-white hover:border-sky-500 transition"><i class="fa-brands fa-tiktok text-xs"></i></a>
+                    <a href="#" class="w-9 h-9 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center hover:bg-blue-500 hover:text-white hover:border-blue-500 transition"><i class="fa-brands fa-whatsapp text-xs"></i></a>
                 </div>
             </div>
-            <div class="glass-card p-5 flex items-center gap-4 cursor-pointer" onclick="loadCategory('all')">
-                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-100 to-purple-100 flex items-center justify-center flex-shrink-0"><span class="text-2xl">✨</span></div>
-                <div class="flex-1">
-                    <h3 class="font-bold text-sm text-slate-800" data-i18n="new_title">New Arrivals</h3>
-                    <p class="text-[11px] text-slate-500 mb-2" data-i18n="new_desc">Check out the latest trends</p>
-                    <a href="#" onclick="loadCategory('all')" class="text-[11px] font-bold text-indigo-500 hover:text-indigo-600" data-i18n="shop_now">Shop now →</a>
+            <div>
+                <p class="text-white font-display font-bold text-sm mb-5" data-i18n="foot_shop">SHOP</p>
+                <ul class="space-y-2.5 text-xs font-medium">
+                    <li><a href="#shop" class="hover:text-sky-400 transition" data-i18n="foot_all">All Products</a></li>
+                    <li><a href="javascript:filterCat('smartphones')" class="hover:text-sky-400 transition" data-i18n="nav_smartphones">Smartphones</a></li>
+                    <li><a href="javascript:filterCat('mobile-accessories')" class="hover:text-sky-400 transition" data-i18n="nav_accessories">Accessories</a></li>
+                    <li><a href="javascript:filterCat('tablets')" class="hover:text-sky-400 transition" data-i18n="nav_tablets">Tablets</a></li>
+                    <li><a href="#deals" class="hover:text-sky-400 transition" data-i18n="foot_deals">Hot Deals</a></li>
+                    <li><a href="#best" class="hover:text-sky-400 transition" data-i18n="foot_best">Best Sellers</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="text-white font-display font-bold text-sm mb-5" data-i18n="foot_care">CUSTOMER CARE</p>
+                <ul class="space-y-2.5 text-xs font-medium">
+                    <li><a href="dashboard.html#orders" class="hover:text-sky-400 transition" data-i18n="foot_track">Track Order</a></li>
+                    <li><a href="dashboard.html" class="hover:text-sky-400 transition" data-i18n="foot_orders">My Orders</a></li>
+                    <li><a href="dashboard.html#wishlist" class="hover:text-sky-400 transition" data-i18n="nav_wishlist">My Wishlist</a></li>
+                    <li><a href="dashboard.html#addresses" class="hover:text-sky-400 transition" data-i18n="foot_addresses">My Addresses</a></li>
+                    <li><a href="dashboard.html#coupons" class="hover:text-sky-400 transition" data-i18n="foot_coupons">Coupons</a></li>
+                    <li><a href="dashboard.html#settings" class="hover:text-sky-400 transition" data-i18n="foot_settings">Settings</a></li>
+                </ul>
+            </div>
+            <div>
+                <p class="text-white font-display font-bold text-sm mb-5" data-i18n="foot_contact">CONTACT US</p>
+                <ul class="space-y-3.5 text-xs font-medium">
+                    <li class="flex items-start gap-3"><i class="fa-solid fa-location-dot text-sky-400 mt-0.5"></i><span>House 12, Road 5, Dhanmondi, Dhaka 1205</span></li>
+                    <li class="flex items-center gap-3"><i class="fa-solid fa-phone text-sky-400"></i><a href="tel:+8801712345678" class="hover:text-sky-400">+880 1712-345678</a></li>
+                    <li class="flex items-center gap-3"><i class="fa-solid fa-envelope text-sky-400"></i><a href="mailto:support@hrshopbd.com" class="hover:text-sky-400">support@hrshopbd.com</a></li>
+                    <li class="flex items-center gap-3"><i class="fa-solid fa-clock text-sky-400"></i><span data-i18n="foot_hours">Sat - Thu: 9:00 AM - 9:00 PM</span></li>
+                </ul>
+                <a href="admin.html" class="inline-flex items-center gap-2 mt-6 text-[10px] font-bold text-slate-500 border border-white/10 rounded-lg px-3 py-2 hover:text-white hover:border-sky-500 transition"><i class="fa-solid fa-lock"></i> Admin Login</a>
+            </div>
+        </div>
+        <div class="border-t border-white/5">
+            <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+                <p class="text-[11px] text-slate-500">© 2025 HR ShopBD. <span data-i18n="rights">All Rights Reserved.</span></p>
+                <div class="flex items-center gap-2 text-[10px] font-extrabold text-slate-400">
+                    <span class="px-2 py-1 bg-white/5 rounded">VISA</span><span class="px-2 py-1 bg-white/5 rounded">Mastercard</span><span class="px-2 py-1 bg-white/5 rounded">bKash</span><span class="px-2 py-1 bg-white/5 rounded">Nagad</span><span class="px-2 py-1 bg-white/5 rounded">COD</span>
                 </div>
             </div>
-        </section>
+        </div>
+    </footer>
 
-        <section class="mb-8 slide-up" style="animation-delay:0.3s">
-            <div class="flex justify-between items-center mb-5">
-                <h2 class="text-xl font-extrabold text-slate-800" data-i18n="deals_title">Best Deals for You</h2>
-                <button onclick="loadCategory('all')" class="text-xs font-semibold text-indigo-500 hover:text-indigo-600 flex items-center gap-1"><span data-i18n="view_all">View All</span> <i class="fa-solid fa-arrow-right text-[10px]"></i></button>
+    <!-- ============ WISHLIST PANEL ============ -->
+    <div id="wishlistPanel" class="fixed inset-0 z-[70] hidden">
+        <div class="absolute inset-0 bg-slate-900/45 backdrop-blur-sm" onclick="closeWishlistPanel()"></div>
+        <aside class="absolute right-0 top-0 h-full w-full max-w-md bg-white/95 backdrop-blur-2xl shadow-2xl flex flex-col slide-in">
+            <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+                <h3 class="font-display font-extrabold text-lg text-slate-900 flex items-center gap-2.5"><span class="w-9 h-9 rounded-xl bg-pink-50 text-pink-500 flex items-center justify-center"><i class="fa-solid fa-heart"></i></span><span data-i18n="panel_wishlist">My Wishlist</span><span id="wishPanelCount" class="text-xs font-black bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full">0</span></h3>
+                <button onclick="closeWishlistPanel()" class="w-9 h-9 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div id="dealsGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                <div class="glass-card p-8 flex items-center justify-center col-span-full">
-                    <div class="text-center">
-                        <div class="w-10 h-10 border-3 border-indigo-300 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-                        <p class="text-sm text-slate-500" data-i18n="loading">Loading products...</p>
-                    </div>
-                </div>
+            <div id="wishPanelItems" class="flex-1 overflow-y-auto px-5 py-4"></div>
+            <div class="p-5 border-t border-slate-100">
+                <a href="dashboard.html#wishlist" class="w-full h-12 rounded-2xl border-2 border-pink-200 text-pink-600 text-sm font-extrabold flex items-center justify-center gap-2 hover:bg-pink-50 transition"><i class="fa-solid fa-arrow-right-arrow-left"></i><span data-i18n="panel_manage">Manage in Dashboard</span></a>
             </div>
-        </section>
-
-        <section class="mb-8 slide-up" style="animation-delay:0.4s">
-            <div class="flex justify-between items-center mb-5">
-                <h2 class="text-xl font-extrabold text-slate-800" id="sectionTitle" data-i18n="recommended_title">Recommended for You</h2>
-                <button onclick="loadCategory('all')" class="text-xs font-semibold text-indigo-500 hover:text-indigo-600 flex items-center gap-1"><span data-i18n="view_all">View All</span> <i class="fa-solid fa-arrow-right text-[10px]"></i></button>
-            </div>
-            <div id="recommendedGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"></div>
-        </section>
-
-        <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 slide-up" style="animation-delay:0.5s">
-            <div class="trust-badge rounded-2xl p-4 text-center">
-                <div class="w-10 h-10 rounded-full bg-green-50 flex items-center justify-center mx-auto mb-2"><i class="fa-solid fa-shield-halved text-green-500 text-sm"></i></div>
-                <p class="text-[11px] font-bold text-slate-700" data-i18n="trust_secure">Secure Payment</p>
-                <p class="text-[10px] text-slate-400" data-i18n="trust_secure_desc">100% secure payment</p>
-            </div>
-            <div class="trust-badge rounded-2xl p-4 text-center">
-                <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center mx-auto mb-2"><i class="fa-solid fa-rotate-left text-blue-500 text-sm"></i></div>
-                <p class="text-[11px] font-bold text-slate-700" data-i18n="trust_return">Easy Returns</p>
-                <p class="text-[10px] text-slate-400" data-i18n="trust_return_desc">30-day return policy</p>
-            </div>
-            <div class="trust-badge rounded-2xl p-4 text-center">
-                <div class="w-10 h-10 rounded-full bg-purple-50 flex items-center justify-center mx-auto mb-2"><i class="fa-solid fa-headset text-purple-500 text-sm"></i></div>
-                <p class="text-[11px] font-bold text-slate-700" data-i18n="trust_support">24/7 Support</p>
-                <p class="text-[10px] text-slate-400" data-i18n="trust_support_desc">Dedicated support</p>
-            </div>
-            <div class="trust-badge rounded-2xl p-4 text-center">
-                <div class="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center mx-auto mb-2"><i class="fa-solid fa-star text-amber-500 text-sm"></i></div>
-                <p class="text-[11px] font-bold text-slate-700" data-i18n="trust_trusted">Trusted by Thousands</p>
-                <p class="text-[10px] text-slate-400" data-i18n="trust_trusted_desc">4.8 average rating</p>
-            </div>
-        </section>
-
-        <section class="glass-card p-8 mb-8 text-center slide-up" style="animation-delay:0.6s">
-            <h3 class="text-xl font-extrabold text-slate-800 mb-2" data-i18n="newsletter_title">Join NovaShop Club</h3>
-            <p class="text-sm text-slate-500 mb-4" data-i18n="newsletter_desc">Get exclusive offers, early access and more!</p>
-            <div class="flex max-w-md mx-auto gap-2">
-                <input type="email" data-i18n-placeholder="newsletter_placeholder" placeholder="Enter your email" class="flex-1 bg-white/60 border border-white/80 rounded-full px-5 py-2.5 text-sm focus:outline-none search-glow transition">
-                <button class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-sm px-6 py-2.5 rounded-full hover:opacity-90 transition shadow-lg" data-i18n="newsletter_btn">Join Now</button>
-            </div>
-        </section>
+        </aside>
     </div>
-</main>
 
-</div>
-
-<button id="mobileCartBtn" onclick="openCartMobile()" class="lg:flex fixed bottom-6 right-6 z-[45] w-14 h-14 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full flex items-center justify-center shadow-2xl text-white transition-all duration-300">
-    <i class="fa-solid fa-bag-shopping"></i>
-    <span id="mobileCartBadge" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center hidden">0</span>
-</button>
-
-<div id="mobileCart" class="fixed inset-0 z-[65] hidden">
-    <div class="absolute inset-0 bg-black/30 backdrop-blur-xs" onclick="closeCartMobile()"></div>
-    <div class="absolute right-0 top-0 h-full w-[90%] max-w-[360px] glass-strong flex flex-col shadow-2xl" id="mobileCartPanel">
-        <div class="px-5 py-4 border-b border-white/30 flex items-center justify-between">
-            <h3 class="font-extrabold text-sm text-slate-800"><span data-i18n="cart_title">My Cart</span> (<span id="mobileCartCount">0</span>)</h3>
-            <button onclick="closeCartMobile()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/50 transition text-slate-400"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="flex-1 overflow-y-auto px-5 py-4 space-y-4" id="mobileCartItems">
-            <div class="text-center py-12">
-                <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-bag-shopping text-slate-300 text-xl"></i></div>
-                <p class="text-sm text-slate-400" data-i18n="cart_empty">Your cart is empty</p>
+    <!-- ============ CART PANEL ============ -->
+    <div id="cartPanel" class="fixed inset-0 z-[70] hidden">
+        <div class="absolute inset-0 bg-slate-900/45 backdrop-blur-sm" onclick="closeCart()"></div>
+        <aside class="absolute right-0 top-0 h-full w-full max-w-md bg-white/95 backdrop-blur-2xl shadow-2xl flex flex-col slide-in">
+            <div class="flex items-center justify-between px-6 py-5 border-b border-slate-100">
+                <h3 class="font-display font-extrabold text-lg text-slate-900 flex items-center gap-2.5"><span class="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center"><i class="fa-solid fa-bag-shopping"></i></span><span data-i18n="panel_cart">Your Cart</span></h3>
+                <button onclick="closeCart()" class="w-9 h-9 rounded-full hover:bg-slate-100 flex items-center justify-center text-slate-400"><i class="fa-solid fa-xmark"></i></button>
             </div>
-        </div>
-        <div id="mobileCartSummary" class="hidden px-5 py-4 border-t border-white/30 space-y-3">
-            <div class="space-y-2 text-sm">
-                <div class="flex justify-between text-slate-500"><span data-i18n="cart_subtotal">Subtotal</span><span id="mobileSubtotal">$0.00</span></div>
-                <div class="flex justify-between text-green-500"><span data-i18n="cart_shipping">Shipping</span><span class="font-bold" data-i18n="cart_free">Free</span></div>
-                <div class="border-t border-slate-200/50 pt-2 flex justify-between font-extrabold text-slate-800">
-                    <span data-i18n="cart_total">Total</span><span id="mobileTotal">$0.00</span>
-                </div>
+            <div id="cartItems" class="flex-1 overflow-y-auto px-5 py-4"></div>
+            <div class="p-5 border-t border-slate-100 space-y-3" id="cartSummary">
+                <div class="flex justify-between text-xs font-semibold text-slate-500"><span data-i18n="cart_subtotal">Subtotal</span><span id="cartSubtotal">$0.00</span></div>
+                <div class="flex justify-between text-xs font-semibold text-slate-500"><span data-i18n="cart_shipping">Shipping</span><span class="text-emerald-600 font-bold" data-i18n="cart_free">FREE</span></div>
+                <div class="flex justify-between text-base font-extrabold text-slate-900 border-t border-dashed border-slate-200 pt-3"><span data-i18n="cart_total">Total</span><span id="cartTotal">$0.00</span></div>
+                <button onclick="proceedCheckout()" class="btn-primary w-full h-13 py-3.5 rounded-2xl text-white text-sm font-extrabold flex items-center justify-center gap-2"><i class="fa-solid fa-shield-halved"></i><span data-i18n="cart_checkout">Proceed to Checkout</span></button>
+                <button onclick="closeCart()" class="w-full text-xs font-bold text-slate-400 hover:text-slate-600 py-1" data-i18n="cart_continue">Continue Shopping</button>
             </div>
-            <a href="checkout.html" class="w-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-sm py-3.5 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition shadow-lg">
-                <span data-i18n="cart_checkout">Checkout</span> <i class="fa-solid fa-arrow-right text-xs"></i>
-            </a>
+        </aside>
+    </div>
+
+    <!-- ============ NOTIFICATIONS PANEL ============ -->
+    <div id="notifPanel" class="absolute right-2 sm:right-6 top-[120px] z-[80] hidden w-[330px] max-w-[calc(100vw-20px)]">
+        <div class="glass !bg-white/95 rounded-3xl shadow-2xl overflow-hidden border border-slate-100">
+            <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100">
+                <p class="font-display font-extrabold text-sm text-slate-900 flex items-center gap-2"><i class="fa-solid fa-bell text-blue-500"></i><span data-i18n="panel_notif">Notifications</span></p>
+                <button onclick="clearNotifs()" class="text-[10px] font-bold text-blue-600 hover:underline" data-i18n="notif_read">Mark all read</button>
+            </div>
+            <div id="notifList" class="max-h-[380px] overflow-y-auto divide-y divide-slate-50"></div>
         </div>
     </div>
-</div>
 
-<div id="wishlistPanel" class="fixed inset-0 z-[70] hidden">
-    <div class="absolute inset-0 bg-black/30" onclick="closeWishlistPanel()"></div>
-    <div class="absolute right-0 top-0 h-full w-[90%] max-w-[380px] glass-strong flex flex-col">
-        <div class="px-5 py-4 border-b border-white/30 flex items-center justify-between">
-            <h3 class="font-extrabold text-sm text-slate-800"><i class="fa-solid fa-heart text-pink-500 mr-2"></i><span data-i18n="nav_wishlist">Wishlist</span> (<span id="wishPanelCount">0</span>)</h3>
-            <button onclick="closeWishlistPanel()" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/50 transition text-slate-400"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div class="flex-1 overflow-y-auto px-5 py-4 space-y-3" id="wishPanelItems">
-            <div class="text-center py-12">
-                <div class="w-16 h-16 rounded-full bg-pink-50 flex items-center justify-center mx-auto mb-3"><i class="fa-regular fa-heart text-pink-300 text-xl"></i></div>
-                <p class="text-sm text-slate-400">No items in wishlist</p>
-                <p class="text-[11px] text-slate-300 mt-1">Browse products and tap the heart icon</p>
-            </div>
-        </div>
-        <div class="px-5 py-3 border-t border-white/30">
-            <a href="dashboard.html#wishlist" class="w-full bg-gradient-to-r from-pink-500 to-rose-500 text-white font-bold text-sm py-3 rounded-xl flex items-center justify-center gap-2 hover:opacity-90 transition shadow-lg">
-                <span data-i18n="view_all">View All</span> <i class="fa-solid fa-arrow-right text-xs"></i>
-            </a>
-        </div>
+    <!-- ============ PRODUCT MODAL ============ -->
+    <div id="productModal" class="fixed inset-0 z-[75] hidden items-center justify-center p-4">
+        <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onclick="closeModal()"></div>
+        <div id="modalCard" class="relative w-full max-w-lg bg-white rounded-[28px] p-6 sm:p-8 shadow-2xl fade-up"></div>
     </div>
-</div>
 
-<div id="productModal" class="fixed inset-0 z-[70] hidden">
-    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" onclick="closeModal()"></div>
-    <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-lg glass-strong rounded-3xl overflow-hidden">
-        <div class="relative">
-            <img id="modalImg" src="" class="w-full h-72 object-contain bg-white/50 p-4">
-            <button onclick="closeModal()" class="absolute top-4 right-4 w-9 h-9 glass rounded-full flex items-center justify-center hover:bg-white/80 transition"><i class="fa-solid fa-xmark text-slate-600"></i></button>
-        </div>
-        <div class="p-6">
-            <p id="modalCategory" class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider mb-1"></p>
-            <h2 id="modalTitle" class="font-extrabold text-xl text-slate-800 mb-2"></h2>
-            <div class="flex items-center gap-2 mb-3">
-                <div id="modalStars" class="flex text-amber-400 text-xs"></div>
-                <span id="modalRating" class="text-xs text-slate-400"></span>
+    <!-- ============ MOBILE MENU ============ -->
+    <div id="mobileMenu" class="fixed inset-0 z-[85] hidden">
+        <div class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm" onclick="closeMobileMenu()"></div>
+        <aside class="absolute left-0 top-0 h-full w-[300px] bg-white shadow-2xl flex flex-col overflow-hidden">
+            <div class="p-5 bg-gradient-to-br from-blue-600 to-violet-600 text-white flex items-center justify-between">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-xl bg-white/20 flex items-center justify-center"><i class="fa-solid fa-mobile-screen-button"></i></div>
+                    <div class="leading-none"><p class="font-display font-extrabold">HR ShopBD</p><p class="text-[8px] font-bold tracking-[.22em] text-blue-100 mt-1">MOBILE &amp; GADGETS</p></div>
+                </div>
+                <button onclick="closeMobileMenu()" class="w-9 h-9 rounded-full bg-white/15 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <p id="modalDesc" class="text-sm text-slate-500 leading-relaxed mb-4 line-clamp-3"></p>
-            <div class="flex items-center justify-between">
-                <span id="modalPrice" class="text-2xl font-extrabold text-slate-800"></span>
-                <button id="modalAddBtn" onclick="addToCartFromModal()" class="bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-bold text-sm px-6 py-3 rounded-xl hover:opacity-90 transition shadow-lg flex items-center gap-2">
-                    <i class="fa-solid fa-bag-shopping text-xs"></i> <span data-i18n="add_to_cart">Add to Cart</span>
-                </button>
+            <div class="flex-1 overflow-y-auto p-4">
+                <div id="mUserBox" class="mb-4"></div>
+                <p class="text-[9px] font-extrabold tracking-[.25em] text-slate-400 uppercase px-3 mb-2">Menu</p>
+                <nav class="space-y-1">
+                    <button onclick="closeMobileMenu();goSection('#home')" class="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition"><i class="fa-solid fa-house w-5 text-center text-blue-500"></i><span data-i18n="nav_home">Home</span></button>
+                    <button onclick="closeMobileMenu();goSection('#shop')" class="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition"><i class="fa-solid fa-store w-5 text-center text-blue-500"></i><span data-i18n="nav_shop">Shop</span></button>
+                    <button onclick="closeMobileMenu();filterCat('smartphones')" class="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition"><i class="fa-solid fa-mobile-screen w-5 text-center text-blue-500"></i><span data-i18n="nav_smartphones">Smartphones</span></button>
+                    <button onclick="closeMobileMenu();filterCat('mobile-accessories')" class="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition"><i class="fa-solid fa-headphones w-5 text-center text-blue-500"></i><span data-i18n="nav_accessories">Accessories</span></button>
+                    <button onclick="closeMobileMenu();filterCat('tablets')" class="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition"><i class="fa-solid fa-tablet-screen-button w-5 text-center text-blue-500"></i><span data-i18n="nav_tablets">Tablets</span></button>
+                    <button onclick="closeMobileMenu();goSection('#deals')" class="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition"><i class="fa-solid fa-fire w-5 text-center text-orange-500"></i><span data-i18n="nav_deals">Hot Deals</span></button>
+                </nav>
+                <p class="text-[9px] font-extrabold tracking-[.25em] text-slate-400 uppercase px-3 mt-5 mb-2">Account</p>
+                <nav class="space-y-1">
+                    <button onclick="closeMobileMenu();location.href='dashboard.html#orders'" class="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition"><i class="fa-solid fa-box w-5 text-center text-violet-500"></i><span data-i18n="foot_orders">My Orders</span></button>
+                    <button onclick="closeMobileMenu();openWishlistPanel()" class="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition"><i class="fa-solid fa-heart w-5 text-center text-pink-500"></i><span data-i18n="nav_wishlist">Wishlist</span> <span id="mWishCount" class="ml-auto text-[10px] font-black bg-pink-100 text-pink-600 px-2 py-0.5 rounded-full hidden">0</span></button>
+                    <button onclick="closeMobileMenu();openCart()" class="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition"><i class="fa-solid fa-bag-shopping w-5 text-center text-blue-500"></i><span data-i18n="panel_cart">Your Cart</span> <span id="mCartCount" class="ml-auto text-[10px] font-black bg-blue-100 text-blue-600 px-2 py-0.5 rounded-full hidden">0</span></button>
+                    <button onclick="closeMobileMenu();toggleNotifPanel()" class="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition"><i class="fa-solid fa-bell w-5 text-center text-amber-500"></i><span data-i18n="panel_notif">Notifications</span> <span id="mNotifCount" class="ml-auto text-[10px] font-black bg-amber-100 text-amber-600 px-2 py-0.5 rounded-full hidden">0</span></button>
+                    <button onclick="closeMobileMenu();location.href='dashboard.html#addresses'" class="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition"><i class="fa-solid fa-location-dot w-5 text-center text-emerald-500"></i><span data-i18n="foot_addresses">Addresses</span></button>
+                    <button onclick="closeMobileMenu();location.href='dashboard.html#coupons'" class="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 transition"><i class="fa-solid fa-ticket w-5 text-center text-rose-500"></i><span data-i18n="foot_coupons">Coupons</span></button>
+                </nav>
+                <button onclick="logout()" id="mLogoutBtn" class="hidden w-full mt-4 px-3 py-3 rounded-xl text-sm font-bold text-red-500 bg-red-50 hover:bg-red-100 transition"><i class="fa-solid fa-arrow-right-from-bracket mr-2"></i><span data-i18n="logout">Logout</span></button>
             </div>
-        </div>
+            <div class="p-4 border-t border-slate-100 flex items-center justify-between">
+                <p class="text-[10px] font-bold text-slate-400" data-i18n="need_help">Need help? Call +880 1712-345678</p>
+                <button onclick="toggleLang()" class="text-[10px] font-extrabold text-blue-600 border border-blue-200 rounded-lg px-2.5 py-1.5 hover:bg-blue-50"><i class="fa-solid fa-language mr-1"></i><span id="mLangLabel">EN</span></button>
+            </div>
+        </aside>
     </div>
-</div>
+
+    <!-- back to top -->
+    <button onclick="window.scrollTo({top:0,behavior:'smooth'})" class="fixed bottom-6 right-6 z-[60] w-12 h-12 rounded-2xl btn-primary text-white shadow-xl hidden items-center justify-center" id="topBtn"><i class="fa-solid fa-arrow-up"></i></button>
+
+    <!-- toast container -->
+    <div id="toastWrap" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[95] space-y-2 w-[92%] max-w-sm"></div>
 
 <script>
-// ===================== i18n =====================
+/* =================================================================
+   HR ShopBD — Homepage  (white / glass UI · mobile gadgets only)
+   ================================================================= */
+const API_BASE = 'https://dummyjson.com';
+const ALLOWED_CATS = ['smartphones', 'mobile-accessories', 'tablets'];
+
+// ---------- i18n ----------
 const i18n = {
     en: {
-        nav_home: 'Home', nav_deals: 'Deals', nav_new: 'New Arrivals', nav_best: 'Best Sellers', nav_brands: 'Brands',
-        nav_orders: 'My Orders', nav_wishlist: 'Wishlist', nav_coupons: 'Coupons', nav_addresses: 'Addresses',
-        nav_login: 'Login / Sign Up', nav_dashboard: 'Dashboard', nav_admin: 'Admin Panel',
-        search_placeholder: 'Search for products, brands and more...',
-        hero_badge: 'New Collection', hero_title: 'Find Your Style,<br>Love Your Look ✨',
-        hero_desc: 'Discover the latest trends in fashion, beauty, and lifestyle.', hero_btn: 'Shop Now',
-        cat_all: 'All', cat_electronics: 'Electronics', cat_jewelry: 'Jewelry', cat_men: 'Men', cat_women: 'Women',
-        flash_title: 'Flash Sale', flash_desc: 'Limited time deals',
-        ship_title: 'Free Shipping', ship_desc: 'On orders over $50',
-        new_title: 'New Arrivals', new_desc: 'Check out the latest trends',
-        shop_now: 'Shop now →', deals_title: 'Best Deals for You', view_all: 'View All',
-        recommended_title: 'Recommended for You', loading: 'Loading products...',
-        trust_secure: 'Secure Payment', trust_secure_desc: '100% secure payment',
-        trust_return: 'Easy Returns', trust_return_desc: '30-day return policy',
-        trust_support: '24/7 Support', trust_support_desc: 'Dedicated support',
-        trust_trusted: 'Trusted by Thousands', trust_trusted_desc: '4.8 average rating',
-        newsletter_title: 'Join HR ShopBD Club', newsletter_desc: 'Get exclusive offers, early access and more!',
-        newsletter_placeholder: 'Enter your email', newsletter_btn: 'Join Now',
-        cart_title: 'My Cart', cart_empty: 'Your cart is empty', cart_empty_desc: 'Add products to get started',
-        cart_subtotal: 'Subtotal', cart_shipping: 'Shipping', cart_free: 'Free', cart_total: 'Total', cart_checkout: 'Checkout',
-        add_to_cart: 'Add to Cart', added: 'Added', added_to_wishlist: 'Added to wishlist!', removed_from_wishlist: 'Removed from wishlist!',
-        notif_title: 'Notifications', notif_1: 'Your order has been delivered!', notif_2: 'Flash sale starts in 1 hour!', notif_3: 'New coupon available!',
-        promo_label: 'Special Offer', promo_title: 'Summer Sale<br>Up to 50% Off', promo_btn: 'Shop Now',
-        no_products: 'No products found'
+        top_free:'Free delivery on orders over $50', top_code:'Get 5% OFF on first order | Code:', top_track:'Track Order', top_help:'Help & Support',
+        signin:'Sign In', account:'Account', logout:'Logout', need_help:'Need help? Call +880 1712-345678',
+        nav_home:'Home', nav_shop:'Shop', nav_smartphones:'Smartphones', nav_accessories:'Accessories', nav_tablets:'Tablets', nav_deals:'Hot Deals', nav_brands:'Brands', nav_contact:'Contact',
+        hero_badge:'New Arrivals', hero_l1:'UPGRADE YOUR', hero_l2:'MOBILE LIFESTYLE',
+        hero_sub:'Premium smartphones, tablets & accessories. 100% original with the best prices in town.',
+        cta_shop:'Shop Now', cta_deals:'Hot Deals', stat_gadgets:'Mobile Gadgets', stat_original:'Original Products', stat_returns:'Easy Returns', tag_instock:'In Stock',
+        perk1t:'100% Original', perk1s:'Genuine products', perk2t:'Best Prices', perk2s:'Compare & save', perk3t:'Fast Delivery', perk3s:'Nationwide shipping', perk4t:'Easy Returns', perk4s:'7-day return policy',
+        cat_label:'Explore', cat_title:'Shop by Category', cat_all:'All Gadgets', view_all:'View All Products', items:'items',
+        all_title:'All Products', loading:'Loading products...', no_products:'No products found.',
+        add_to_cart:'Add to Cart', added:'Added ✓', sort_az:'Name (A-Z)', sort_pl:'Price: Low to High', sort_rating:'Top Rated',
+        deal_label:'Limited Time', deal_title:'MEGA DEALS ON MOBILE GEAR', deal_sub:'Up to 40% off on smartphones, earbuds, chargers and more. Grab them before they are gone!', deal_cta:'Shop Hot Deals', deal_ends:'Deal Ends In', deal_stock:'Hurry! 75% of sale items already claimed',
+        unit_days:'Days', unit_hours:'Hours', unit_mins:'Mins', unit_secs:'Secs',
+        best_title:'Best Sellers',
+        why_title:'Why Shop With HR ShopBD?', why1t:'Original Products', why1s:'100% authentic', why2t:'Best Prices', why2s:'Guaranteed cheap', why3t:'Fast Delivery', why3s:'Quick & reliable', why4t:'Easy Returns', why4s:'7 days return', why5t:'24/7 Support', why5s:"We're here to help",
+        testi_title:'What Our Customers Say', verified:'Verified Buyer',
+        news_label:'Stay Updated', news_title:'LATEST TECH DEALS', news_sub:'Subscribe for new arrivals, exclusive offers and secret discounts — straight to your inbox.', subscribe:'Subscribe',
+        footer_desc:'Your one-stop destination for genuine smartphones, tablets & accessories. Upgrade your mobile lifestyle with us.',
+        foot_shop:'SHOP', foot_all:'All Products', foot_deals:'Hot Deals', foot_best:'Best Sellers', foot_care:'CUSTOMER CARE', foot_track:'Track Order', foot_orders:'My Orders', foot_addresses:'Addresses', foot_coupons:'Coupons', foot_settings:'Settings', foot_contact:'CONTACT US', foot_hours:'Sat - Thu: 9:00 AM - 9:00 PM', rights:'All Rights Reserved.',
+        panel_wishlist:'My Wishlist', panel_manage:'Manage in Dashboard', panel_cart:'Your Cart', panel_notif:'Notifications', notif_read:'Mark all read',
+        cart_subtotal:'Subtotal', cart_shipping:'Shipping', cart_free:'FREE', cart_total:'Total', cart_checkout:'Proceed to Checkout', cart_continue:'Continue Shopping',
+        cart_empty:'Your cart is empty', cart_empty_desc:'Add some gadgets to get started!', wl_empty:'Wishlist is empty', wl_empty_desc:'Tap the ♥ on products you love.',
+        quick_view:'Quick View', category:'Category', rating_label:'Rating', brand:'Brand', stock:'In Stock', buy_now:'Buy Now',
+        added_to_wishlist:'Added to wishlist ❤', removed_from_wishlist:'Removed from wishlist', added_to_cart:'Added to cart 🛒', remove:'Remove', copy:'Copy',
+        results_for:'Showing results for', welcome_n:'Welcome to HR ShopBD', notif_1:'Your order #HR10024 is out for delivery 🚚', notif_2:'Flash sale: up to 40% OFF this weekend ⚡', notif_3:'New iPhone 16 covers just landed 📱', notif_4:'Use code HRBD5 for 5% off your first order 💳',
+        wishlist_msg:'Added to your wishlist', order_msg:'Your order has been placed', sub_ok:'Subscribed! Check your inbox for deals 🎉', sub_bad:'Please enter a valid email', hello:'Hi', guest:'Guest'
     },
     bn: {
-        nav_home: 'হোম', nav_deals: 'ডিলস', nav_new: 'নতুন আগমন', nav_best: 'সেরা বিক্রেতা', nav_brands: 'ব্র্যান্ড',
-        nav_orders: 'আমার অর্ডার', nav_wishlist: 'ইচ্ছাতালিকা', nav_coupons: 'কুপন', nav_addresses: 'ঠিকানা',
-        nav_login: 'লগইন / সাইন আপ', nav_dashboard: 'ড্যাশবোর্ড', nav_admin: 'অ্যাডমিন প্যানেল',
-        search_placeholder: 'পণ্য, ব্র্যান্ড এবং আরও অনুসন্ধান করুন...',
-        hero_badge: 'নতুন সংগ্রহ', hero_title: 'আপনার স্টাইল খুঁজুন,<br>আপনার লুক ভালোবাসুন ✨',
-        hero_desc: 'ফ্যাশন, সৌন্দর্য এবং লাইফস্টাইলের সর্বশেষ ট্রেন্ড আবিষ্কার করুন।', hero_btn: 'এখনই কিনুন',
-        cat_all: 'সব', cat_electronics: 'ইলেকট্রনিক্স', cat_jewelry: 'গহনা', cat_men: 'পুরুষ', cat_women: 'নারী',
-        flash_title: 'ফ্ল্যাশ সেল', flash_desc: 'সীমিত সময়ের ডিল',
-        ship_title: 'ফ্রি শিপিং', ship_desc: '$৫০ এর বেশি অর্ডারে',
-        new_title: 'নতুন আগমন', new_desc: 'সর্বশেষ ট্রেন্ড দেখুন',
-        shop_now: 'এখনই কিনুন →', deals_title: 'আপনার জন্য সেরা ডিল', view_all: 'সব দেখুন',
-        recommended_title: 'আপনার জন্য সুপারিশ', loading: 'পণ্য লোড হচ্ছে...',
-        trust_secure: 'নিরাপদ পেমেন্ট', trust_secure_desc: '১০০% নিরাপদ পেমেন্ট',
-        trust_return: 'সহজ রিটার্ন', trust_return_desc: '৩০-দিনের রিটার্ন নীতি',
-        trust_support: '২৪/৭ সাপোর্ট', trust_support_desc: 'সমর্পিত সহায়তা',
-        trust_trusted: 'হাজারো মানুষের বিশ্বাস', trust_trusted_desc: '৪.৮ গড় রেটিং',
-        newsletter_title: 'HR ShopBD ক্লাবে যোগ দিন', newsletter_desc: 'একচেটিয়া অফার, আগাম অ্যাক্সেস এবং আরও পান!',
-        newsletter_placeholder: 'আপনার ইমেইল লিখুন', newsletter_btn: 'যোগ দিন',
-        cart_title: 'আমার কার্ট', cart_empty: 'আপনার কার্ট খালি', cart_empty_desc: 'শুরু করতে পণ্য যোগ করুন',
-        cart_subtotal: 'উপমোট', cart_shipping: 'শিপিং', cart_free: 'বিনামূল্যে', cart_total: 'মোট', cart_checkout: 'চেকআউট',
-        add_to_cart: 'কার্টে যোগ করুন', added: 'যোগ করা হয়েছে', added_to_wishlist: 'ইচ্ছাতালিকায় যোগ করা হয়েছে!', removed_from_wishlist: 'ইচ্ছাতালিকা থেকে সরানো হয়েছে!',
-        notif_title: 'নোটিফিকেশন', notif_1: 'আপনার অর্ডার ডেলিভারি হয়েছে!', notif_2: 'ফ্ল্যাশ সেল ১ ঘণ্টায় শুরু!', notif_3: 'নতুন কুপন পাওয়া গেছে!',
-        promo_label: 'বিশেষ অফার', promo_title: 'গ্রীষ্মকালীন সেল<br>৫০% পর্যন্ত ছাড়', promo_btn: 'এখনই কিনুন',
-        no_products: 'কোনো পণ্য পাওয়া যায়নি'
+        top_free:'৫০ ডলারের বেশি অর্ডারে ফ্রি ডেলিভারি', top_code:'প্রথম অর্ডারে ৫% ছাড় | কোড:', top_track:'অর্ডার ট্র্যাক করুন', top_help:'সাহায্য ও সাপোর্ট',
+        signin:'সাইন ইন', account:'অ্যাকাউন্ট', logout:'লগ আউট', need_help:'সাহায্য লাগবে? কল করুন +৮৮০ ১৭১২-৩৪৫৬৭৮',
+        nav_home:'হোম', nav_shop:'শপ', nav_smartphones:'স্মার্টফোন', nav_accessories:'এক্সেসরিজ', nav_tablets:'ট্যাবলেট', nav_deals:'হট ডিল', nav_brands:'ব্র্যান্ড', nav_contact:'যোগাযোগ',
+        hero_badge:'নতুন কালেকশন', hero_l1:'আপগ্রেড করুন আপনার', hero_l2:'মোবাইল লাইফস্টাইল',
+        hero_sub:'প্রিমিয়াম স্মার্টফোন, ট্যাবলেট ও এক্সেসরিজ — ১০০% অরিজিনাল, সেরা দামে।',
+        cta_shop:'এখনই কিনুন', cta_deals:'হট ডিল', stat_gadgets:'মোবাইল গ্যাজেট', stat_original:'অরিজিনাল পণ্য', stat_returns:'সহজ রিটার্ন', tag_instock:'স্টকে আছে',
+        perk1t:'১০০% অরিজিনাল', perk1s:'জেনুইন পণ্য', perk2t:'সেরা দাম', perk2s:'তুলনা করে বাঁচান', perk3t:'দ্রুত ডেলিভারি', perk3s:'সারাদেশে শিপিং', perk4t:'সহজ রিটার্ন', perk4s:'৭ দিনের রিটার্ন',
+        cat_label:'ব্রাউজ করুন', cat_title:'ক্যাটাগরি অনুযায়ী শপ', cat_all:'সব গ্যাজেট', view_all:'সব পণ্য দেখুন', items:'আইটেম',
+        all_title:'সব পণ্য', loading:'পণ্য লোড হচ্ছে...', no_products:'কোনো পণ্য পাওয়া যায়নি।',
+        add_to_cart:'কার্টে যোগ করুন', added:'যোগ হয়েছে ✓', sort_az:'নাম (A-Z)', sort_pl:'দাম: কম থেকে বেশি', sort_rating:'সেরা রেটিং',
+        deal_label:'সীমিত সময়', deal_title:'মোবাইল গিয়ারে মেগা ডিল', deal_sub:'স্মার্টফোন, ইয়ারবাড, চার্জারসহ ৪০% পর্যন্ত ছাড়। দেরি করবেন না!', deal_cta:'হট ডিল শপ করুন', deal_ends:'অফার শেষ হতে বাকি', deal_stock:'তাড়াতাড়ি করুন! ৭৫% সেল আইটেম ইতিমধ্যে বিক্রি হয়েছে',
+        unit_days:'দিন', unit_hours:'ঘণ্টা', unit_mins:'মিনিট', unit_secs:'সেকেন্ড',
+        best_title:'বেস্ট সেলার',
+        why_title:'কেন HR ShopBD থেকে কিনবেন?', why1t:'অরিজিনাল পণ্য', why1s:'১০০% প্রামাণিক', why2t:'সেরা দাম', why2s:'সবচেয়ে কম দামে', why3t:'দ্রুত ডেলিভারি', why3s:'দ্রুত ও নির্ভরযোগ্য', why4t:'সহজ রিটার্ন', why4s:'৭ দিন রিটার্ন', why5t:'২৪/৭ সাপোর্ট', why5s:'আমরা আছি আপনার পাশে',
+        testi_title:'গ্রাহকরা যা বলেন', verified:'ভেরিফাইড ক্রেতা',
+        news_label:'আপডেট থাকুন', news_title:'সর্বশেষ টেক ডিল', news_sub:'নতুন পণ্য, এক্সক্লুসিভ অফার ও সিক্রেট ডিসকাউন্ট পেতে সাবস্ক্রাইব করুন।', subscribe:'সাবস্ক্রাইব',
+        footer_desc:'অরিজিনাল স্মার্টফোন, ট্যাবলেট ও এক্সেসরিজের এক-স্টপ গন্তব্য। আমাদের সাথেই আপগ্রেড করুন আপনার মোবাইল লাইফস্টাইল।',
+        foot_shop:'শপ', foot_all:'সব পণ্য', foot_deals:'হট ডিল', foot_best:'বেস্ট সেলার', foot_care:'কাস্টমার কেয়ার', foot_track:'অর্ডার ট্র্যাক', foot_orders:'আমার অর্ডার', foot_addresses:'ঠিকানা', foot_coupons:'কুপন', foot_settings:'সেটিংস', foot_contact:'যোগাযোগ', foot_hours:'শনি - বৃহস্পতি: সকাল ৯টা - রাত ৯টা', rights:'সর্বস্বত্ব সংরক্ষিত।',
+        panel_wishlist:'আমার ইচ্ছাতালিকা', panel_manage:'ড্যাশবোর্ডে ম্যানেজ করুন', panel_cart:'আপনার কার্ট', panel_notif:'নোটিফিকেশন', notif_read:'সব পড়া হয়েছে',
+        cart_subtotal:'সাবটোটাল', cart_shipping:'ডেলিভারি চার্জ', cart_free:'ফ্রি', cart_total:'মোট', cart_checkout:'চেকআউট করুন', cart_continue:'কেনাকাটা চালিয়ে যান',
+        cart_empty:'আপনার কার্ট খালি', cart_empty_desc:'শুরু করতে কিছু গ্যাজেট যোগ করুন!', wl_empty:'ইচ্ছাতালিকা খালি', wl_empty_desc:'পছন্দের পণ্যে ♥ চিহ্ন দিন।',
+        quick_view:'দ্রুত দেখুন', category:'ক্যাটাগরি', rating_label:'রেটিং', brand:'ব্র্যান্ড', stock:'স্টকে আছে', buy_now:'এখনই কিনুন',
+        added_to_wishlist:'ইচ্ছাতালিকায় যোগ হয়েছে ❤', removed_from_wishlist:'ইচ্ছাতালিকা থেকে সরানো হয়েছে', added_to_cart:'কার্টে যোগ হয়েছে 🛒', remove:'মুছুন', copy:'কপি',
+        results_for:'সার্চ ফলাফল', welcome_n:'HR ShopBD তে স্বাগতম', notif_1:'আপনার অর্ডার #HR10024 ডেলিভারির পথে 🚚', notif_2:'ফ্ল্যাশ সেল: এই উইকএন্ডে ৪০% পর্যন্ত ছাড় ⚡', notif_3:'নতুন iPhone কভার এসেছে 📱', notif_4:'প্রথম অর্ডারে ৫% ছাড় পেতে কোড HRBD5 💳',
+        wishlist_msg:'ইচ্ছাতালিকায় যোগ হয়েছে', order_msg:'আপনার অর্ডার সফল হয়েছে', sub_ok:'সাবস্ক্রাইব হয়েছে! ইনবক্স চেক করুন 🎉', sub_bad:'সঠিক ইমেইল দিন', hello:'হ্যালো', guest:'অতিথি'
     }
 };
+let lang = localStorage.getItem('novaLang') || 'en';
+if (!i18n[lang]) lang = 'en';
 
-let currentLang = localStorage.getItem('novaLang') || 'en';
-
-function setLang(lang) {
-    currentLang = lang;
-    localStorage.setItem('novaLang', lang);
-    document.getElementById('langEn').classList.toggle('active', lang === 'en');
-    document.getElementById('langBn').classList.toggle('active', lang === 'bn');
-    applyTranslations();
-    loadProducts(currentCategory);
-}
-
+function t(key) { return (i18n[lang] && i18n[lang][key]) || i18n.en[key] || key; }
 function applyTranslations() {
-    const t = i18n[currentLang];
+    document.documentElement.lang = lang === 'bn' ? 'bn' : 'en';
     document.querySelectorAll('[data-i18n]').forEach(el => {
-        const key = el.getAttribute('data-i18n');
-        if (t[key]) el.innerHTML = t[key];
-    });
-    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
-        const key = el.getAttribute('data-i18n-placeholder');
-        if (t[key]) el.placeholder = t[key];
-    });
-    document.documentElement.lang = currentLang === 'bn' ? 'bn' : 'en';
-}
-
-// ===================== STATE =====================
-let allProducts = [];
-let cart = JSON.parse(localStorage.getItem('novaCart') || '[]');
-let wishlist = JSON.parse(localStorage.getItem('novaWishlist') || '[]');
-let currentCategory = 'all';
-let modalProduct = null;
-
-// ===================== DUMMYJSON API =====================
-const API_BASE = 'https://dummyjson.com';
-
-async function fetchProducts() {
-    const res = await fetch(`${API_BASE}/products?limit=0`);
-    if (!res.ok) throw new Error(`Products API ${res.status}`);
-    const data = await res.json();
-    return data.products || [];
-}
-
-async function fetchByCategory(cat) {
-    if (!cat || cat === 'all') return fetchProducts();
-    const res = await fetch(`${API_BASE}/products/category/${encodeURIComponent(cat)}`);
-    if (!res.ok) throw new Error(`Category API ${res.status}`);
-    const data = await res.json();
-    return data.products || [];
-}
-
-async function searchProducts(query) {
-    const q = String(query || '').trim();
-    if (!q) return [];
-    const res = await fetch(`${API_BASE}/products/search?q=${encodeURIComponent(q)}`);
-    if (!res.ok) throw new Error(`Search API ${res.status}`);
-    const data = await res.json();
-    return data.products || [];
-}
-
-async function fetchProductById(id) {
-    const res = await fetch(`${API_BASE}/products/${encodeURIComponent(id)}`);
-    if (!res.ok) throw new Error(`Product API ${res.status}`);
-    return await res.json();
-}
-
-// ===================== INIT =====================
-document.addEventListener('DOMContentLoaded', async () => {
-    applyTranslations();
-    renderCart();
-    updateWishlistCount();
-    checkLoginState();
-    await loadProducts('all');
-    startCountdown();
-    document.addEventListener('click', (e) => {
-        const notif = document.getElementById('notifPanel');
-        if (!e.target.closest('#notifPanel') && !e.target.closest('.fa-bell')) notif.classList.add('hidden');
-    });
-});
-
-async function loadProducts(cat) {
-    try {
-        const data = await fetchByCategory(cat);
-        allProducts = data || [];
-        renderProductGrid('dealsGrid', allProducts, true);
-        renderProductGrid('recommendedGrid', allProducts.slice(0, 8), false);
-    } catch (err) {
-        console.error('Failed to load products:', err);
-        const grid = document.getElementById('dealsGrid');
-        if (grid) grid.innerHTML = `<div class="col-span-full text-center py-10 glass-card"><div class="text-red-400 font-bold mb-1">Products could not be loaded</div><div class="text-xs text-slate-400 mb-3">Check your internet connection and try again.</div><button onclick="loadCategory('${cat}')" class="px-4 py-2 rounded-full bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xs font-bold">Retry</button></div>`;
-        const rec = document.getElementById('recommendedGrid');
-        if (rec) rec.innerHTML = '';
-    }
-}
-
-async function loadCategory(cat) {
-    currentCategory = cat;
-
-    document.querySelectorAll('.category-pill').forEach(p => {
-        p.classList.toggle('active', p.dataset.category === cat);
-        const text = p.querySelector('span');
-        if (text && p.dataset.category !== 'all') {
-            text.classList.toggle('text-white', p.dataset.category === cat);
-            text.classList.toggle('text-slate-700', p.dataset.category !== cat);
+        const k = el.getAttribute('data-i18n');
+        if (i18n[lang][k]) {
+            if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') el.placeholder = i18n[lang][k];
+            else el.textContent = i18n[lang][k];
         }
     });
+    document.getElementById('langLabel').textContent = lang === 'bn' ? 'বাং' : 'EN';
+    const ml = document.getElementById('mLangLabel'); if (ml) ml.textContent = lang === 'bn' ? 'বাং' : 'EN';
+    document.title = lang === 'bn' ? 'HR ShopBD — মোবাইল ও এক্সেসরিজ' : 'HR ShopBD — Mobile & Accessories';
+    updateCountLabels();
+}
+function toggleLang() { lang = lang === 'en' ? 'bn' : 'en'; localStorage.setItem('novaLang', lang); applyTranslations(); renderProductGrid(); renderBestSellers(); refreshDrawerLabels(); }
 
-    const grid = document.getElementById('dealsGrid');
-    if (grid) {
-        grid.innerHTML = `<div class="col-span-full text-center py-12">
-            <div class="w-10 h-10 border-3 border-indigo-300 border-t-transparent rounded-full animate-spin mx-auto mb-3"></div>
-            <p class="text-sm text-slate-500">${i18n[currentLang].loading}</p>
-        </div>`;
-    }
+// ---------- state ----------
+let allProducts = [];
+let filtered = [];
+let activeCat = 'all';
+let cart = [];
+let wishlist = [];
+try { cart = JSON.parse(localStorage.getItem('novaCart') || '[]'); if (!Array.isArray(cart)) cart = []; } catch (e) { cart = []; }
+try { wishlist = JSON.parse(localStorage.getItem('novaWishlist') || '[]'); if (!Array.isArray(wishlist)) wishlist = []; } catch (e) { wishlist = []; }
 
-    await loadProducts(cat);
+// ---------- helpers ----------
+function fmt(n) { return '$' + Number(n || 0).toFixed(2); }
+function friendlyCat(c) {
+    if (c === 'smartphones') return 'Smartphone';
+    if (c === 'mobile-accessories') return 'Accessory';
+    if (c === 'tablets') return 'Tablet';
+    return c;
+}
+function starsOf(r) { const n = Math.max(0, Math.min(5, Math.round(r || 0))); return '★'.repeat(n) + '☆'.repeat(5 - n); }
+
+function showToast(msg, type) {
+    const wrap = document.getElementById('toastWrap');
+    const colors = type === 'error' ? 'bg-red-500' : type === 'info' ? 'bg-slate-800' : 'bg-gradient-to-r from-emerald-500 to-green-500';
+    const el = document.createElement('div');
+    el.className = `toast ${colors} text-white text-xs font-bold px-5 py-3.5 rounded-2xl shadow-2xl text-center`;
+    el.innerHTML = msg;
+    wrap.appendChild(el);
+    setTimeout(() => el.remove(), 2800);
+}
+function goSection(sel) {
+    closeAllPanels();
+    const el = document.querySelector(sel);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    document.querySelectorAll('.navlink').forEach(n => n.classList.toggle('active', n.getAttribute('data-i18n') && sel.includes(n.textContent.toLowerCase()) === false && false));
+}
+function closeAllPanels() {
+    closeCart(); closeWishlistPanel(); closeMobileMenu();
+    const np = document.getElementById('notifPanel'); if (np) np.classList.add('hidden');
+    closeModal();
 }
 
-// ===================== RENDER PRODUCTS =====================
-function renderProductGrid(containerId, products, showBadge) {
-    const container = document.getElementById(containerId);
-    if (!products || products.length === 0) {
-        container.innerHTML = `<div class="col-span-full text-center py-8 text-sm text-slate-400">${i18n[currentLang].no_products}</div>`;
+// ---------- auth ----------
+function checkAuth() {
+    const guest = document.getElementById('authGuest');
+    const user = document.getElementById('authUser');
+    const avatarImg = document.getElementById('avatarImg');
+    const userName = document.getElementById('userName');
+    let u = null;
+    try { u = JSON.parse(localStorage.getItem('novaShopUser') || 'null'); } catch (e) {}
+    if (u && u.email) {
+        guest.classList.add('hidden'); guest.classList.remove('flex');
+        user.classList.remove('hidden'); user.classList.add('flex');
+        avatarImg.src = u.photoURL || ('https://i.pravatar.cc/100?u=' + encodeURIComponent(u.email));
+        avatarImg.onerror = function () { this.src = 'https://ui-avatars.com/api/?name=' + encodeURIComponent(u.name || u.email) + '&background=2563eb&color=fff'; };
+        userName.textContent = (u.name || u.email.split('@')[0]).split(' ')[0];
+    } else {
+        user.classList.add('hidden'); user.classList.remove('flex');
+        guest.classList.remove('hidden'); guest.classList.add('flex');
+    }
+    // mobile user box
+    const box = document.getElementById('mUserBox');
+    if (u && u.email) {
+        box.innerHTML = `<div class="flex items-center gap-3 p-3 rounded-2xl bg-slate-50">
+            <img src="${avatarImg.src}" class="w-11 h-11 rounded-full object-cover" alt="">
+            <div class="min-w-0"><p class="text-sm font-extrabold text-slate-800 truncate">${t('hello')}, ${(u.name || u.email.split('@')[0])}</p>
+            <p class="text-[10px] text-slate-400 font-semibold truncate">${u.email}</p></div></div>`;
+        document.getElementById('mLogoutBtn').classList.remove('hidden');
+    } else {
+        box.innerHTML = `<a href="login.html" class="flex items-center justify-center gap-2 p-3 rounded-2xl btn-primary text-white text-sm font-extrabold"><i class="fa-solid fa-user"></i> ${t('signin')}</a>`;
+        document.getElementById('mLogoutBtn').classList.add('hidden');
+    }
+}
+function logout() {
+    localStorage.removeItem('novaShopAuth');
+    localStorage.removeItem('novaShopUser');
+    closeMobileMenu();
+    checkAuth();
+    showToast(lang === 'bn' ? 'লগ আউট হয়েছে 👋' : 'Logged out 👋');
+}
+
+// ---------- fetch products (mobile only) ----------
+async function fetchAllMobileProducts() {
+    const all = [];
+    await Promise.all(ALLOWED_CATS.map(async c => {
+        try {
+            const res = await fetch(`${API_BASE}/products/category/${c}?select=id,title,description,price,discountPercentage,rating,stock,brand,category,thumbnail,images`);
+            const data = await res.json();
+            if (data && Array.isArray(data.products)) all.push(...data.products);
+        } catch (e) { console.warn('fetch failed for', c, e); }
+    }));
+    const unique = new Map();
+    all.forEach(p => unique.set(p.id, p));
+    return [...unique.values()];
+}
+
+// ---------- render ----------
+function renderSkeletons() {
+    document.getElementById('productGrid').innerHTML = Array.from({ length: 8 }).map(() =>
+        `<div class="skeleton h-[300px]"></div>`).join('');
+}
+function renderProductGrid() {
+    const grid = document.getElementById('productGrid');
+    const tCat = activeCat === 'all' ? null : activeCat;
+    let list = tCat ? allProducts.filter(p => p.category === tCat) : allProducts.slice();
+    const query = (document.getElementById('searchInput').value || '').trim().toLowerCase();
+    if (query) list = list.filter(p => (p.title || '').toLowerCase().includes(query));
+    applySortValue(list);
+    if (!list.length) {
+        grid.innerHTML = `<div class="col-span-full text-center py-16">
+            <div class="w-20 h-20 mx-auto rounded-3xl bg-slate-100 flex items-center justify-center mb-4"><i class="fa-solid fa-box-open text-slate-300 text-2xl"></i></div>
+            <p class="text-sm font-bold text-slate-400">${t('no_products')}</p>
+            <button onclick="filterCat('all');document.getElementById('searchInput').value='';document.getElementById('mSearchInput').value='';onSearch('')" class="mt-4 text-xs font-extrabold text-blue-600 underline underline-offset-4">${t('cat_all')}</button></div>`;
+        document.getElementById('shownCount').textContent = 0;
         return;
     }
-    const t = i18n[currentLang];
-    container.innerHTML = products.map((p, i) => {
-        const inWishlist = wishlist.includes(p.id);
+    document.getElementById('shownCount').textContent = list.length;
+    document.getElementById('sectionTitle').textContent = query ? `${t('results_for')} "${query}"` : (activeCat === 'all' ? t('all_title') : document.querySelector(`.chip[data-cat="${activeCat}"] span`)?.textContent || t('all_title'));
+    grid.innerHTML = list.map((p, i) => {
+        const inWish = wishlist.includes(p.id);
         const inCart = cart.find(c => c.id === p.id);
-        const rating = typeof p.rating === 'number' ? p.rating : (p.rating?.rate || 0);
-        const count = typeof p.rating === 'object' ? (p.rating?.count || 0) : 0;
-        const stars = '★'.repeat(Math.round(rating)) + '☆'.repeat(5 - Math.round(rating));
-        const discount = p.discountPercentage || 0;
-        const img = p.thumbnail || p.image || (p.images && p.images[0]) || '';
-        const badge = showBadge && discount > 0 ? `<span class="badge-discount absolute top-3 left-3 text-white text-[9px] font-bold px-2 py-1 rounded-lg z-10">-${Math.round(discount)}%</span>` : showBadge && i < 6 ? `<span class="badge-new absolute top-3 left-3 text-white text-[9px] font-bold px-2 py-1 rounded-lg z-10">NEW</span>` : '';
-        const safeJson = JSON.stringify(p).replace(/\\/g, '\\\\').replace(/'/g,"&#39;").replace(/"/g,"&quot;");
-        return `
-        <div class="product-card glass-card fade-in" style="animation-delay:${i * 0.05}s">
-            <div class="relative bg-white/50 h-40 overflow-hidden cursor-pointer" onclick='openProductById(${p.id})' data-product='${safeJson}'>
-                ${badge}
-                <img src="${img}" alt="${p.title}" class="product-img w-full h-full object-contain p-3" loading="lazy">
-                <button onclick="event.stopPropagation();toggleWishlist(${p.id})" class="wishlist-btn absolute top-3 right-3 w-8 h-8 glass rounded-full flex items-center justify-center text-slate-400 hover:text-red-400 transition z-10">
-                    <i class="fa-${inWishlist ? 'solid' : 'regular'} fa-heart text-xs"></i>
+        const disc = Math.round(p.discountPercentage || 0);
+        const oldP = disc > 0 ? p.price / (1 - disc / 100) : 0;
+        return `<div class="product-card rounded-3xl overflow-hidden flex flex-col fade-up" style="animation-delay:${Math.min(i * 0.04, 0.4)}s">
+            <div class="relative bg-gradient-to-b from-slate-50 to-white p-4 h-44 sm:h-52 cursor-pointer group" onclick="openModal(${p.id})">
+                ${disc > 0 ? `<span class="absolute top-3 left-3 z-10 bg-gradient-to-r from-red-500 to-orange-500 text-white text-[10px] font-black px-2.5 py-1 rounded-lg shadow">-${disc}%</span>` : ''}
+                ${disc <= 0 && p.stock > 0 ? `<span class="absolute top-3 left-3 z-10 bg-emerald-500 text-white text-[9px] font-black px-2.5 py-1 rounded-lg shadow">NEW</span>` : ''}
+                <button onclick="event.stopPropagation();toggleWishlist(${p.id})" class="absolute top-3 right-3 z-10 w-8 h-8 rounded-full ${inWish ? 'bg-pink-500 text-white shadow-lg shadow-pink-500/40' : 'bg-white/90 text-slate-400 hover:text-pink-500 hover:scale-110'} flex items-center justify-center transition shadow">
+                    <i class="fa-${inWish ? 'solid' : 'regular'} fa-heart text-[13px]"></i>
                 </button>
+                <img src="${p.thumbnail || ''}" alt="${(p.title || '').replace(/"/g, '&quot;')}" loading="lazy" class="zoom-img w-full h-full object-contain drop-shadow-sm">
+                <span class="absolute bottom-2 left-1/2 -translate-x-1/2 text-[10px] font-extrabold text-blue-600 bg-blue-50/90 backdrop-blur px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition"><i class="fa-solid fa-eye mr-1"></i>${t('quick_view')}</span>
             </div>
-            <div class="p-3">
-                <p class="text-[9px] font-bold text-indigo-400 uppercase tracking-wider mb-0.5 truncate">${p.category}</p>
-                <h3 class="text-xs font-bold text-slate-700 truncate mb-1 cursor-pointer hover:text-indigo-500 transition" onclick='openProductById(${p.id})'>${p.title}</h3>
-                <div class="flex items-center gap-1 mb-1.5">
-                    <span class="text-amber-400 text-[10px]">${stars}</span>
-                    <span class="text-[10px] text-slate-400">(${count})</span>
+            <div class="p-3.5 sm:p-4 flex flex-col flex-1">
+                <p class="text-[9px] font-extrabold uppercase tracking-[.18em] text-blue-500 mb-1 truncate">${friendlyCat(p.category)}${p.brand ? ' · ' + p.brand : ''}</p>
+                <h3 class="text-[13px] font-bold text-slate-800 leading-snug line-clamp-2 min-h-[36px] cursor-pointer hover:text-blue-600 transition" onclick="openModal(${p.id})">${(p.title || '').replace(/"/g, '&quot;')}</h3>
+                <div class="flex items-center gap-1.5 mt-1.5">
+                    <span class="text-[11px] tracking-tight text-amber-400">${starsOf(p.rating)}</span>
+                    <span class="text-[9px] font-bold text-slate-300">(${Number(p.rating || 0).toFixed(1)})</span>
                 </div>
-                <div class="flex items-center gap-2">
-                    <span class="text-sm font-extrabold text-slate-800">$${p.price.toFixed(2)}</span>
-                    ${discount > 0 ? `<span class="text-[10px] text-slate-400 line-through">$${(p.price / (1 - discount/100)).toFixed(2)}</span>` : ''}
+                <div class="flex items-end justify-between mt-auto pt-3">
+                    <div>
+                        <p class="text-[15px] font-black text-slate-900">${fmt(p.price)}</p>
+                        ${oldP ? `<p class="text-[10px] font-semibold text-slate-300 line-through">${fmt(oldP)}</p>` : ''}
+                    </div>
                 </div>
-                <button onclick="addToCart(${p.id})"
-                    class="mt-2 w-full ${inCart ? 'bg-indigo-100 text-indigo-600' : 'bg-gradient-to-r from-indigo-500 to-purple-500 text-white'} text-[11px] font-bold py-2 rounded-xl flex items-center justify-center gap-1 hover:opacity-90 transition">
-                    <i class="fa-solid fa-${inCart ? 'check' : 'plus'} text-[10px]"></i> ${inCart ? t.added : t.add_to_cart}
+                <button onclick="addToCart(${p.id})" class="mt-3 w-full h-10 rounded-xl text-[11px] font-extrabold flex items-center justify-center gap-2 transition ${inCart ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 'btn-primary text-white'}">
+                    <i class="fa-solid fa-${inCart ? 'check' : 'cart-plus'} text-[11px]"></i>${inCart ? t('added') : t('add_to_cart')}
                 </button>
             </div>
         </div>`;
     }).join('');
 }
-
-// ===================== CART =====================
-function addToCart(productId) {
-    const product = allProducts.find(p => p.id === productId);
-    if (!product) return;
-    const existing = cart.find(c => c.id === productId);
-    if (existing) { existing.qty += 1; } else { cart.push({ ...product, qty: 1 }); }
-    saveCart(); renderCart(); loadProducts(currentCategory);
+function applySortValue(list) {
+    const s = document.getElementById('sortSelect').value;
+    if (s === 'az') list.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+    else if (s === 'za') list.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
+    else if (s === 'pl') list.sort((a, b) => a.price - b.price);
+    else if (s === 'ph') list.sort((a, b) => b.price - a.price);
+    else if (s === 'rating') list.sort((a, b) => (b.rating || 0) - (a.rating || 0));
+    else if (s === 'discount') list.sort((a, b) => (b.discountPercentage || 0) - (a.discountPercentage || 0));
+    return list;
 }
-function removeFromCart(productId) { cart = cart.filter(c => c.id !== productId); saveCart(); renderCart(); loadProducts(currentCategory); }
-function updateQty(productId, delta) {
-    const item = cart.find(c => c.id === productId);
-    if (!item) return;
-    item.qty += delta;
-    if (item.qty <= 0) { removeFromCart(productId); return; }
-    saveCart(); renderCart();
+function applySort() { renderProductGrid(); }
+
+function filterCat(cat, el) {
+    activeCat = cat;
+    closeAllPanels();
+    document.querySelectorAll('.chip').forEach(c => c.classList.toggle('active', c.dataset.cat === cat));
+    document.querySelectorAll('.cat-pill').forEach(p => p.classList.toggle('active', p.dataset.pill === cat));
+    renderProductGrid();
+    const shop = document.getElementById('shop');
+    shop.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    window.scrollBy(0, -140);
 }
-function saveCart() { localStorage.setItem('novaCart', JSON.stringify(cart)); }
 
-function renderCart() {
-    const totalItems = cart.reduce((s, c) => s + c.qty, 0);
-    const subtotal = cart.reduce((s, c) => s + c.price * c.qty, 0);
-    document.getElementById('mobileCartCount').textContent = totalItems;
-    
-    const badge = document.getElementById('mobileCartBadge');
-    const desktopBadge = document.getElementById('desktopCartBadge');
-    
-    if (totalItems > 0) { 
-        badge.textContent = totalItems; badge.classList.remove('hidden'); 
-        desktopBadge.textContent = totalItems; desktopBadge.classList.remove('hidden'); 
-    } else { 
-        badge.classList.add('hidden'); 
-        desktopBadge.classList.add('hidden'); 
+// ---------- hero featured ----------
+async function loadHeroPicks() {
+    const picks = [123, 101, 160]; // iPhone 13 Pro, AirPods Max Silver, Galaxy Tab S8
+    for (let i = 0; i < picks.length; i++) {
+        try {
+            const res = await fetch(`${API_BASE}/products/${picks[i]}?select=id,title,price,thumbnail,category,discountPercentage`);
+            const p = await res.json();
+            if (!p || !p.title) continue;
+            document.getElementById('heroP' + (i + 1)).src = p.thumbnail || '';
+            document.getElementById('heroT' + (i + 1)).textContent = p.title;
+            document.getElementById('heroC' + (i + 1)).textContent = friendlyCat(p.category).toUpperCase();
+            document.getElementById('heroPr' + (i + 1)).textContent = fmt(p.price);
+        } catch (e) {}
     }
+}
 
-    const t = i18n[currentLang];
-    const mobileCartContainer = document.getElementById('mobileCartItems');
-
-    if (cart.length === 0) {
-        const emptyHTML = `<div class="text-center py-12"><div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mx-auto mb-3"><i class="fa-solid fa-bag-shopping text-slate-300 text-xl"></i></div><p class="text-sm text-slate-400">${t.cart_empty}</p><p class="text-[11px] text-slate-300 mt-1">${t.cart_empty_desc}</p></div>`;
-        mobileCartContainer.innerHTML = emptyHTML;
-        document.getElementById('mobileCartSummary').classList.add('hidden'); return;
-    }
-
-    const itemHTML = cart.map(item => `
-        <div class="flex gap-3 p-3 glass-card">
-            <img src="${item.thumbnail || item.image}" class="w-16 h-16 rounded-xl object-contain bg-white/50 flex-shrink-0 p-1">
-            <div class="flex-1 min-w-0">
-                <h4 class="text-xs font-bold text-slate-700 truncate">${item.title}</h4>
-                <p class="text-[10px] text-slate-400">${item.category}</p>
+// ---------- best sellers slider ----------
+function renderBestSellers() {
+    const top = allProducts.slice().sort((a, b) => (b.rating || 0) - (a.rating || 0)).slice(0, 10);
+    const holder = document.getElementById('bestSlider');
+    if (!top.length) return;
+    holder.innerHTML = top.map(p => {
+        const disc = Math.round(p.discountPercentage || 0);
+        const inWish = wishlist.includes(p.id);
+        return `<div class="snap-start shrink-0 w-[210px] sm:w-[240px] product-card rounded-3xl overflow-hidden fade-up">
+            <div class="relative bg-slate-50 p-3 h-36 cursor-pointer" onclick="openModal(${p.id})">
+                ${disc > 0 ? `<span class="absolute top-2 left-2 z-10 bg-red-500 text-white text-[9px] font-black px-2 py-0.5 rounded-md">-${disc}%</span>` : ''}
+                <button onclick="event.stopPropagation();toggleWishlist(${p.id})" class="absolute top-2 right-2 z-10 w-7 h-7 rounded-full ${inWish ? 'bg-pink-500 text-white' : 'bg-white/90 text-slate-400 hover:text-pink-500'} flex items-center justify-center text-[11px] transition shadow"><i class="fa-${inWish ? 'solid' : 'regular'} fa-heart"></i></button>
+                <img src="${p.thumbnail || ''}" loading="lazy" class="w-full h-full object-contain" alt="">
+            </div>
+            <div class="p-3">
+                <h3 class="text-xs font-bold text-slate-800 truncate">${(p.title || '').replace(/"/g, '&quot;')}</h3>
+                <div class="flex items-center gap-1 mt-1"><span class="text-[10px] text-amber-400">${starsOf(p.rating)}</span><span class="text-[8px] text-slate-300 font-bold">(${Number(p.rating || 0).toFixed(1)})</span></div>
                 <div class="flex items-center justify-between mt-2">
-                    <span class="text-sm font-extrabold text-slate-800">$${(item.price * item.qty).toFixed(2)}</span>
-                    <div class="flex items-center gap-2">
-                        <button onclick="updateQty(${item.id}, -1)" class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 text-xs hover:bg-slate-200 transition">−</button>
-                        <span class="text-xs font-bold text-slate-700 w-4 text-center">${item.qty}</span>
-                        <button onclick="updateQty(${item.id}, 1)" class="w-6 h-6 rounded-lg bg-slate-100 flex items-center justify-center text-slate-500 text-xs hover:bg-slate-200 transition">+</button>
-                        <button onclick="removeFromCart(${item.id})" class="w-6 h-6 rounded-lg hover:bg-red-50 flex items-center justify-center text-slate-400 text-xs hover:text-red-500 transition ml-1"><i class="fa-solid fa-trash text-[9px]"></i></button>
-                    </div>
+                    <p class="text-sm font-black text-slate-900">${fmt(p.price)}</p>
+                    <button onclick="addToCart(${p.id})" class="w-7 h-7 rounded-lg btn-primary text-white text-[10px] flex items-center justify-center"><i class="fa-solid fa-cart-plus"></i></button>
                 </div>
             </div>
-        </div>
-    `).join('');
-    mobileCartContainer.innerHTML = itemHTML;
+        </div>`;
+    }).join('');
+}
+function scrollSlider(dir) { const s = document.getElementById('bestSlider'); s.scrollBy({ left: dir * 260, behavior: 'smooth' }); }
 
-    document.getElementById('mobileSubtotal').textContent = `$${subtotal.toFixed(2)}`;
-    document.getElementById('mobileTotal').textContent = `$${subtotal.toFixed(2)}`;
-    document.getElementById('mobileCartSummary').classList.remove('hidden');
+// ---------- brands row ----------
+function renderBrands() {
+    const brands = [...new Set(allProducts.map(p => p.brand).filter(Boolean))].sort();
+    const holder = document.getElementById('brandRow');
+    const chips = brands.map(b => `<div class="inline-flex items-center gap-2 px-8 py-2 border-r border-slate-100 text-slate-500 hover:text-blue-600 transition cursor-pointer" onclick="goSection('#shop')"><i class="fa-solid fa-certificate text-blue-200"></i><span class="font-display font-extrabold text-sm tracking-widest">${b.toUpperCase()}</span></div>`).join('');
+    const gap = `<div class="px-4"></div>`;
+    holder.innerHTML = chips + gap + chips; // duplicate for marquee loop
 }
 
-// ===================== MODAL =====================
-function openModal(productOrStr) {
-    let product;
-    if (typeof productOrStr === 'string') {
-        try { product = JSON.parse(productOrStr); } catch(e) { return; }
-    } else {
-        product = productOrStr;
-    }
-    modalProduct = product;
-    const img = product.thumbnail || product.image || (product.images && product.images[0]) || '';
-    document.getElementById('modalImg').src = img;
-    document.getElementById('modalCategory').textContent = product.category;
-    document.getElementById('modalTitle').textContent = product.title;
-    document.getElementById('modalDesc').textContent = product.description;
-    document.getElementById('modalPrice').textContent = `$${product.price.toFixed(2)}`;
-    const rating = typeof product.rating === 'number' ? product.rating : (product.rating?.rate || 0);
-    const stars = Math.round(rating);
-    document.getElementById('modalStars').innerHTML = '★'.repeat(stars) + '☆'.repeat(5 - stars);
-    document.getElementById('modalRating').textContent = `${rating.toFixed(1)}`;
-    const inCart = cart.find(c => c.id === product.id);
-    const btn = document.getElementById('modalAddBtn');
-    btn.innerHTML = inCart ? `<i class="fa-solid fa-check text-xs"></i> ${i18n[currentLang].added}` : `<i class="fa-solid fa-bag-shopping text-xs"></i> ${i18n[currentLang].add_to_cart}`;
-    document.getElementById('productModal').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
+// ---------- cart ----------
+function saveCart() { localStorage.setItem('novaCart', JSON.stringify(cart)); }
+function addToCart(id) {
+    const p = allProducts.find(x => x.id === id);
+    if (!p) return;
+    const ex = cart.find(c => c.id === id);
+    if (ex) ex.qty += 1; else cart.push({ id: p.id, title: p.title, price: p.price, image: p.thumbnail || p.images?.[0] || '', qty: 1 });
+    saveCart(); renderCartUI(); renderProductGrid(); renderBestSellers();
+    showToast(t('added_to_cart'));
 }
-function closeModal() { document.getElementById('productModal').classList.add('hidden'); document.body.style.overflow = ''; }
-async function openProductById(productId) {
-    try {
-        const product = await fetchProductById(productId);
-        openModal(product);
-    } catch (e) {
-        console.error(e);
-        showToast('Could not open product');
-    }
+function updateQty(id, d) {
+    const it = cart.find(c => c.id === id); if (!it) return;
+    it.qty += d;
+    if (it.qty <= 0) cart = cart.filter(c => c.id !== id);
+    saveCart(); renderCartUI(); renderProductGrid(); renderBestSellers();
 }
-function addToCartFromModal() { if (modalProduct) { addToCart(modalProduct.id); const btn = document.getElementById('modalAddBtn'); btn.innerHTML = `<i class="fa-solid fa-check text-xs"></i> ${i18n[currentLang].added}`; } }
-
-// ===================== SEARCH =====================
-let searchTimeout;
-let suggestionTimeout;
-
-function escapeHTML(value) {
-    return String(value ?? '').replace(/[&<>"']/g, ch => ({
-        '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#039;'
-    }[ch]));
-}
-
-async function showSearchSuggestions(query) {
-    const box = document.getElementById('searchSuggestions');
-    if (!box) return;
-
-    const q = query.trim();
-    if (q.length < 2) {
-        box.classList.add('hidden');
-        box.innerHTML = '';
+function cartTotals() { return { count: cart.reduce((s, c) => s + c.qty, 0), sum: cart.reduce((s, c) => s + c.qty * c.price, 0) }; }
+function renderCartUI() {
+    const { count, sum } = cartTotals();
+    const c1 = document.getElementById('cartCount'), c2 = document.getElementById('mCartCount');
+    c1.textContent = count; c1.classList.toggle('hidden', count === 0);
+    if (c2) { c2.textContent = count; c2.classList.toggle('hidden', count === 0); }
+    const box = document.getElementById('cartItems');
+    const sumEl = document.getElementById('cartSummary');
+    if (!cart.length) {
+        box.innerHTML = `<div class="text-center py-16"><div class="w-20 h-20 mx-auto rounded-3xl bg-slate-100 flex items-center justify-center mb-4"><i class="fa-solid fa-bag-shopping text-slate-300 text-2xl"></i></div><p class="text-sm font-bold text-slate-500">${t('cart_empty')}</p><p class="text-[11px] text-slate-400 mt-1">${t('cart_empty_desc')}</p><button onclick="closeCart();goSection('#shop')" class="mt-5 btn-primary text-white text-xs font-extrabold px-6 py-3 rounded-xl">${t('cta_shop')}</button></div>`;
+        sumEl.classList.add('hidden');
         return;
     }
-
-    box.classList.remove('hidden');
-    box.innerHTML = `
-        <div class="flex items-center gap-2 px-3 py-3 text-xs text-slate-500">
-            <div class="w-4 h-4 border-2 border-indigo-300 border-t-transparent rounded-full animate-spin"></div>
-            Searching products...
-        </div>`;
-
-    try {
-        const data = await searchProducts(q);
-        const products = (data || []).slice(0, 7);
-
-        if (!products.length) {
-            box.innerHTML = `<div class="px-3 py-4 text-xs text-slate-400">No products found for "${escapeHTML(q)}"</div>`;
-            return;
-        }
-
-        box.innerHTML = `
-            <div class="px-3 pt-2 pb-1 text-[9px] font-extrabold uppercase tracking-wider text-indigo-500">
-                Search products
+    sumEl.classList.remove('hidden');
+    document.getElementById('cartSubtotal').textContent = fmt(sum);
+    document.getElementById('cartTotal').textContent = fmt(sum);
+    box.innerHTML = cart.map(c => `<div class="flex gap-3.5 p-3 rounded-2xl hover:bg-slate-50 transition">
+        <img src="${c.image || ''}" class="w-20 h-20 rounded-xl bg-slate-50 object-contain border border-slate-100 p-1.5" alt="">
+        <div class="flex-1 min-w-0">
+            <p class="text-xs font-bold text-slate-800 line-clamp-2 leading-snug">${(c.title || '').replace(/"/g, '&quot;')}</p>
+            <p class="text-[13px] font-black text-blue-600 mt-1">${fmt(c.price)}</p>
+            <div class="flex items-center justify-between mt-2">
+                <div class="flex items-center border border-slate-200 rounded-lg overflow-hidden">
+                    <button onclick="updateQty(${c.id},-1)" class="w-7 h-7 flex items-center justify-center text-slate-500 hover:bg-slate-100 text-xs"><i class="fa-solid fa-minus"></i></button>
+                    <span class="w-8 text-center text-xs font-extrabold text-slate-700">${c.qty}</span>
+                    <button onclick="updateQty(${c.id},1)" class="w-7 h-7 flex items-center justify-center text-slate-500 hover:bg-slate-100 text-xs"><i class="fa-solid fa-plus"></i></button>
+                </div>
+                <button onclick="updateQty(${c.id},-99)" class="text-slate-300 hover:text-red-500 text-xs"><i class="fa-solid fa-trash-can"></i></button>
             </div>
-            ${products.map(p => `
-                <button type="button"
-                    class="search-suggestion-item w-full flex items-center gap-3 p-2 rounded-xl text-left"
-                    onclick="selectSearchProduct(${p.id}, '${escapeHTML(p.title).replace(/'/g,"&#039;")}')">
-                    <img src="${escapeHTML(p.thumbnail || '')}" class="w-10 h-10 rounded-xl object-contain bg-white/60 p-1 border border-white/70">
-                    <span class="min-w-0 flex-1">
-                        <span class="block text-xs font-bold text-slate-700 truncate">${escapeHTML(p.title)}</span>
-                        <span class="block text-[9px] text-slate-400 truncate">${escapeHTML(p.category || '')} · $${Number(p.price || 0).toFixed(2)}</span>
-                    </span>
-                    <i class="fa-solid fa-arrow-up-right-from-square text-[9px] text-indigo-400"></i>
-                </button>`).join('')}
-        `;
-    } catch (e) {
-        box.innerHTML = `<div class="px-3 py-4 text-xs text-red-400">Search failed. Please try again.</div>`;
-    }
+        </div>
+    </div>`).join('');
 }
-
-function selectSearchProduct(productId, title) {
-    const input = document.getElementById('searchInput');
-    const box = document.getElementById('searchSuggestions');
-    if (input) input.value = title;
-    if (box) box.classList.add('hidden');
-
-    // Search endpoint result is fetched again so the selected item opens reliably.
-    searchProducts(title).then(results => {
-        const product = (results || []).find(p => p.id === productId);
-        if (product) openModal(JSON.stringify(product));
-    });
+function openCart() { closeWishlistPanel(); const p = document.getElementById('cartPanel'); p.classList.remove('hidden'); document.body.style.overflow = 'hidden'; renderCartUI(); }
+function closeCart() { const p = document.getElementById('cartPanel'); if (p) p.classList.add('hidden'); if (!document.getElementById('wishlistPanel').classList.contains('hidden') === false) {} document.body.style.overflow = ''; }
+function proceedCheckout() {
+    if (!cart.length) { showToast(t('cart_empty'), 'info'); return; }
+    location.href = 'checkout.html';
 }
+function refreshDrawerLabels() { renderCartUI(); renderWishlistPanel(); checkAuth(); }
 
-async function handleSearch(query) {
-    clearTimeout(searchTimeout);
-    clearTimeout(suggestionTimeout);
-
-    suggestionTimeout = setTimeout(() => showSearchSuggestions(query), 180);
-
-    searchTimeout = setTimeout(async () => {
-        if (query.trim().length < 2) {
-            document.getElementById('searchSuggestions')?.classList.add('hidden');
-            loadCategory(currentCategory);
-            return;
-        }
-        try {
-            const data = await searchProducts(query.trim());
-            allProducts = data || [];
-            renderProductGrid('dealsGrid', allProducts, true);
-            renderProductGrid('recommendedGrid', allProducts.slice(0, 8), false);
-        } catch (err) {
-            console.error('Search failed:', err);
-        }
-    }, 350);
-}
-
-document.addEventListener('click', (e) => {
-    const input = document.getElementById('searchInput');
-    const box = document.getElementById('searchSuggestions');
-    if (box && !box.contains(e.target) && e.target !== input) {
-        box.classList.add('hidden');
-    }
-});
-
-// ===================== WISHLIST =====================
-function toggleWishlist(productId) {
-    const idx = wishlist.indexOf(productId);
-    if (idx === -1) { wishlist.push(productId); showToast(i18n[currentLang].added_to_wishlist); }
-    else { wishlist.splice(idx, 1); showToast(i18n[currentLang].removed_from_wishlist); }
+// ---------- wishlist ----------
+function toggleWishlist(id) {
+    const p = allProducts.find(x => x.id === id);
+    const idx = wishlist.indexOf(id);
+    if (idx === -1) { wishlist.push(id); showToast(t('added_to_wishlist')); }
+    else { wishlist.splice(idx, 1); showToast(t('removed_from_wishlist')); }
     localStorage.setItem('novaWishlist', JSON.stringify(wishlist));
-    updateWishlistCount();
-    renderProductGrid('dealsGrid', allProducts, true);
-    renderProductGrid('recommendedGrid', allProducts.slice(0, 8), false);
+    updateWishlistBadges(); renderProductGrid(); renderBestSellers();
+    if (!document.getElementById('wishlistPanel').classList.contains('hidden')) renderWishlistPanel();
 }
-function updateWishlistCount() {
-    const count = wishlist.length;
-    const el = document.getElementById('wishlistCount');
-    const headerEl = document.getElementById('headerWishlistCount');
-    if (count > 0) { el.textContent = count; el.classList.remove('hidden'); headerEl.textContent = count; headerEl.classList.remove('hidden'); }
-    else { el.classList.add('hidden'); headerEl.classList.add('hidden'); }
+function updateWishlistBadges() {
+    const n = wishlist.length;
+    const b = document.getElementById('wishlistCount');
+    b.textContent = n; b.classList.toggle('hidden', n === 0);
+    const m = document.getElementById('mWishCount');
+    if (m) { m.textContent = n; m.classList.toggle('hidden', n === 0); }
+    const c = document.getElementById('wishPanelCount'); if (c) c.textContent = n;
 }
-function showWishlist() { openWishlistPanel(); }
 function openWishlistPanel() {
-    document.getElementById('wishlistPanel').classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
+    const p = document.getElementById('wishlistPanel');
+    p.classList.remove('hidden'); document.body.style.overflow = 'hidden';
     renderWishlistPanel();
 }
-function closeWishlistPanel() {
-    document.getElementById('wishlistPanel').classList.add('hidden');
-    document.body.style.overflow = '';
-}
-async function renderWishlistPanel() {
-    const container = document.getElementById('wishPanelItems');
-    document.getElementById('wishPanelCount').textContent = wishlist.length;
-    if (wishlist.length === 0) {
-        container.innerHTML = '<div class="text-center py-12"><div class="w-16 h-16 rounded-full bg-pink-50 flex items-center justify-center mx-auto mb-3"><i class="fa-regular fa-heart text-pink-300 text-xl"></i></div><p class="text-sm text-slate-400">No items in wishlist</p></div>';
+function closeWishlistPanel() { const p = document.getElementById('wishlistPanel'); if (p) p.classList.add('hidden'); if (document.getElementById('cartPanel').classList.contains('hidden')) document.body.style.overflow = ''; }
+function renderWishlistPanel() {
+    const box = document.getElementById('wishPanelItems');
+    updateWishlistBadges();
+    if (!wishlist.length) {
+        box.innerHTML = `<div class="text-center py-16"><div class="w-20 h-20 mx-auto rounded-3xl bg-pink-50 flex items-center justify-center mb-4"><i class="fa-regular fa-heart text-pink-300 text-2xl"></i></div><p class="text-sm font-bold text-slate-500">${t('wl_empty')}</p><p class="text-[11px] text-slate-400 mt-1">${t('wl_empty_desc')}</p><button onclick="closeWishlistPanel();goSection('#shop')" class="mt-5 btn-primary text-white text-xs font-extrabold px-6 py-3 rounded-xl">${t('cta_shop')}</button></div>`;
         return;
     }
-    container.innerHTML = '<div class="text-center py-8"><div class="w-8 h-8 border-2 border-pink-300 border-t-transparent rounded-full animate-spin mx-auto"></div></div>';
-    try {
-        const res = await fetch('https://dummyjson.com/products?limit=100&select=id,title,price,category,thumbnail');
-        const data = await res.json();
-        const products = (data.products || []).filter(p => wishlist.includes(p.id));
-        if (products.length === 0) { container.innerHTML = '<div class="text-center py-12"><p class="text-sm text-slate-400">No items found</p></div>'; return; }
-        container.innerHTML = products.map(p => '<div class="flex gap-3 p-3 glass-card"><img src="' + p.thumbnail + '" class="w-14 h-14 rounded-xl object-contain bg-white/50 flex-shrink-0 p-1"><div class="flex-1 min-w-0"><p class="text-[10px] text-indigo-400 font-bold uppercase">' + p.category + '</p><h4 class="text-xs font-bold text-slate-700 truncate">' + p.title + '</h4><p class="text-sm font-extrabold text-slate-800 mt-1">$' + p.price.toFixed(2) + '</p></div><div class="flex flex-col items-center gap-2"><button onclick="toggleWishlist(' + p.id + ');renderWishlistPanel()" class="w-7 h-7 rounded-full bg-red-50 flex items-center justify-center text-red-400 hover:bg-red-100 transition"><i class="fa-solid fa-xmark text-[10px]"></i></button><button onclick="addToCart(' + p.id + ')" class="w-7 h-7 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-500 hover:bg-indigo-100 transition"><i class="fa-solid fa-plus text-[10px]"></i></button></div></div>').join('');
-    } catch(e) { container.innerHTML = '<div class="text-center py-8 text-sm text-red-400">Failed to load</div>'; }
+    const items = [];
+    wishlist.forEach(id => { const p = allProducts.find(x => x.id === id); if (p) items.push(p); });
+    const missing = wishlist.filter(id => !allProducts.find(x => x.id === id));
+    const render = () => {
+        if (!items.length && missing.length) { box.innerHTML = `<div class="text-center py-8 text-xs text-slate-400">${t('loading')}</div>`; return; }
+        box.innerHTML = items.map(p => {
+            const disc = Math.round(p.discountPercentage || 0);
+            return `<div class="flex gap-3.5 p-3 mb-2.5 rounded-2xl border border-slate-100 hover:shadow-md transition bg-white">
+                <img src="${p.thumbnail || ''}" class="w-20 h-20 rounded-xl bg-slate-50 object-contain border border-slate-100 p-1.5 cursor-pointer" onclick="openModal(${p.id})" alt="">
+                <div class="flex-1 min-w-0">
+                    <p class="text-xs font-bold text-slate-800 line-clamp-2 leading-snug cursor-pointer hover:text-blue-600" onclick="openModal(${p.id})">${(p.title || '').replace(/"/g, '&quot;')}</p>
+                    <div class="flex items-center gap-1 mt-0.5"><span class="text-[9px] text-amber-400">${starsOf(p.rating)}</span></div>
+                    <div class="flex items-center justify-between mt-1.5">
+                        <p class="text-sm font-black text-slate-900">${fmt(p.price)}${disc ? `<span class="ml-1 text-[9px] text-slate-300 line-through font-semibold">${fmt(p.price / (1 - disc / 100))}</span>` : ''}</p>
+                    </div>
+                    <div class="flex gap-2 mt-2">
+                        <button onclick="addToCart(${p.id})" class="flex-1 h-8 rounded-lg btn-primary text-white text-[10px] font-extrabold"><i class="fa-solid fa-cart-plus mr-1"></i>${t('add_to_cart')}</button>
+                        <button onclick="toggleWishlist(${p.id})" class="w-8 h-8 rounded-lg bg-pink-50 text-pink-500 hover:bg-pink-100 text-[10px] flex items-center justify-center" title="${t('remove')}"><i class="fa-solid fa-xmark"></i></button>
+                    </div>
+                </div>
+            </div>`;
+        }).join('') || `<div class="text-center py-10 text-xs text-slate-400">${t('wl_empty')}</div>`;
+    };
+    if (missing.length) {
+        fetch(`${API_BASE}/products?limit=50&select=id,title,price,thumbnail,category,discountPercentage,rating`)
+            .then(r => r.json()).then(d => {
+                (d.products || []).forEach(p => { if (missing.includes(p.id) && !items.find(x => x.id === p.id)) items.push(p); });
+                render();
+            }).catch(() => render());
+    } else render();
 }
 
-// ===================== NOTIFICATIONS =====================
-function toggleNotifications() { document.getElementById('notifPanel').classList.toggle('hidden'); }
-
-// ===================== TOAST =====================
-function showToast(msg) {
-    const toast = document.createElement('div');
-    toast.className = 'fixed top-24 right-6 z-[100] bg-gradient-to-r from-indigo-500 to-purple-500 text-white text-xs font-bold px-5 py-3 rounded-xl shadow-2xl transition-all';
-    toast.textContent = msg;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.style.opacity = '1', 10);
-    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 2500);
+// ---------- notifications ----------
+let notifRead = localStorage.getItem('novaNotifRead') === '1';
+const notifIcons = ['fa-truck-fast', 'fa-fire', 'fa-mobile-screen-button', 'fa-ticket'];
+const notifColors = ['text-blue-500 bg-blue-50', 'text-orange-500 bg-orange-50', 'text-violet-500 bg-violet-50', 'text-emerald-500 bg-emerald-50'];
+function renderNotifs() {
+    const n = 4;
+    const list = document.getElementById('notifList');
+    const countEl = document.getElementById('notifCount');
+    const m = document.getElementById('mNotifCount');
+    list.innerHTML = Array.from({ length: n }).map((_, i) => `<div class="flex gap-3 px-5 py-3.5 hover:bg-slate-50 transition cursor-pointer" onclick="clearNotifs()">
+        <div class="w-9 h-9 shrink-0 rounded-xl ${notifColors[i]} flex items-center justify-center text-xs"><i class="fa-solid ${notifIcons[i]}"></i></div>
+        <div class="min-w-0"><p class="text-xs font-bold text-slate-700 leading-snug">${t('notif_' + (i + 1))}</p><p class="text-[10px] text-slate-300 font-semibold mt-1">${i === 0 ? '2 min' : i === 1 ? '1 hr' : i === 2 ? '3 hrs' : '1 day'} · HR ShopBD</p></div>
+        ${!notifRead ? '<span class="ml-auto w-2 h-2 rounded-full bg-blue-500 mt-2 shrink-0"></span>' : ''}
+    </div>`).join('');
+    const unread = notifRead ? 0 : n;
+    countEl.textContent = unread; countEl.classList.toggle('hidden', unread === 0);
+    if (m) { m.textContent = unread; m.classList.toggle('hidden', unread === 0); }
 }
-
-// ===================== AUTH STATE (Fixed auto-login bug) =====================
-function checkLoginState() {
-    const user = JSON.parse(localStorage.getItem('novaShopUser') || 'null');
-    const authStatus = localStorage.getItem('novaShopAuth');
-    
-    // Sothik vabe check kora hochhe je user real login korechhe kina
-    if (user && authStatus === 'true') {
-        document.getElementById('avatarLoggedOut').classList.add('hidden');
-        document.getElementById('avatarLoggedIn').classList.remove('hidden');
-        const photo = user.photoURL || 'https://i.pravatar.cc/150?img=47';
-        document.getElementById('headerAvatar').src = photo;
-    } else {
-        // Jodi login na thake tahole strictly logout/icon state e rakha hobe
-        localStorage.removeItem('novaShopAuth');
-        document.getElementById('avatarLoggedOut').classList.remove('hidden');
-        document.getElementById('avatarLoggedIn').classList.add('hidden');
+function toggleNotifPanel() {
+    const p = document.getElementById('notifPanel');
+    const willShow = p.classList.contains('hidden');
+    if (willShow) { renderNotifs(); p.classList.remove('hidden'); clearNotifs(true); }
+    else p.classList.add('hidden');
+}
+function clearNotifs(silent) {
+    notifRead = true; localStorage.setItem('novaNotifRead', '1');
+    renderNotifs();
+    if (!silent) showToast(lang === 'bn' ? 'সব নোটিফিকেশন পড়া হয়েছে' : 'All notifications marked read', 'info');
+}
+document.addEventListener('click', (e) => {
+    const p = document.getElementById('notifPanel');
+    if (!p.classList.contains('hidden') && !e.target.closest('#notifPanel') && !e.target.closest('button[onclick^="toggleNotifPanel"]') && !e.target.closest('aside') === false) {
+        // handled below
     }
-}
-
-// ===================== GLASS POPUP MENU =====================
-let sidebarOpen = false;
-
-function setActive(el) {
-    document.querySelectorAll('.sidebar-item').forEach(s => s.classList.remove('active'));
-    if (el) el.classList.add('active');
-    toggleMobileSidebar(false);
-}
-
-function toggleMobileSidebar(forceClose) {
-    const sidebar = document.getElementById('sidebar');
-    const overlay = document.getElementById('mobileOverlay');
-    if (!sidebar || !overlay) return;
-
-    const shouldClose = forceClose === false || sidebarOpen;
-
-    if (shouldClose) {
-        sidebar.classList.remove('menu-open');
-        overlay.classList.add('hidden');
-        document.body.style.overflow = '';
-        sidebarOpen = false;
-        return;
-    }
-
-    sidebar.classList.add('menu-open');
-    overlay.classList.remove('hidden');
-    document.body.style.overflow = 'hidden';
-    sidebarOpen = true;
-}
-
-document.addEventListener('keydown', e => {
-    if (e.key === 'Escape' && sidebarOpen) toggleMobileSidebar(false);
+});
+document.addEventListener('click', (e) => {
+    const p = document.getElementById('notifPanel');
+    if (!p.classList.contains('hidden') && !e.target.closest('#notifPanel') && !e.target.closest('.icon-btn') ) p.classList.add('hidden');
 });
 
-// ===================== CART POPUP (PC & Mobile) =====================
-function openCartMobile() { document.getElementById('mobileCart').classList.remove('hidden'); }
-function closeCartMobile() { document.getElementById('mobileCart').classList.add('hidden'); }
-
-// ===================== COUNTDOWN =====================
-function startCountdown() {
-    let totalSec = 2 * 3600 + 45 * 60 + 18;
-    function update() {
-        if (totalSec <= 0) totalSec = 8 * 3600;
-        const h = Math.floor(totalSec / 3600); const m = Math.floor((totalSec % 3600) / 60); const s = totalSec % 60;
-        document.getElementById('cdHours').textContent = String(h).padStart(2, '0');
-        document.getElementById('cdMins').textContent = String(m).padStart(2, '0');
-        document.getElementById('cdSecs').textContent = String(s).padStart(2, '0');
-        totalSec--;
-    }
-    update(); setInterval(update, 1000);
+// ---------- product modal ----------
+function openModal(id) {
+    const p = allProducts.find(x => x.id === id);
+    if (!p) return;
+    const inWish = wishlist.includes(id);
+    const inCart = cart.find(c => c.id === id);
+    const disc = Math.round(p.discountPercentage || 0);
+    const img = p.images && p.images[0] ? p.images[0] : (p.thumbnail || '');
+    const card = document.getElementById('modalCard');
+    card.innerHTML = `
+        <button onclick="closeModal()" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-slate-500 transition"><i class="fa-solid fa-xmark"></i></button>
+        <div class="flex flex-col sm:flex-row gap-6">
+            <div class="shrink-0 w-full sm:w-44 h-44 sm:h-44 bg-slate-50 rounded-2xl flex items-center justify-center p-4">
+                <img src="${img}" class="w-full h-full object-contain" alt="">
+            </div>
+            <div class="min-w-0">
+                <p class="text-[10px] font-extrabold uppercase tracking-[.2em] text-blue-500 mb-1">${friendlyCat(p.category)}${p.brand ? ' · ' + p.brand : ''}</p>
+                <h3 class="font-display font-extrabold text-lg text-slate-900 leading-snug">${(p.title || '').replace(/"/g, '&quot;')}</h3>
+                <p class="text-xs text-slate-400 mt-2 line-clamp-3 leading-relaxed">${(p.description || '').replace(/"/g, '&quot;')}</p>
+                <div class="flex items-center gap-2 mt-3"><span class="text-amber-400 text-sm">${starsOf(p.rating)}</span><span class="text-[11px] font-bold text-slate-400">(${Number(p.rating || 0).toFixed(1)})</span>${p.stock > 0 ? `<span class="text-[9px] font-black bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full">${t('stock')}</span>` : ''}</div>
+                <div class="flex items-end gap-2 mt-3">
+                    <p class="text-2xl font-black text-slate-900">${fmt(p.price)}</p>
+                    ${disc ? `<p class="text-sm text-slate-300 line-through font-semibold mb-1">${fmt(p.price / (1 - disc / 100))}</p><span class="text-[10px] font-black bg-red-100 text-red-500 px-2 py-1 rounded-lg mb-1">-${disc}%</span>` : ''}
+                </div>
+                <div class="flex gap-2.5 mt-5">
+                    <button onclick="addToCart(${p.id});closeModal()" class="btn-primary flex-1 h-12 rounded-xl text-white text-xs font-extrabold flex items-center justify-center gap-2">${inCart ? '<i class="fa-solid fa-check"></i>' + t('added') : '<i class="fa-solid fa-cart-plus"></i>' + t('add_to_cart')}</button>
+                    <button onclick="toggleWishlist(${p.id})" class="w-12 h-12 rounded-xl border ${inWish ? 'bg-pink-500 border-pink-500 text-white' : 'border-slate-200 text-pink-400 hover:border-pink-300'} flex items-center justify-center transition"><i class="fa-${inWish ? 'solid' : 'regular'} fa-heart"></i></button>
+                </div>
+            </div>
+        </div>`;
+    const modal = document.getElementById('productModal');
+    modal.classList.remove('hidden'); modal.classList.add('flex');
+    document.body.style.overflow = 'hidden';
+}
+function closeModal() {
+    const modal = document.getElementById('productModal');
+    modal.classList.add('hidden'); modal.classList.remove('flex');
+    if (document.getElementById('cartPanel').classList.contains('hidden') && document.getElementById('wishlistPanel').classList.contains('hidden')) document.body.style.overflow = '';
 }
 
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+// ---------- search ----------
+let searchTimer = null;
+function onSearch(v) {
+    const q = (v || '').toLowerCase();
+    // sync both inputs
+    const main = document.getElementById('searchInput');
+    const mob = document.getElementById('mSearchInput');
+    if (document.activeElement !== main) main.value = q;
+    if (document.activeElement !== mob) mob.value = q;
+    document.getElementById('clearSearch').style.display = q ? 'flex' : 'none';
+    clearTimeout(searchTimer);
+    searchTimer = setTimeout(() => renderProductGrid(), 220);
+}
+
+// ---------- countdown ----------
+function getDealEnd() {
+    const d = new Date(); d.setHours(23, 59, 59, 0);
+    const day = d.getDay(); const add = (7 - day) % 7; // next Sunday
+    if (add === 0 && Date.now() > d.getTime()) d.setDate(d.getDate() + 7); else if (add > 0) d.setDate(d.getDate() + add);
+    return d.getTime();
+}
+let dealEnd = getDealEnd();
+function startCountdown() {
+    const tick = () => {
+        const diff = Math.max(0, dealEnd - Date.now());
+        const d = Math.floor(diff / 86400000), h = Math.floor(diff / 3600000) % 24, m = Math.floor(diff / 60000) % 60, s = Math.floor(diff / 1000) % 60;
+        const pad = n => String(n).padStart(2, '0');
+        document.getElementById('cdDays').textContent = pad(d);
+        document.getElementById('cdHours').textContent = pad(h);
+        document.getElementById('cdMins').textContent = pad(m);
+        document.getElementById('cdSecs').textContent = pad(s);
+    };
+    tick(); setInterval(tick, 1000);
+}
+
+// ---------- newsletter / misc ----------
+function subscribeNews() {
+    const el = document.getElementById('newsEmail');
+    const email = el.value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast(t('sub_bad'), 'error'); return; }
+    showToast(t('sub_ok'));
+    el.value = '';
+}
+function updateCountLabels() {
+    const counts = {};
+    allProducts.forEach(p => { counts[p.category] = (counts[p.category] || 0) + 1; });
+    document.getElementById('countAll').textContent = allProducts.length + ' ' + t('items');
+    document.getElementById('countSmartphones').textContent = (counts.smartphones || 0) + ' ' + t('items');
+    document.getElementById('countMobile-accessories').textContent = (counts['mobile-accessories'] || 0) + ' ' + t('items');
+    document.getElementById('countTablets').textContent = (counts.tablets || 0) + ' ' + t('items');
+    document.getElementById('statProducts').textContent = allProducts.length;
+}
+function openMobileMenu() {
+    document.getElementById('mobileMenu').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    checkAuth(); updateWishlistBadges(); renderCartUI(); renderNotifs();
+}
+function closeMobileMenu() {
+    const mm = document.getElementById('mobileMenu');
+    if (mm) mm.classList.add('hidden');
+    const anyOpen = !document.getElementById('cartPanel').classList.contains('hidden') || !document.getElementById('wishlistPanel').classList.contains('hidden') || !document.getElementById('productModal').classList.contains('hidden');
+    if (!anyOpen) document.body.style.overflow = '';
+}
+
+// back to top
+window.addEventListener('scroll', () => {
+    const btn = document.getElementById('topBtn');
+    const show = window.scrollY > 600;
+    btn.classList.toggle('hidden', !show);
+    btn.classList.toggle('flex', show);
+});
+
+// ============ INIT ============
+document.addEventListener('DOMContentLoaded', async () => {
+    applyTranslations();
+    renderSkeletons();
+    checkAuth();
+    renderNotifs();
+    renderCartUI();
+    updateWishlistBadges();
+    renderWishlistPanel();
+    startCountdown();
+    loadHeroPicks();
+    try {
+        allProducts = await fetchAllMobileProducts();
+        document.getElementById('totalCount').textContent = allProducts.length;
+        updateCountLabels();
+        renderProductGrid();
+        renderBestSellers();
+        renderBrands();
+        // welcome notification if new user
+        if (!localStorage.getItem('novaWelcomed')) {
+            setTimeout(() => showToast('👋 ' + t('welcome_n'), 'info'), 1200);
+            localStorage.setItem('novaWelcomed', '1');
+        }
+    } catch (e) {
+        document.getElementById('productGrid').innerHTML = `<div class="col-span-full text-center py-16 text-sm font-bold text-red-400">⚠️ ${t('no_products')}</div>`;
+        console.error(e);
+    }
+});
 </script>
 </body>
 </html>
