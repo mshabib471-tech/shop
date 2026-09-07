@@ -236,8 +236,17 @@
       </div>
     </section>
 
+    <div id="envNotice" class="hidden w-full max-w-[450px] mt-3 rounded-2xl border border-amber-200 bg-amber-50/90 px-4 py-3 text-xs leading-5 text-amber-800">
+      <b>Firebase:</b> Direct <code>file://</code> opening is not suitable for Firebase web authentication. Run this page on localhost (VS Code Live Server) or HTTPS hosting, and add the hostname to Firebase Authentication → Authorized domains.
+    </div>
     <footer class="mt-6 text-[11px] text-slate-400">© 2026 HR ShopBD. All rights reserved.</footer>
   </main>
+
+  <div id="accountBar" class="hidden fixed left-1/2 -translate-x-1/2 bottom-4 z-30 rounded-2xl bg-white/95 border border-white px-4 py-3 shadow-xl backdrop-blur-xl text-xs text-slate-600">
+    <span id="accountText"></span>
+    <button id="continueShopBtn" class="ml-3 font-bold text-indigo-600">Continue to Shop →</button>
+    <button id="logoutBtn" class="ml-3 font-bold text-rose-500">Sign out</button>
+  </div>
 
   <div id="toast" class="toast"><div id="toastText"></div></div>
 
@@ -262,6 +271,10 @@
 
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
+
+    if (location.protocol === "file:") {
+      $("envNotice").classList.remove("hidden");
+    }
     const googleProvider = new GoogleAuthProvider();
     googleProvider.setCustomParameters({ prompt: "select_account" });
 
@@ -323,6 +336,7 @@
         await persist();
         await signInWithEmailAndPassword(auth, $("loginEmail").value.trim(), $("loginPassword").value);
         toast("Login successful. Welcome back!", "success");
+        setTimeout(goToShop, 500);
       } catch (err) { toast(friendlyError(err), "error"); }
       finally { setBusy(btn, false, "Login"); }
     }
@@ -339,6 +353,7 @@
         const cred = await createUserWithEmailAndPassword(auth, $("signupEmail").value.trim(), $("signupPassword").value);
         await updateProfile(cred.user, { displayName: $("signupName").value.trim() });
         toast("Account created successfully!", "success");
+        setTimeout(goToShop, 500);
       } catch (err) { toast(friendlyError(err), "error"); }
       finally { setBusy(btn, false, "Create Account"); }
     }
@@ -348,6 +363,7 @@
         await setPersistence(auth, browserLocalPersistence);
         await signInWithPopup(auth, googleProvider);
         toast("Google login successful!", "success");
+        setTimeout(goToShop, 500);
       } catch (err) { toast(friendlyError(err), "error"); }
     }
 
@@ -394,6 +410,7 @@
       try {
         await confirmationResult.confirm(code);
         toast("Phone login successful!", "success");
+        setTimeout(goToShop, 500);
       } catch (err) { toast(friendlyError(err), "error"); }
       finally { setBusy(btn, false, "Verify & Continue"); }
     }
@@ -435,13 +452,31 @@
       };
     });
 
-    // If the user is already authenticated, continue to the shop.
+    // Do not silently redirect on page load. Show the current Firebase session instead.
     onAuthStateChanged(auth, (user) => {
+      const bar = $("accountBar");
       if (user) {
-        // Change this destination if your shop file has another name.
-        setTimeout(() => { window.location.href = "index.html"; }, 350);
+        const name = user.displayName || user.email || user.phoneNumber || "your account";
+        $("accountText").textContent = `Signed in: ${name}`;
+        bar.classList.remove("hidden");
+      } else {
+        bar.classList.add("hidden");
       }
     });
+
+    function goToShop() {
+      window.location.href = "index.html";
+    }
+
+    $("continueShopBtn").onclick = goToShop;
+    $("logoutBtn").onclick = async () => {
+      try {
+        await signOut(auth);
+        toast("Signed out successfully.", "success");
+      } catch (err) {
+        toast(friendlyError(err), "error");
+      }
+    };
 
     // Lightweight EN/BN UI toggle.
     const translations = {
