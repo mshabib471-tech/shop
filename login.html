@@ -6,6 +6,7 @@
   <title>HR ShopBD — Login</title>
   <meta name="description" content="Secure login and registration for HR ShopBD." />
   <script src="https://cdn.tailwindcss.com"></script>
+  <script src="hr-db.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -38,10 +39,7 @@
       background: linear-gradient(90deg,#4f46e5,#9b59f6);
       -webkit-background-clip:text; background-clip:text; color:transparent;
     }
-    .tab {
-      transition: .2s ease;
-      color:#65738b;
-    }
+    .tab { transition: .2s ease; color:#65738b; }
     .tab.active {
       color:#fff;
       background:linear-gradient(90deg,#5e5bed,#8b50f4);
@@ -115,18 +113,18 @@
         🛍️
       </div>
       <h1 class="mt-4 text-2xl font-extrabold tracking-tight text-slate-800">HR <span class="gradient-text">ShopBD</span></h1>
-      <p class="mt-1 text-sm text-slate-500">Your Style, Your Way ✨</p>
+      <p class="mt-1 text-sm text-slate-500">Your Mobile &amp; Gadget Store ✨</p>
     </header>
 
     <section class="card glass w-full max-w-[450px] rounded-[26px] p-6 sm:p-7">
       <div class="grid grid-cols-2 rounded-2xl bg-white/45 p-1 mb-6">
-        <button id="loginTab" class="tab active rounded-xl py-3 text-sm font-bold" type="button">Login</button>
-        <button id="signupTab" class="tab rounded-xl py-3 text-sm font-bold" type="button">Sign Up</button>
+        <button id="loginTab" class="tab active rounded-xl py-3 text-sm font-bold" type="button" data-i18n="tabLogin">Login</button>
+        <button id="signupTab" class="tab rounded-xl py-3 text-sm font-bold" type="button" data-i18n="tabSignup">Sign Up</button>
       </div>
 
       <div id="loginPanel">
         <button id="googleLogin" type="button" class="social-btn w-full h-12 rounded-xl flex items-center justify-center gap-3 text-sm font-semibold">
-          <span class="text-xl font-bold" style="font-family:Arial">G</span>
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5" alt="Google">
           <span data-i18n="google">Continue with Google</span>
         </button>
 
@@ -148,29 +146,29 @@
           <label class="field h-12 rounded-xl px-4 flex items-center gap-3">
             <span class="text-slate-400">🔒</span>
             <input id="loginPassword" type="password" autocomplete="current-password" required minlength="6" placeholder="Password" class="w-full text-sm text-slate-700 placeholder:text-slate-400" />
-            <button class="toggle-pass text-slate-400" type="button" data-target="loginPassword">◉</button>
+            <button class="toggle-pass text-slate-400" type="button" data-target="loginPassword">👁</button>
           </label>
 
           <div class="flex items-center justify-between text-xs pt-1">
             <label class="flex items-center gap-2 text-slate-500 cursor-pointer">
-              <input id="rememberMe" type="checkbox" class="accent-indigo-500">
+              <input id="rememberMe" type="checkbox" checked class="accent-indigo-500">
               <span data-i18n="remember">Remember me</span>
             </label>
             <button id="forgotBtn" type="button" class="font-bold text-indigo-500 hover:text-indigo-700" data-i18n="forgot">Forgot Password?</button>
           </div>
 
-          <button id="loginBtn" class="primary-btn w-full h-12 rounded-xl text-white font-bold text-sm mt-2" type="submit">Login</button>
+          <button id="loginBtn" class="primary-btn w-full h-12 rounded-xl text-white font-bold text-sm mt-2" type="submit" data-i18n="btnLogin">Login</button>
         </form>
 
         <p class="text-center text-xs text-slate-400 mt-4">
           <span data-i18n="noAccount">Don't have an account?</span>
-          <button id="switchSignup" class="font-bold text-indigo-500">Sign Up</button>
+          <button id="switchSignup" class="font-bold text-indigo-500" data-i18n="tabSignup">Sign Up</button>
         </p>
       </div>
 
       <div id="signupPanel" class="hidden-panel">
         <button id="googleSignup" type="button" class="social-btn w-full h-12 rounded-xl flex items-center justify-center gap-3 text-sm font-semibold">
-          <span class="text-xl font-bold" style="font-family:Arial">G</span>
+          <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" class="w-5 h-5" alt="Google">
           <span data-i18n="google">Continue with Google</span>
         </button>
 
@@ -194,7 +192,7 @@
           <label class="field h-12 rounded-xl px-4 flex items-center gap-3">
             <span class="text-slate-400">🔒</span>
             <input id="signupPassword" type="password" autocomplete="new-password" required minlength="6" placeholder="Password (6+ characters)" class="w-full text-sm text-slate-700 placeholder:text-slate-400" />
-            <button class="toggle-pass text-slate-400" type="button" data-target="signupPassword">◉</button>
+            <button class="toggle-pass text-slate-400" type="button" data-target="signupPassword">👁</button>
           </label>
           <label class="field h-12 rounded-xl px-4 flex items-center gap-3">
             <span class="text-slate-400">🔒</span>
@@ -203,49 +201,54 @@
 
           <label class="flex items-center gap-2 text-xs text-slate-500 pt-1 cursor-pointer">
             <input id="terms" type="checkbox" required class="accent-indigo-500">
-            <span data-i18n="terms">I agree to the</span> <a href="#" class="font-bold text-indigo-500">Terms & Conditions</a>
+            <span data-i18n="terms">I agree to the</span> <a href="#" class="font-bold text-indigo-500" data-i18n="termsLink">Terms &amp; Conditions</a>
           </label>
 
-          <button id="signupBtn" class="primary-btn w-full h-12 rounded-xl text-white font-bold text-sm mt-2" type="submit">Create Account</button>
+          <button id="signupBtn" class="primary-btn w-full h-12 rounded-xl text-white font-bold text-sm mt-2" type="submit" data-i18n="btnSignup">Create Account</button>
         </form>
 
         <p class="text-center text-xs text-slate-400 mt-4">
           <span data-i18n="haveAccount">Already have an account?</span>
-          <button id="switchLogin" class="font-bold text-indigo-500">Login</button>
+          <button id="switchLogin" class="font-bold text-indigo-500" data-i18n="tabLogin">Login</button>
         </p>
       </div>
 
       <div id="phonePanel" class="hidden-panel">
         <div class="rounded-2xl bg-indigo-50/70 border border-indigo-100 p-4 text-sm text-slate-600 mb-4">
-          Enter your phone number with country code, e.g. <b>+8801XXXXXXXXX</b>. Firebase will send a real SMS verification code.
+          <span data-i18n="phoneHint">Enter your phone number with country code, e.g.</span> <b>+8801XXXXXXXXX</b>.
         </div>
         <div id="recaptcha-container"></div>
         <label class="field h-12 rounded-xl px-4 flex items-center gap-3 mb-3">
           <span class="text-slate-400">📞</span>
           <input id="phoneNumber" type="tel" autocomplete="tel" placeholder="+8801XXXXXXXXX" class="w-full text-sm text-slate-700 placeholder:text-slate-400" />
         </label>
-        <button id="sendCodeBtn" type="button" class="primary-btn w-full h-12 rounded-xl text-white font-bold text-sm">Send Verification Code</button>
+        <button id="sendCodeBtn" type="button" class="primary-btn w-full h-12 rounded-xl text-white font-bold text-sm" data-i18n="btnSendCode">Send Verification Code</button>
         <div id="codeArea" class="hidden mt-3">
           <label class="field h-12 rounded-xl px-4 flex items-center gap-3">
             <span class="text-slate-400">#</span>
             <input id="phoneCode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6-digit verification code" class="w-full text-sm text-slate-700 placeholder:text-slate-400" />
           </label>
-          <button id="verifyCodeBtn" type="button" class="primary-btn w-full h-12 rounded-xl text-white font-bold text-sm mt-3">Verify & Continue</button>
+          <button id="verifyCodeBtn" type="button" class="primary-btn w-full h-12 rounded-xl text-white font-bold text-sm mt-3" data-i18n="btnVerify">Verify &amp; Continue</button>
+          <button id="resendCodeBtn" type="button" class="w-full text-center text-[11px] font-bold text-indigo-400 hover:text-indigo-600 mt-3" data-i18n="btnResend">Resend code</button>
         </div>
-        <button id="backFromPhone" type="button" class="w-full text-center text-sm font-bold text-indigo-500 mt-4">← Back to Login</button>
+        <button id="backFromPhone" type="button" class="w-full text-center text-sm font-bold text-indigo-500 mt-4" data-i18n="btnBackLogin">← Back to Login</button>
       </div>
     </section>
 
     <div id="envNotice" class="hidden w-full max-w-[450px] mt-3 rounded-2xl border border-amber-200 bg-amber-50/90 px-4 py-3 text-xs leading-5 text-amber-800">
-      <b>Firebase:</b> Direct <code>file://</code> opening is not suitable for Firebase web authentication. Run this page on localhost (VS Code Live Server) or HTTPS hosting, and add the hostname to Firebase Authentication → Authorized domains.
+      <b>Firebase:</b> Direct <code>file://</code> opening is not suitable for Firebase web authentication. Run this page on localhost or HTTPS hosting, and add the hostname to Firebase Authentication → Authorized domains.
     </div>
-    <footer class="mt-6 text-[11px] text-slate-400">© 2026 HR ShopBD. All rights reserved.</footer>
+    <div id="setupNotice" class="hidden w-full max-w-[450px] mt-3 rounded-2xl border border-sky-200 bg-sky-50/90 px-4 py-3 text-xs leading-5 text-sky-800">
+      <b>Almost ready:</b> make sure <b>Google</b> and <b>Phone</b> sign-in are enabled in Firebase Console → Authentication → Sign-in method, and that this preview domain is listed under <b>Authorized domains</b>. Then real login works.
+    </div>
+    <footer class="mt-6 text-[11px] text-slate-400">© <span id="yearNow"></span> HR ShopBD. All rights reserved.</footer>
   </main>
 
   <div id="accountBar" class="hidden fixed left-1/2 -translate-x-1/2 bottom-4 z-30 rounded-2xl bg-white/95 border border-white px-4 py-3 shadow-xl backdrop-blur-xl text-xs text-slate-600">
+    <img id="barAvatar" src="" class="w-7 h-7 rounded-full object-cover inline-block align-middle mr-2 hidden">
     <span id="accountText"></span>
-    <button id="continueShopBtn" class="ml-3 font-bold text-indigo-600">Continue to Shop →</button>
-    <button id="logoutBtn" class="ml-3 font-bold text-rose-500">Sign out</button>
+    <button id="continueShopBtn" class="ml-3 font-bold text-indigo-600" data-i18n="btnContinue">Go to Dashboard →</button>
+    <button id="logoutBtn" class="ml-3 font-bold text-rose-500" data-i18n="btnLogoutBar">Sign out</button>
   </div>
 
   <div id="toast" class="toast"><div id="toastText"></div></div>
@@ -256,8 +259,17 @@
       getAuth, GoogleAuthProvider, signInWithPopup, signInWithPhoneNumber,
       RecaptchaVerifier, createUserWithEmailAndPassword, signInWithEmailAndPassword,
       sendPasswordResetEmail, updateProfile, setPersistence,
-      browserLocalPersistence, browserSessionPersistence, onAuthStateChanged, signOut
+      browserLocalPersistence, onAuthStateChanged, signOut
     } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-auth.js";
+
+    // ---------- tiny helpers (defined BEFORE any use) ----------
+    const $ = (id) => document.getElementById(id);
+    const toast = (message, type = "") => {
+      $("toastText").textContent = message;
+      $("toast").className = "toast show " + type;
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => { $("toast").className = "toast"; }, 4200);
+    };
 
     const firebaseConfig = {
       apiKey: "AIzaSyAaLdtzOIZVYB-Bdc42CXm2T8iclWLc4o0",
@@ -275,16 +287,9 @@
     if (location.protocol === "file:") {
       $("envNotice").classList.remove("hidden");
     }
+
     const googleProvider = new GoogleAuthProvider();
     googleProvider.setCustomParameters({ prompt: "select_account" });
-
-    const $ = (id) => document.getElementById(id);
-    const toast = (message, type="") => {
-      $("toastText").textContent = message;
-      $("toast").className = "toast show " + type;
-      clearTimeout(window.__toastTimer);
-      window.__toastTimer = setTimeout(() => $("toast").className = "toast", 4200);
-    };
 
     const friendlyError = (e) => {
       const code = e?.code || "";
@@ -301,13 +306,14 @@
         "auth/account-exists-with-different-credential": "This email is already registered using another sign-in method.",
         "auth/too-many-requests": "Too many attempts. Please wait and try again.",
         "auth/operation-not-allowed": "This Firebase sign-in method is not enabled in Firebase Console.",
-        "auth/unauthorized-domain": "This website domain is not authorized in Firebase Authentication.",
+        "auth/unauthorized-domain": "This website domain is not authorized in Firebase Authentication → Authorized domains.",
         "auth/invalid-phone-number": "Enter a valid phone number with country code.",
         "auth/missing-phone-number": "Enter your phone number first.",
         "auth/quota-exceeded": "Firebase SMS quota has been exceeded. Please try again later.",
         "auth/code-expired": "The verification code has expired. Request a new code.",
         "auth/invalid-verification-code": "The verification code is incorrect.",
-        "auth/captcha-check-failed": "reCAPTCHA verification failed. Please try again."
+        "auth/captcha-check-failed": "reCAPTCHA verification failed. Please try again.",
+        "auth/missing-verification-code": "Enter the 6-digit code we sent you."
       };
       return map[code] || e?.message || "Something went wrong. Please try again.";
     };
@@ -316,7 +322,7 @@
       if (!button) return;
       if (busy) {
         button.dataset.original = button.textContent;
-        button.innerHTML = '<span class="inline-flex items-center justify-center gap-2"><span class="spinner"></span>' + text + '</span>';
+        button.innerHTML = '<span class="inline-flex items-center justify-center gap-2"><span class="spinner"></span>' + text + "</span>";
         button.disabled = true;
       } else {
         button.textContent = button.dataset.original || text;
@@ -324,25 +330,66 @@
       }
     };
 
-    async function persist() {
-      await setPersistence(auth, $("rememberMe")?.checked ? browserLocalPersistence : browserSessionPersistence);
-    }
+    // ---------- turn a Firebase user into the site-wide session ----------
+    const providerOf = (u) => {
+      try {
+        const pid = (u.providerData && u.providerData[0] && u.providerData[0].providerId) || "";
+        if (pid === "google.com") return "google";
+        if (pid === "phone") return "phone";
+        if (pid === "password") return "email";
+      } catch (e) {}
+      if (u.phoneNumber && !u.email) return "phone";
+      return u.email ? "email" : "google";
+    };
+    const siteUser = (u) => ({
+      uid: u.uid,
+      name: u.displayName || (u.email ? u.email.split("@")[0] : "User"),
+      email: u.email || "",
+      phone: u.phoneNumber || "",
+      photoURL: u.photoURL || "",
+      provider: providerOf(u),
+      joined: (u.metadata && u.metadata.creationTime) ? new Date(u.metadata.creationTime).toISOString() : new Date().toISOString()
+    });
+    const commitSession = (fbUser) => {
+      HRDB.saveSession(siteUser(fbUser));
+      localStorage.setItem("hrshop_user_email", fbUser.email || "");
+    };
+
+    // ---------- safe internal redirect ----------
+    const SAFE_PAGES = ["index.html", "login.html", "dashboard.html", "checkout.html", "admin.html"];
+    const safeReturnTo = () => {
+      const rt = new URLSearchParams(location.search).get("returnTo") || "";
+      const clean = rt.split("#")[0];
+      if (clean && SAFE_PAGES.some(p => clean === p || clean.startsWith("./") === false && clean.startsWith(p + "?"))) return rt;
+      return null;
+    };
+    const redirectAfterAuth = () => {
+      const rt = safeReturnTo();
+      window.location.href = rt || "dashboard.html";
+    };
+
+    // ---------- sign-in handlers ----------
+    const afterSignIn = (fbUser) => {
+      commitSession(fbUser);
+      toast("Login successful. Welcome!", "success");
+      setTimeout(redirectAfterAuth, 650);
+    };
 
     async function loginEmail(e) {
       e.preventDefault();
       const btn = $("loginBtn");
       setBusy(btn, true, "Signing in...");
       try {
-        await persist();
-        await signInWithEmailAndPassword(auth, $("loginEmail").value.trim(), $("loginPassword").value);
-        toast("Login successful. Welcome back!", "success");
-        setTimeout(goToShop, 500);
+        await setPersistence(auth, browserLocalPersistence);
+        const cred = await signInWithEmailAndPassword(auth, $("loginEmail").value.trim(), $("loginPassword").value);
+        afterSignIn(cred.user);
       } catch (err) { toast(friendlyError(err), "error"); }
-      finally { setBusy(btn, false, "Login"); }
+      finally { setBusy(btn, false, $("loginBtn").dataset.original || "Login"); }
     }
 
     async function signupEmail(e) {
       e.preventDefault();
+      if (!$("terms").checked) { toast("Please accept the Terms & Conditions.", "error"); return; }
       if ($("signupPassword").value !== $("signupConfirm").value) {
         toast("Passwords do not match.", "error"); return;
       }
@@ -352,18 +399,16 @@
         await setPersistence(auth, browserLocalPersistence);
         const cred = await createUserWithEmailAndPassword(auth, $("signupEmail").value.trim(), $("signupPassword").value);
         await updateProfile(cred.user, { displayName: $("signupName").value.trim() });
-        toast("Account created successfully!", "success");
-        setTimeout(goToShop, 500);
+        afterSignIn(cred.user);
       } catch (err) { toast(friendlyError(err), "error"); }
-      finally { setBusy(btn, false, "Create Account"); }
+      finally { setBusy(btn, false, $("signupBtn").dataset.original || "Create Account"); }
     }
 
     async function googleLogin() {
       try {
         await setPersistence(auth, browserLocalPersistence);
-        await signInWithPopup(auth, googleProvider);
-        toast("Google login successful!", "success");
-        setTimeout(goToShop, 500);
+        const cred = await signInWithPopup(auth, googleProvider);
+        afterSignIn(cred.user);
       } catch (err) { toast(friendlyError(err), "error"); }
     }
 
@@ -376,6 +421,7 @@
       } catch (err) { toast(friendlyError(err), "error"); }
     }
 
+    // ---------- phone (real SMS) ----------
     let recaptchaVerifier = null;
     let confirmationResult = null;
 
@@ -384,6 +430,11 @@
       recaptchaVerifier = new RecaptchaVerifier(auth, "recaptcha-container", { size: "normal" });
       return recaptchaVerifier;
     }
+    function resetRecaptcha() {
+      try { if (recaptchaVerifier) recaptchaVerifier.clear(); } catch (e) {}
+      recaptchaVerifier = null;
+      confirmationResult = null;
+    }
 
     async function sendPhoneCode() {
       const phone = $("phoneNumber").value.trim();
@@ -391,12 +442,13 @@
       if (!phone) { toast("Enter your phone number.", "error"); return; }
       setBusy(btn, true, "Sending...");
       try {
+        await setPersistence(auth, browserLocalPersistence);
         const verifier = setupRecaptcha();
         confirmationResult = await signInWithPhoneNumber(auth, phone, verifier);
         $("codeArea").classList.remove("hidden");
         toast("Verification code sent by SMS.", "success");
       } catch (err) {
-        if (recaptchaVerifier) { try { recaptchaVerifier.clear(); } catch {} recaptchaVerifier = null; }
+        resetRecaptcha();
         toast(friendlyError(err), "error");
       } finally { setBusy(btn, false, "Send Verification Code"); }
     }
@@ -408,13 +460,15 @@
       const btn = $("verifyCodeBtn");
       setBusy(btn, true, "Verifying...");
       try {
-        await confirmationResult.confirm(code);
-        toast("Phone login successful!", "success");
-        setTimeout(goToShop, 500);
+        await setPersistence(auth, browserLocalPersistence);
+        const cred = await confirmationResult.confirm(code);
+        resetRecaptcha();
+        afterSignIn(cred.user);
       } catch (err) { toast(friendlyError(err), "error"); }
       finally { setBusy(btn, false, "Verify & Continue"); }
     }
 
+    // ---------- panels ----------
     function showMode(mode) {
       const login = mode === "login";
       $("loginTab").classList.toggle("active", login);
@@ -423,19 +477,19 @@
       $("signupPanel").classList.toggle("hidden-panel", login);
       $("phonePanel").classList.add("hidden-panel");
     }
-
     function showPhone() {
       $("loginPanel").classList.add("hidden-panel");
       $("signupPanel").classList.add("hidden-panel");
       $("phonePanel").classList.remove("hidden-panel");
-      setTimeout(() => { try { setupRecaptcha(); } catch {} }, 100);
+      setTimeout(() => { try { setupRecaptcha(); } catch (e) {} }, 150);
     }
 
     $("loginTab").onclick = () => showMode("login");
     $("signupTab").onclick = () => showMode("signup");
     $("switchSignup").onclick = () => showMode("signup");
     $("switchLogin").onclick = () => showMode("login");
-    $("backFromPhone").onclick = () => showMode("login");
+    $("backFromPhone").onclick = () => { resetRecaptcha(); showMode("login"); };
+    $("resendCodeBtn").onclick = sendPhoneCode;
     $("loginForm").addEventListener("submit", loginEmail);
     $("signupForm").addEventListener("submit", signupEmail);
     $("googleLogin").onclick = googleLogin;
@@ -452,36 +506,45 @@
       };
     });
 
-    // Do not silently redirect on page load. Show the current Firebase session instead.
-    onAuthStateChanged(auth, (user) => {
+    // ---------- session state ----------
+    let pendingLogout = new URLSearchParams(location.search).get("action") === "logout";
+    onAuthStateChanged(auth, async (user) => {
+      if (pendingLogout) {
+        pendingLogout = false;
+        try { await signOut(auth); } catch (e) {}
+        HRDB.clearSession();
+        toast("Signed out successfully.", "success");
+        setTimeout(() => { window.location.href = "index.html"; }, 500);
+        return;
+      }
       const bar = $("accountBar");
       if (user) {
+        commitSession(user);
         const name = user.displayName || user.email || user.phoneNumber || "your account";
-        $("accountText").textContent = `Signed in: ${name}`;
+        $("accountText").textContent = "Signed in: " + name;
+        if (user.photoURL) { $("barAvatar").src = user.photoURL; $("barAvatar").classList.remove("hidden"); }
         bar.classList.remove("hidden");
       } else {
         bar.classList.add("hidden");
       }
     });
 
-    function goToShop() {
-      window.location.href = "index.html";
-    }
-
-    $("continueShopBtn").onclick = goToShop;
+    $("continueShopBtn").onclick = () => {
+      const rt = safeReturnTo();
+      window.location.href = rt || "dashboard.html";
+    };
     $("logoutBtn").onclick = async () => {
-      try {
-        await signOut(auth);
-        toast("Signed out successfully.", "success");
-      } catch (err) {
-        toast(friendlyError(err), "error");
-      }
+      pendingLogout = false;
+      try { await signOut(auth); } catch (e) {}
+      HRDB.clearSession();
+      toast("Signed out successfully.", "success");
+      setTimeout(() => { window.location.href = "index.html"; }, 500);
     };
 
-    // Lightweight EN/BN UI toggle.
+    // ---------- EN / BN ----------
     const translations = {
-      en: { back:"Back to Shop", google:"Continue with Google", phone:"Continue with Phone", orEmail:"or continue with email", remember:"Remember me", forgot:"Forgot Password?", noAccount:"Don't have an account?", haveAccount:"Already have an account?", terms:"I agree to the" },
-      bn: { back:"শপে ফিরে যান", google:"Google দিয়ে চালিয়ে যান", phone:"ফোন দিয়ে চালিয়ে যান", orEmail:"অথবা ইমেইল দিয়ে চালিয়ে যান", remember:"আমাকে মনে রাখুন", forgot:"পাসওয়ার্ড ভুলে গেছেন?", noAccount:"অ্যাকাউন্ট নেই?", haveAccount:"ইতিমধ্যে অ্যাকাউন্ট আছে?", terms:"আমি সম্মত" }
+      en: { back:"Back to Shop", tabLogin:"Login", tabSignup:"Sign Up", btnLogin:"Login", btnSignup:"Create Account", google:"Continue with Google", phone:"Continue with Phone", orEmail:"or continue with email", remember:"Remember me", forgot:"Forgot Password?", noAccount:"Don't have an account?", haveAccount:"Already have an account?", terms:"I agree to the", termsLink:"Terms & Conditions", btnSendCode:"Send Verification Code", btnVerify:"Verify & Continue", btnResend:"Resend code", btnBackLogin:"← Back to Login", btnContinue:"Go to Dashboard →", btnLogoutBar:"Sign out", phoneHint:"Enter your phone number with country code, e.g." },
+      bn: { back:"শপে ফিরে যান", tabLogin:"লগইন", tabSignup:"নিবন্ধন", btnLogin:"লগইন", btnSignup:"অ্যাকাউন্ট খুলুন", google:"Google দিয়ে চালিয়ে যান", phone:"ফোন দিয়ে চালিয়ে যান", orEmail:"অথবা ইমেইল দিয়ে চালিয়ে যান", remember:"আমাকে মনে রাখুন", forgot:"পাসওয়ার্ড ভুলে গেছেন?", noAccount:"অ্যাকাউন্ট নেই?", haveAccount:"ইতিমধ্যে অ্যাকাউন্ট আছে?", terms:"আমি সম্মত", termsLink:"শর্তাবলীতে", btnSendCode:"ভেরিফিকেশন কোড পাঠান", btnVerify:"যাচাই করুন ও চালিয়ে যান", btnResend:"কোড আবার পাঠান", btnBackLogin:"← লগইনে ফিরে যান", btnContinue:"ড্যাশবোর্ডে যান →", btnLogoutBar:"সাইন আউট", phoneHint:"কান্ট্রি কোডসহ ফোন নম্বর দিন, যেমন" }
     };
     function setLang(lang) {
       document.querySelectorAll("[data-i18n]").forEach(el => {
@@ -495,6 +558,7 @@
     $("enBtn").onclick = () => setLang("en");
     $("bnBtn").onclick = () => setLang("bn");
     setLang(localStorage.getItem("hrshop_lang") || "en");
+    document.getElementById("yearNow").textContent = new Date().getFullYear();
   </script>
 </body>
 </html>
