@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>HR ShopBD — Checkout</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="hr-db.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script>tailwind.config = { theme: { extend: { fontFamily: { 'inter': ['Inter', 'sans-serif'] } } } }</script>
@@ -244,7 +245,7 @@
     let currentLang = localStorage.getItem('novaLang') || 'en';
     function applyTranslations() { const t = i18n[currentLang]; document.querySelectorAll('[data-i18n]').forEach(el => { const key = el.getAttribute('data-i18n'); if (t[key]) el.innerHTML = t[key]; }); }
 
-    let cart = JSON.parse(localStorage.getItem('novaCart') || '[]');
+    let cart = HRDB.get('Cart', []) || [];
     let selectedPayment = 'card';
 
     // Render summary
@@ -332,21 +333,29 @@
 
     function placeOrder() {
         if (cart.length === 0) return;
-        // Save order
-        const orders = JSON.parse(localStorage.getItem('novaOrders') || '[]');
-        const orderId = 'ORD-' + String(orders.length + 1).padStart(3, '0');
+        // Real orders are saved per account — guests must sign in first.
+        if (!HRDB.isAuthed()) {
+            showToast('Please sign in to place your order.', 'error');
+            setTimeout(() => { window.location.href = 'login.html?returnTo=checkout.html'; }, 1300);
+            return;
+        }
+        // Save order into this user's database
+        const orders = HRDB.get('Orders', []) || [];
+        const orderId = 'ORD-' + Date.now().toString().slice(-6);
         const subtotal = cart.reduce((s, c) => s + c.price * c.qty, 0);
-        orders.push({
+        orders.unshift({
             id: orderId,
             items: cart.map(c => ({ title: c.title, price: c.price, qty: c.qty, thumbnail: c.thumbnail || c.image })),
-            total: subtotal * 1.05,
+            total: Math.round(subtotal * 1.05 * 100) / 100,
             status: 'processing',
-            date: new Date().toISOString().split('T')[0]
+            date: new Date().toISOString().split('T')[0],
+            payment: selectedPayment,
+            shipName: (document.getElementById('shipFirst').value + ' ' + document.getElementById('shipLast').value).trim()
         });
-        localStorage.setItem('novaOrders', JSON.stringify(orders));
+        HRDB.set('Orders', orders);
         // Clear cart
         cart = [];
-        localStorage.setItem('novaCart', JSON.stringify(cart));
+        HRDB.set('Cart', cart);
         // Show success
         document.getElementById('orderNumber').textContent = 'Order #' + orderId;
         document.getElementById('successModal').classList.remove('hidden');
@@ -363,16 +372,29 @@
 
     document.addEventListener('DOMContentLoaded', () => {
         applyTranslations();
+        cart = HRDB.get('Cart', []) || [];
         renderSummary();
-        if (cart.length === 0) { window.location.href = 'index.html'; }
-        // Pre-fill from stored user
-        const user = JSON.parse(localStorage.getItem('novaShopUser') || '{}');
+        // Pre-fill from the signed-in account
+        const user = HRDB.user() || {};
         if (user.email) document.getElementById('shipEmail').value = user.email;
         if (user.phone) document.getElementById('shipPhone').value = user.phone;
         if (user.name) {
             const parts = user.name.split(' ');
             document.getElementById('shipFirst').value = parts[0] || '';
             document.getElementById('shipLast').value = parts.slice(1).join(' ') || '';
+        }
+        if (HRDB.isAuthed()) {
+            // Optional cloud database: pick up this account's cart if newer
+            HRDB.cloud.start(() => {
+                cart = HRDB.get('Cart', []) || [];
+                renderSummary();
+                if (!cart.length) {
+                    showToast(i18n[currentLang].cart_empty_toast || 'Your cart is empty.', 'error');
+                    setTimeout(() => { window.location.href = 'index.html'; }, 1100);
+                }
+            });
+        } else if (!cart.length) {
+            window.location.href = 'index.html';
         }
     });
     </script>
